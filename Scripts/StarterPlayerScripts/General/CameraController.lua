@@ -1,4 +1,5 @@
 -- OmniRal
+--!nocheck
 
 local CameraController = {}
 
@@ -22,7 +23,6 @@ local Workspace = game:GetService("Workspace")
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
-local GlobalConstraints = require(ReplicatedStorage.Source.SharedModules.Top.GlobalConstraints)
 local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
 local Janitor = require(ReplicatedStorage.Packages.Janitor)
 local Spring = require(ReplicatedStorage.Packages.Spring)

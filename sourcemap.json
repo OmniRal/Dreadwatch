@@ -230,6 +230,14 @@
 											"filePaths": [
 												"Scripts/ReplicatedStorage/ClientModules/Weapons/RustyController.lua"
 											]
+										},
+										{
+											"name": "BasicSwordController",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/Weapons/BasicSwordController.lua"
+											]
 										}
 									],
 									"filePaths": [
@@ -309,6 +317,22 @@
 													"children": [],
 													"filePaths": [
 														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/UnitEnum.lua"
+													]
+												},
+												{
+													"name": "WeaponEnum",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/WeaponEnum.lua"
+													]
+												},
+												{
+													"name": "QuestEnum",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/QuestEnum.lua"
 													]
 												}
 											],
@@ -3704,14 +3728,6 @@
 											]
 										},
 										{
-											"name": "CharacterService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/General/CharacterService.lua"
-											]
-										},
-										{
 											"name": "HealthService",
 											"className": "ModuleScript",
 											"children": [],
@@ -3836,19 +3852,19 @@
 											]
 										},
 										{
-											"name": "CharacterService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Player/CharacterService.lua"
-											]
-										},
-										{
 											"name": "PartyService",
 											"className": "ModuleScript",
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/Player/PartyService.lua"
+											]
+										},
+										{
+											"name": "CharacterService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Player/CharacterService.lua"
 											]
 										}
 									],
@@ -3964,6 +3980,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/Weapons/WeaponService.lua"
+											]
+										},
+										{
+											"name": "BasicSwordService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Weapons/BasicSwordService.lua"
 											]
 										}
 									],

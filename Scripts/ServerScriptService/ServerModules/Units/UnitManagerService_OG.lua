@@ -17,7 +17,7 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 
 --local UnitAttributeService = require(ServerScriptService.Source.ServerModules.Units.UnitAttributeService)
-local CharacterService = require(ServerScriptService.Source.ServerModules.General.CharacterService)
+local CharacterService = require(ServerScriptService.Source.ServerModules.Player.CharacterService)
 local WorldUIService = require(ReplicatedStorage.Source.SharedModules.UI.WorldUIService)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

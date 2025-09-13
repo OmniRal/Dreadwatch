@@ -2,24 +2,34 @@
 
 local WeaponService = {}
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Services
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local Workspace = game:GetService("Workspace")
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Modules
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
-
+local WeapnEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.WeaponEnum)
 local WeaponInfo = require(ReplicatedStorage.Source.SharedModules.Info.WeaponInfo)
 
-local WeaponModules = {
-    --Cruncher = require(ServerScriptService.Source.ServerModules.Weapons.CruncherService)
-}
+local WeaponModules = {}
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Constants
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local PlayerAmmo : {
@@ -39,6 +49,8 @@ local WeaponAnims : {
 local Assets = ReplicatedStorage.Assets
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Private Functions
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local function SetTestButtons()
     for _, Button in Workspace.WeaponButtons:GetChildren() do
@@ -56,7 +68,7 @@ local function SetTestButtons()
             Button.BrickColor = BrickColor.new("White")
 
             if Button.Name == "LoadWeapon" then
-                WeaponService:EquipWeapon(Player, Button:GetAttribute("Slot"), Button:GetAttribute("WeaponName"), Button:GetAttribute("SkinName"), true)
+                WeaponService:EquipWeapon(Player, Button:GetAttribute("WeaponName"), Button:GetAttribute("SkinName"), true)
             else
                 WeaponService:UnloadWeapon(Player)
             end
@@ -68,6 +80,63 @@ local function SetTestButtons()
     end
 end
 
+-- Load new base character animations; such as idle and jumping.
+local function NewBaseCharacterAnimations(Player: Player, Animations: {Name: string, ID: number})
+    if not Player or not Animations then return end
+    if not Player.Character then return end
+
+    local Human, Animate = Player.Character:FindFirstChild("Humanoid"), Player.Character:FindFirstChild("Animate")
+    if not Human or not Animate then return end
+
+    task.spawn(function()
+        for x = 1, 3 do
+            for _, OldTrack in pairs(Human:GetPlayingAnimationTracks()) do
+                OldTrack:Stop()
+            end
+            task.wait()
+        end
+    
+        for Name, ID in pairs(Animations) do
+            local Val = Animate:FindFirstChild(Name)
+            if Val then
+                for _, ThisAnimation in pairs(Val:GetChildren()) do
+                    if ThisAnimation:GetAttribute("Original") == nil then
+                        ThisAnimation:SetAttribute("Original", ThisAnimation.AnimationId)
+                    end
+                    ThisAnimation.AnimationId = "rbxassetid://" .. ID
+                end
+            end
+        end
+    end)
+end
+
+-- Reset previously changed base character animations back to their original IDs.
+local function SetOriginalCharacterAnimations(Player: Player)
+    if not Player then return end
+    if not Player.Character then return end
+
+    local Human, Animate = Player.Character:FindFirstChild("Humanoid"), Player.Character:FindFirstChild("Animate")
+    if not Human or not Animate then return end
+
+    for _, OldTrack in pairs(Human:GetPlayingAnimationTracks()) do
+        OldTrack:Stop()
+    end
+
+    local Animations = {"idle", "walk", "run", "jump", "fall"}
+    for _, Name in pairs(Animations) do
+        local Val = Animate:FindFirstChild(Name)
+        if Val then
+            for _, ThisAnimation in pairs(Val:GetChildren()) do
+                if ThisAnimation:GetAttribute("Original") then
+                    ThisAnimation.AnimationId = ThisAnimation:GetAttribute("Original")
+                end
+            end
+        end
+    end
+end
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Ammo --
@@ -191,10 +260,10 @@ end
 
 -- Animations --
 
-function WeaponService:EquipWeapon(Player: Player, Slot: WeaponInfo.WeaponType, WeaponName: string, SkinName: string?, LoadWeapon: boolean?)
+function WeaponService:EquipWeapon(Player: Player, WeaponName: string, SkinName: string?, LoadWeapon: boolean?)
     if not Player then return end
 
-    DataService:SetWeapon(Player, Slot, WeaponName, SkinName)
+    DataService:SetWeapon(Player, WeaponName, SkinName)
     if not LoadWeapon then return end
     WeaponService:LoadWeapon(Player, WeaponName, SkinName)
 end
@@ -203,7 +272,8 @@ function WeaponService:LoadWeapon(Player: Player, WeaponName: string, SkinName: 
     if not Player then return end
     if not Player.Character then return end
     if not Assets.Weapons:FindFirstChild(WeaponName) then return end
-    if not WeaponModules[WeaponName] then return end
+    local Module, Info = WeaponModules[WeaponName], WeaponInfo[WeaponName]
+    if not Module or not Info then return end
     
     if not SkinName then
         SkinName = "Default"
@@ -221,8 +291,12 @@ function WeaponService:LoadWeapon(Player: Player, WeaponName: string, SkinName: 
     NewWeapon:SetAttribute("SkinName", SkinName)
     NewWeapon.Parent = Player.Character
 
-    local Success = WeaponModules[WeaponName]:Load(Player, NewWeapon, SkinName)
+    local Success = Module:Load(Player, NewWeapon, SkinName)
     if Success then
+        if Info.BaseAnimations then
+            NewBaseCharacterAnimations(Player, Info.BaseAnimations)
+        end
+
         Remotes.WeaponService.Loaded:Fire(Player, WeaponName)
     else
         NewWeapon:Destroy()
@@ -237,9 +311,13 @@ function WeaponService:UnloadWeapon(Player: Player)
     if not OldWeapon then return end
     
     local WeaponName = OldWeapon:GetAttribute("WeaponName")
-    if not WeaponModules[WeaponName] then return end
-
-    WeaponModules[WeaponName]:Unload(Player, OldWeapon)
+    local Module, Info = WeaponModules[WeaponName], WeaponInfo[WeaponName]
+    if not Module then return end
+    
+    if Info.BaseAnimations then
+        SetOriginalCharacterAnimations(Player)
+    end
+    Module:Unload(Player, OldWeapon)
 
     Remotes.WeaponService.Unloaded:Fire(Player, WeaponName)
 

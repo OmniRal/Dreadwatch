@@ -17,7 +17,7 @@ local RunService = game:GetService("RunService")
 local GlobalConstraints = require(ReplicatedStorage.Source.SharedModules.Top.GlobalValues)
 local UnitEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.UnitEnum)
 
-local CharacterService = require(ServerScriptService.Source.ServerModules.General.CharacterService)
+local CharacterService = require(ServerScriptService.Source.ServerModules.Player.CharacterService)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants

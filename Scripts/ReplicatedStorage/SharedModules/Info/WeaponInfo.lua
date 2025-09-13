@@ -4,44 +4,73 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
+local WeaponEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.WeaponEnum)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-export type WeaponType = "Primary" | "Utility" | "Melee"
+local WeaponInfo: {[string]: WeaponEnum.Weapon} = {}
 
-export type WeaponUseType = "Single" | "Auto"
+WeaponInfo.BasicSword = {
+    UnlockedBy = "Default",
+    Cost = 0,
 
-export type Weapon = {
-    UnlockedBy: CustomEnum.UnlockedBy,
-    Cost: number,
+    DisplayName = "Basic Sword",
+    Description = "",
+    FlavorText = "",
+    Icon = 0,
 
-    DisplayName: string,
-    Description: string,
-    FlavorText: string,
-    Icon: number,
-    
-    Type: WeaponType,
-    UseType: WeaponUseType,
-    Reload: boolean?,
+    Type = "Melee",
+    UseType = "Single",
 
-    UseRate: number,
-    ReloadTime: number,
-    MaxMags: number?,
-    MaxClips: number?,
+    MeleeData = {
+    },
 
-    Damage: NumberRange,
+    Damage = NumberRange.new(10, 12),
 
-    HoldingAnimations: {[string]: number | {[string]: {ID: number, Priority: Enum.AnimationPriority}}?}?,
-    ModelAnimations: {[string]: number | {[string]: {ID: number, Priority: Enum.AnimationPriority}}?}?,
+    Abilities = {
+        Innate = {
+            Name = "Jizz",
+            DisplayName = "Jizz",
+            Description = "",
+            FlavorText = "",
+            Icon = "",
 
-    Skins: {[string]: {UnlockedBy: CustomEnum.UnlockedBy, Cost: number}},
+            Damage = NumberRange.new(45, 50),
+        },
+
+        Grand = {
+            Name = "SuperJizz",
+            DisplayName = "Super Jizz",
+            Description = "",
+            FlavorText = "",
+            Icon = 0,
+
+            Damage = NumberRange.new(45, 50),
+        }
+    },
+
+    BaseAnimations = {
+		["idle"] = 15493944783, 
+		["walk"] = 15493945869, 
+		["run"] = 15493946987, 
+		["jump"] = 15493949484, 
+		["fall"] = 15493951085
+    },
+
+    HoldingAnimations = {
+        
+    },
+
+    ModelAnimations = {
+
+    },
+
+    Skins = {
+        ["Default"] = {UnlockedBy = "Default", Cost = 0},
+    }
 }
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-local WeaponInfo: {[string]: Weapon} = {}
-
+--[[
 WeaponInfo.Cruncher = {
     DisplayName = "Cruncher",
     Description = "Grinds bolts, metals and various other debris to use as fire power!",
@@ -169,5 +198,6 @@ WeaponInfo.Brighton = {
         ["Default"] = {UnlockedBy = "Default", Cost = 0},
     },
 }
+]]
 
 return WeaponInfo

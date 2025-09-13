@@ -35,6 +35,7 @@ local ProfileTemplate = {
 
     Level = 1,
     XP = 0,
+
     Quests = {
         Current = {},
         Completed = {},
@@ -42,19 +43,15 @@ local ProfileTemplate = {
     
     Badges = {},
 
-    Primary = "Cruncher",
-    PrimarySkin = "Greenmark",
-    
-    Utility = "None",
-    UtilitySkin = "Default",
-
-    Melee = "None",
-    MeleeSkin = "Default",
-
     Weapons = {},
+    Neutrals = {},
+    Modifiers = {},
+
+    EquippedWeapon = "BasicSword",
+    EquippedWeaponSkin = "Default",
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_1', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_2', ProfileTemplate)
 
 local Profiles = {}
 
@@ -152,9 +149,8 @@ function DataService:SetIndex(Player: Player, Index: string | {}, Value: string?
     Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
 end
 
-function DataService:SetWeapon(Player: Player, Slot: string, WeaponName: string, SkinName: string?)
+function DataService:SetWeapon(Player: Player, WeaponName: string, SkinName: string?)
     self:WaitForPlayerDataLoaded(Player)
-    assert(Slot == "Primary" or Slot == "Utility" or Slot == "Melee", "Trying to set invalid weapon slot.")
     assert(WeaponInfo[WeaponName] ~= nil, "Trying to set invalid weapon.")
     
     if not SkinName then
@@ -162,8 +158,8 @@ function DataService:SetWeapon(Player: Player, Slot: string, WeaponName: string,
     end
     assert(WeaponInfo[WeaponName].Skins[SkinName] ~= nil, "Trying to set invalid weapon skin.")
 
-    Profiles[Player].Data[Slot] = WeaponName
-    Profiles[Player].Data[Slot .. "Skin"] = SkinName or "Default"
+    Profiles[Player].Data.EquippedWeapon = WeaponName
+    Profiles[Player].Data.EquippedWeaponSkin = SkinName or "Default"
 
     Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
 end
