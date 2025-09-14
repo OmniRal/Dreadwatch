@@ -7,4 +7,6 @@ GlobalValues.Teams = true
 GlobalValues.DefaultHistoryEntryCleanTime = 30
 GlobalValues.RootWalkSpeed = 0.01
 
+GlobalValues.UseClips = false
+
 return GlobalValues

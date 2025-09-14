@@ -47,11 +47,11 @@ local ProfileTemplate = {
     Neutrals = {},
     Modifiers = {},
 
-    EquippedWeapon = "BasicSword",
-    EquippedWeaponSkin = "Default",
+    CurrentWeapon = "BasicSword",
+    CurrentWeaponSkin = "Default",
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_2', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_3', ProfileTemplate)
 
 local Profiles = {}
 
@@ -158,8 +158,8 @@ function DataService:SetWeapon(Player: Player, WeaponName: string, SkinName: str
     end
     assert(WeaponInfo[WeaponName].Skins[SkinName] ~= nil, "Trying to set invalid weapon skin.")
 
-    Profiles[Player].Data.EquippedWeapon = WeaponName
-    Profiles[Player].Data.EquippedWeaponSkin = SkinName or "Default"
+    Profiles[Player].Data.CurrentWeapon = WeaponName
+    Profiles[Player].Data.CurrentWeaponSkin = SkinName or "Default"
 
     Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
 end

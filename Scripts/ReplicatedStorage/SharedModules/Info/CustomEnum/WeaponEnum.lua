@@ -5,6 +5,7 @@ local WeaponEnum = {}
 local CustomEnum = require(script.Parent)
 
 export type WeaponUseType = "Single" | "Auto"
+export type WeaponStyle = "Melee" | "Ranged"
 
 export type WeaponAbility = {
     Name: string,
@@ -26,9 +27,11 @@ export type Weapon = {
     Icon: number,
     
     UseType: WeaponUseType,
+    Style: WeaponStyle,
 
     MeleeData: {
-
+        CanComboChain: boolean?,
+        ComboAmount: number?,
     }?,
 
     RangedData: {

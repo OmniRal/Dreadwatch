@@ -19,10 +19,12 @@ WeaponInfo.BasicSword = {
     FlavorText = "",
     Icon = 0,
 
-    Type = "Melee",
     UseType = "Single",
+    Style = "Melee",
 
     MeleeData = {
+        CanComboChain = true,
+        ComboAmount = 3,
     },
 
     Damage = NumberRange.new(10, 12),
@@ -58,7 +60,16 @@ WeaponInfo.BasicSword = {
     },
 
     HoldingAnimations = {
-        
+        Base = {
+
+        },
+        Using = {
+            ["Swing_1_A"] = {ID = 15502657876, Priority = Enum.AnimationPriority.Action}, -- Starting combo
+            ["Swing_1_B"] = {ID = 15502661852, Priority = Enum.AnimationPriority.Action}, -- Looping combo
+            ["Swing_2"] = {ID = 15502658851, Priority = Enum.AnimationPriority.Action},
+            ["Swing_3"] = {ID = 15502660636, Priority = Enum.AnimationPriority.Action},
+        }
+
     },
 
     ModelAnimations = {

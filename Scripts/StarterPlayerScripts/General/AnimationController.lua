@@ -36,6 +36,7 @@ function AnimationController:PlayNew(Character: any, KeyName: string, AnimName: 
     if not self.Tracks[KeyName][AnimName] then return end
     local Tracks = self.Tracks[KeyName]
     local AnimTrack = self.AnimTracks[KeyName]
+
     if AnimTrack.CanPlay or Override then
         if AnimTrack.T ~= nil then
             AnimTrack.T:Stop()

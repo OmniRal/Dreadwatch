@@ -35,6 +35,11 @@ local AnimationController = require(StarterPlayer.StarterPlayerScripts.Source.Ge
 
 BasicSwordController.BackgroundRun = false
 
+BasicSwordController.ComboNum = 1
+BasicSwordController.ComboStarted = false
+BasicSwordController.CanContinueCombo = false
+BasicSwordController.AttackActive = false
+
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local Camera = Workspace.CurrentCamera
@@ -47,12 +52,16 @@ local Using = false
 
 local function AnimKeyframes(Keyframe: string, AnimName: string, Params: {}?)
     if Keyframe == "End" then
-        if AnimName == "StartFire" then
-            AnimationController:PlayNew(LocalPlayer.Character, "BasicSwordUsingAnimations", "Using", true, 1, AnimKeyframes)
-        
-        elseif AnimName == "Reloading" then
-            Reloading = false
-        end
+        Using = false
+        BasicSwordController.ComboNum = 1
+        BasicSwordController.ComboStarted = false
+        BasicSwordController.CanContinueCombo = false
+
+    elseif Keyframe == "AttackStart" then
+        BasicSwordController.CanContinueCombo = true
+
+    elseif Keyframe == "AttackEnd" then
+        BasicSwordController.CanContinueCombo = false
 
     end 
 end
@@ -61,12 +70,12 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function BasicSwordController:Use(DeltaTime: number, FirstOrThirdPerson: boolean?): string?
+function BasicSwordController:Use(DeltaTime: number, FirstOrThirdPerson: boolean?, ComboID: string?): string?
+    if not ComboID then return end
 
-    if not Using then
-        Using = true
-        AnimationController:PlayNew(LocalPlayer.Character, "BasicSwordUsingAnimations", "StartFire", true, 1, AnimKeyframes)
-    end
+    Using = true
+    BasicSwordController.CanContinueCombo = false
+    AnimationController:PlayNew(LocalPlayer.Character, "BasicSwordUsingAnimations", "Swing_" .. ComboID, true, 1, AnimKeyframes)
 
     return
 end

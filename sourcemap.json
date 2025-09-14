@@ -1,5 +1,5 @@
 {
-	"name": "Hunters",
+	"name": "Dreadwatch",
 	"className": "DataModel",
 	"filePaths": [
 		"default.project.json"
@@ -208,6 +208,14 @@
 									"className": "Folder",
 									"children": [
 										{
+											"name": "BasicSwordController",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/Weapons/BasicSwordController.lua"
+											]
+										},
+										{
 											"name": "BrightonController",
 											"className": "ModuleScript",
 											"children": [],
@@ -229,14 +237,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ReplicatedStorage/ClientModules/Weapons/RustyController.lua"
-											]
-										},
-										{
-											"name": "BasicSwordController",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/ClientModules/Weapons/BasicSwordController.lua"
 											]
 										}
 									],
@@ -312,6 +312,14 @@
 											"className": "ModuleScript",
 											"children": [
 												{
+													"name": "QuestEnum",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/QuestEnum.lua"
+													]
+												},
+												{
 													"name": "UnitEnum",
 													"className": "ModuleScript",
 													"children": [],
@@ -325,14 +333,6 @@
 													"children": [],
 													"filePaths": [
 														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/WeaponEnum.lua"
-													]
-												},
-												{
-													"name": "QuestEnum",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/QuestEnum.lua"
 													]
 												}
 											],
@@ -3852,19 +3852,19 @@
 											]
 										},
 										{
-											"name": "PartyService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Player/PartyService.lua"
-											]
-										},
-										{
 											"name": "CharacterService",
 											"className": "ModuleScript",
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/Player/CharacterService.lua"
+											]
+										},
+										{
+											"name": "PartyService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Player/PartyService.lua"
 											]
 										}
 									],
@@ -3951,6 +3951,14 @@
 									"className": "Folder",
 									"children": [
 										{
+											"name": "BasicSwordService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Weapons/BasicSwordService.lua"
+											]
+										},
+										{
 											"name": "BrightonService",
 											"className": "ModuleScript",
 											"children": [],
@@ -3980,14 +3988,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/Weapons/WeaponService.lua"
-											]
-										},
-										{
-											"name": "BasicSwordService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Weapons/BasicSwordService.lua"
 											]
 										}
 									],
