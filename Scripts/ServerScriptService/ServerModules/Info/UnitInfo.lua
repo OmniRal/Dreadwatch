@@ -34,11 +34,11 @@ export type UnitBase = {
 
     EnemyStats: {
         Agro: {
-            Is: boolean, -- If set to false, enemies will only attack if a player attacks them first
-            Range: number, -- How close the player needs before the Unit starts chasing
+            Is: boolean, -- If set to false, enemies will only attack if a player attacks them first.
+            Range: number, -- How close the player needs before the Unit starts chasing.
         },
 
-        ChaseRange: number, -- How far the unit can chase a player from their original spawn position before stopping
+        ChaseRange: NumberRange, -- How far the unit can chase a player from their original spawn position before stopping.
 
         HealthThresholdForCombat: number, -- Set to MAX PERCENT if it should always attack. Set to ZERO PERCENT if it should only run away.
         SearchTime: number, -- How long a unit will stand in one spot and search for a target after losing vision of them
@@ -112,9 +112,9 @@ UnitInfo["TestBot"] = {
     },
     
     BaseStats = {
-        Health = 25,
+        Health = 200,
         WalkSpeed = 4,
-        RunSpeed = 14,
+        RunSpeed = 10,
     },
 
     EnemyStats = {
@@ -123,27 +123,27 @@ UnitInfo["TestBot"] = {
             Range = 35,
         },
     
-        ChaseRange = 60,
+        ChaseRange = NumberRange.new(5, 60),
         HealthThresholdForCombat = 25,
         SearchTime = 3,
 
         Attacks = {
             ["Melee_Attack"] = {
-                HealthThreshold = 25,
+                HealthThreshold = 100,
                 Cooldown = NumberRange.new(1.5, 2),
                 Chance = 75,
                 Damage = NumberRange.new(7, 10),
                 Speed = 1,
                 Style = "Melee",
                 Type = "Physical",
-                UseRange = 5,
+                UseRange = 8,
                 DamageRange = 8,
-                MoveSpeedWhileAttacking = 25,
+                MoveSpeedWhileAttacking = 0,
                 RequireVision = false,
             },
 
             ["Ranged_Attack"] = {
-                HealthThreshold = 100,
+                HealthThreshold = 0,
                 Cooldown = NumberRange.new(4, 4),
                 Chance = 25,
                 Damage = NumberRange.new(2, 2),

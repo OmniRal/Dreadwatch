@@ -37,7 +37,7 @@ export type UnitConstructor = {
     IdleTime: NumberRange,
     CleanDelay: NumberRange, -- How long to wait before the unit is destroyed fully. Only once this unit is gone, can it respawn (if respawning is enabled),
 
-    OverrideChaseRange: number?,
+    OverrideChaseRange: NumberRange?,
 }
 
 export type UnitStates = "None" | "Spawning" | "Dying" | "Fixing" | "Idling" | "Patrolling" | "Chasing" | "Attacking" | "Searching" | "Stuck" | string
@@ -118,7 +118,7 @@ export type Unit = {
         Human: Humanoid,
         Root: BasePart,
 
-        ChaseRange: number,
+        ChaseRange: NumberRange,
 
         Searching: {
             Active: boolean,
@@ -354,6 +354,7 @@ function Unit:ResetValues()
     local self: Unit = self
 
     self.Human.Health = self.Info.BaseStats.Health
+    self.Human.MaxHealth = self.Info.BaseStats.Health
     self.Human.WalkSpeed = self.Info.BaseStats.WalkSpeed
         
     self.Patrolling.Current = 0
@@ -543,10 +544,10 @@ function Unit:SetState(NewState: UnitStates, Details: {any}, Force: boolean?)
 
     self.State = NewState
 
-    warn("_______________________________________")
-    warn("New State : " .. NewState)
-    warn("Last State : " .. self.LastState)
-    warn("_______________________________________")
+    --warn("_______________________________________")
+    --warn("New State : " .. NewState)
+    --warn("Last State : " .. self.LastState)
+    --warn("_______________________________________")
 
     if NewState == "None" then
         return
@@ -566,6 +567,7 @@ function Unit:SetState(NewState: UnitStates, Details: {any}, Force: boolean?)
         self.Idle.Until = Time
 
     elseif NewState == "Patrolling" then
+        self:Patrol()
         if self.Goal.Point then
             if IsGoalBlocked(self.Root.Position, self.Goal.Point, {self.Model}) then
                 self:CreateNewPath()
@@ -856,7 +858,7 @@ function Unit:CheckTarget()
                 end
 
                 local UnitDistanceFromSpawn = (self.Root.Position - self.Spawning.Here.Position).Magnitude
-                if UnitDistanceFromSpawn > self.Target.ChaseRange then
+                if UnitDistanceFromSpawn > self.Target.ChaseRange.Max then
                     print("Target out of range; going to SEARCH.")
                     self:SetState("Searching")
                     return
@@ -953,6 +955,7 @@ function Unit:Move()
     if not self.Human or not self.Root then return end
 
     if self.State == "Patrolling" then
+        
         if not self.Goal.Reached then
             if self.Path.Num <= 0 then
                 if (self.Root.Position - self.Goal.Point).Magnitude > 5 then
@@ -977,6 +980,11 @@ function Unit:Move()
         local GoalPosition = self.Target.Root.Position
         if self.Target.OutOfVision then
             GoalPosition = self.Target.LastPositionSeen
+        else
+            if (self.Root.Position - self.Target.Root.Position).Magnitude <= self.Target.ChaseRange.Min then
+                self.Human:MoveTo(self.Root.Position)
+                return
+            end
         end
 
         if IsGoalBlocked(self.Root.Position, GoalPosition, {self.Model, self.Target.Model}) then
@@ -1022,6 +1030,7 @@ function Unit:Move()
         end]]
 
     elseif self.State == "Attacking" then
+        if (self.Root.Position - self.Target.Root.Position).Magnitude > 8 then return end
         self.Human:MoveTo(self.Target.Root.Position)
 
     elseif self.State == "Searching" then

@@ -53,23 +53,19 @@ WeaponInfo.BasicSword = {
 
     BaseAnimations = {
 		["idle"] = 15493944783, 
-		["walk"] = 15493945869, 
+		["walk"] = 15493945869,
 		["run"] = 15493946987, 
 		["jump"] = 15493949484, 
 		["fall"] = 15493951085
     },
 
     HoldingAnimations = {
-        Base = {
-
-        },
         Using = {
             ["Swing_1_A"] = {ID = 15502657876, Priority = Enum.AnimationPriority.Action}, -- Starting combo
             ["Swing_1_B"] = {ID = 15502661852, Priority = Enum.AnimationPriority.Action}, -- Looping combo
             ["Swing_2"] = {ID = 15502658851, Priority = Enum.AnimationPriority.Action},
             ["Swing_3"] = {ID = 15502660636, Priority = Enum.AnimationPriority.Action},
         }
-
     },
 
     ModelAnimations = {
@@ -108,7 +104,8 @@ WeaponInfo.Cruncher = {
             ["Firing"] = {ID = 105064106391976, Priority = Enum.AnimationPriority.Action2},
             ["StopFire"] = {ID = 76608737715824, Priority = Enum.AnimationPriority.Action2},
             ["Reloading"] = {ID = 93639917370633, Priority = Enum.AnimationPriority.Action3},
-        }},
+        }
+    },
     ModelAnimations = {
         Base = {
             ["Grinding"] = {ID = 87569697764574, Priority = Enum.AnimationPriority.Idle},

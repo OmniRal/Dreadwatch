@@ -54,8 +54,13 @@ export type Weapon = {
         ["fall"]: number?,
     }?,
     
-    HoldingAnimations: {[string]: number | {[string]: {ID: number, Priority: Enum.AnimationPriority}}?}?,
-    ModelAnimations: {[string]: number | {[string]: {ID: number, Priority: Enum.AnimationPriority}}?}?,
+    HoldingAnimations: {
+        [string]: {[string]: {ID: number, Priority: Enum.AnimationPriority}}
+    }?,
+
+    ModelAnimations: {
+        [string]: {[string]: {ID: number, Priority: Enum.AnimationPriority}}
+    }?,
 
     Skins: {[string]: {UnlockedBy: CustomEnum.UnlockedBy, Cost: number}},
 }

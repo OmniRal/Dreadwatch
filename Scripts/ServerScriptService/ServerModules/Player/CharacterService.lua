@@ -153,7 +153,9 @@ function CharacterService:SpawnCharacter(Player: Player)
     end)]]
 end
 
-function CharacterService:ApplyDamage(Source: Player | Model | string, Victim: Player | Model, Damage: number, DamageName: string, DamageType: string, CritPossible: boolean?)
+
+
+function CharacterService:ApplyDamage_Old(Source: Player | Model | string, Victim: Player | Model, Damage: number, DamageName: string, DamageType: string, CritPossible: boolean?)
     if not Source or not Victim then return end
 
     local VictimModel = Victim

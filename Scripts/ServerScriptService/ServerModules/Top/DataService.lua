@@ -16,6 +16,8 @@ local ShopInfo = require(ReplicatedStorage.Source.SharedModules.Info.ShopInfo)
 local BadgeInfo = require(ReplicatedStorage.Source.SharedModules.Info.BadgeInfo)
 local WeaponInfo = require(ReplicatedStorage.Source.SharedModules.Info.WeaponInfo)
 
+local ModStoneEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.ModStoneEnum)
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 DataService.ProfileReady = false
@@ -44,14 +46,21 @@ local ProfileTemplate = {
     Badges = {},
 
     Weapons = {},
-    Neutrals = {},
-    Modifiers = {},
+    Relics = {},
+    Mods = {},
 
     CurrentWeapon = "BasicSword",
     CurrentWeaponSkin = "Default",
+
+    CurrentRelics = {},
+    CurrentMods = {
+        [1] = "Echo",
+        [2] = "Blast",
+        [3] = "None",
+    },
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_3', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_7', ProfileTemplate)
 
 local Profiles = {}
 
@@ -147,6 +156,13 @@ function DataService:SetIndex(Player: Player, Index: string | {}, Value: string?
     end
 
     Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
+end
+
+-- Returns an array of the players current equipped Mod Stones.
+function DataService:GetPlayerMods(Player: Player): ModStoneEnum.ModList
+    self:WaitForPlayerDataLoaded(Player)
+
+    return Profiles[Player].Data.CurrentMods
 end
 
 function DataService:SetWeapon(Player: Player, WeaponName: string, SkinName: string?)

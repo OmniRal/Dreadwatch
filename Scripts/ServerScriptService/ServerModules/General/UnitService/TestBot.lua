@@ -12,6 +12,7 @@ local Workspace = game:GetService("Workspace")
 
 local Unit = require(ServerScriptService.Source.ServerModules.Classes.Unit)
 local UnitInfo = require(ServerScriptService.Source.ServerModules.Info.UnitInfo).TestBot
+local UnitService = require(ServerScriptService.Source.ServerModules.General.UnitService)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -90,7 +91,8 @@ local function AnimKeyframes(Unit: Unit.Unit, AnimName: string, Keyframe: string
                 if Model then
                     if Model:FindFirstChild("Humanoid") then
                         local Damage = RNG:NextInteger(UnitInfo.EnemyStats.Attacks.Ranged_Attack.Damage.Min, UnitInfo.EnemyStats.Attacks.Ranged_Attack.Damage.Max)
-                        Model.Humanoid:TakeDamage(Damage)
+                        --Model.Humanoid:TakeDamage(Damage)
+                        UnitService:ApplyDamage(Unit.Model, Model, Damage, "Jizzed")
                     end
                 end
             end

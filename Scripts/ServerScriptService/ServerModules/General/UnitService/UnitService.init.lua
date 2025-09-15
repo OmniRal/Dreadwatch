@@ -3,19 +3,32 @@
 
 local UnitService = {}
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Services
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
-local New = require(ReplicatedStorage.Source.Pronghorn.New)
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Modules
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 local UnitInfo = require(ServerScriptService.Source.ServerModules.Info.UnitInfo)
 local Unit = require(ServerScriptService.Source.ServerModules.Classes.Unit)
 
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Constants
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local RunHanlder: RBXScriptConnection? = nil
@@ -50,16 +63,61 @@ local Spawners: {
 local RNG = Random.new()
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
------------------
--- Private API --
------------------
+-- Private Functions
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local function UpdateSpawnersAndUnits()
+    for Model, Spawner in Spawners do
+        if not Spawner then continue end
+        if not Spawner.Active then continue end
+            
+        if #Spawner.Units < Spawner.MaxUnits then
+            if Spawner.AutoSpawn then
+                UnitService:Spawn(Model)
+            end
+        end
 
+        if #Spawner.Units <= 0 then continue end
+
+        for n, Unit in ipairs(Spawner.Units) do
+            if not Unit then continue end
+
+            if not Unit.Death.ReadyToClean then
+                Unit:Update()
+
+            else
+                Unit:Clean()
+                table.remove(Spawner.Units, n)
+                continue
+            end
+        end
+    end
+end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-----------------
--- Public API --
-----------------
+-- Public API
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Apply damage to another unit.
+-- @Source = damage APPLYER.
+-- @Victim = damage RECEIVER.
+-- @DamageAmount = how much damage.
+-- @DamageName = what the damage is called; e.g. "Thor's Hammer".
+-- @DamageType = which kind of damage type it is, based on CustomEnum.DamageTyoes; if enabled in GlobalValues.
+-- @CritPossible = if it should calculate potentially applying a crit.
+function UnitService:ApplyDamage(Source: Player | Model | string, Victim: Player | Model, DamageAmount: number, DamageName: string, DamageType: string?, CritPossible: boolean?)
+    if not Source or not Victim then return end
+
+    local VictimModel = Victim
+    if Victim:IsA("Player") then
+        VictimModel = Victim.Character
+    end
+
+    if not VictimModel then return end
+
+    if not VictimModel:FindFirstChild("Humanoid") then return end
+    VictimModel.Humanoid:TakeDamage(DamageAmount)
+end
 
 function UnitService:AddSingleSpawner(SpawnerModel: Model)
     if not SpawnerModel then return end
@@ -152,31 +210,7 @@ function UnitService:Run()
     UnitService:Stop()
 
     RunHanlder = RunService.Heartbeat:Connect(function(DeltaTime: number)
-        for Model, Spawner in Spawners do
-            if not Spawner then continue end
-            if not Spawner.Active then continue end
-            
-            if #Spawner.Units < Spawner.MaxUnits then
-                if Spawner.AutoSpawn then
-                    UnitService:Spawn(Model)
-                end
-            end
-
-            if #Spawner.Units <= 0 then continue end
-
-            for n, Unit in ipairs(Spawner.Units) do
-                if not Unit then continue end
-
-                if not Unit.Death.ReadyToClean then
-                    Unit:Update()
-
-                else
-                    Unit:Clean()
-                    table.remove(Spawner.Units, n)
-                    continue
-                end
-            end
-        end
+        UpdateSpawnersAndUnits()
     end)
 end
 

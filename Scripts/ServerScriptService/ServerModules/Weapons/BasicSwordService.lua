@@ -13,11 +13,12 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local WeaponInfo = require(ReplicatedStorage.Source.SharedModules.Info.WeaponInfo).Brighton
-
+local ModService = require(ServerScriptService.Source.ServerModules.General.ModService)
+local UnitService = require(ServerScriptService.Source.ServerModules.General.UnitService)
 local WeaponService = require(ServerScriptService.Source.ServerModules.Weapons.WeaponService)
 local SoundControlService = require(ReplicatedStorage.Source.SharedModules.Other.SoundControlService)
 
+local WeaponInfo = require(ReplicatedStorage.Source.SharedModules.Info.WeaponInfo).BasicSword
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -96,8 +97,20 @@ end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function BasicSwordService:Use(Player: Player): number?
-    print("Using!")
+function BasicSwordService:Use(Player: Player, SwingNum: number, HitList: {Model}): number?
+    if not Player or not SwingNum or not HitList then return end
+
+    for _, Unit in HitList do
+        if not Unit then continue end
+        ModService:RunThroughMods(
+            Player,
+            function()
+                UnitService:ApplyDamage(Player, Unit, RNG:NextInteger(WeaponInfo.Damage.Min, WeaponInfo.Damage.Max), "BasicSword")
+            end,
+            Unit.HumanoidRootPart.Position
+        )
+        
+    end
 
     return 1
 end
@@ -142,8 +155,8 @@ function BasicSwordService:Unload(Player: Player, WeaponModel: any)
 end
 
 function BasicSwordService:Init()
-    Remotes:CreateToServer("Use", {"Vector3", "number", "CFrame", "boolean?"}, "Reliable", function(Player: Player, AimTo: Vector3, Spread: number, CameraCF: CFrame, FirstOrThirdPerson: boolean?)
-        BasicSwordService:Use(Player)
+    Remotes:CreateToServer("Use", {"number", "table"}, "Reliable", function(Player: Player, SwingNum: number, HitList: {Model})
+        BasicSwordService:Use(Player, SwingNum, HitList)
     end)
 
     Remotes:CreateToServer("StopUse", {}, "Returns", function(Player: Player)
