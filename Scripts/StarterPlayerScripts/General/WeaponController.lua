@@ -155,12 +155,6 @@ function WeaponController:ToggleWeaponControls(Toggle: boolean, Weapon: string)
 
         PlayerInfo.WeaponModule:Load()
 
-        GameplayUIController:UpdateWeaponFrame(
-            Info.Icon,
-            if Info.MaxClips ~= nil then true else false,
-            if Info.MaxMags ~= nil then true else false
-        )
-        
     else
         if not PlayerInfo.WeaponModule then return end
         
@@ -170,7 +164,6 @@ function WeaponController:ToggleWeaponControls(Toggle: boolean, Weapon: string)
         PlayerInfo.WeaponModule = nil
         PlayerInfo.CurrentWeapon = "None"
         PlayerInfo.WeaponModel = nil
-        GameplayUIController:UpdateWeaponFrame()
         
     end
 end

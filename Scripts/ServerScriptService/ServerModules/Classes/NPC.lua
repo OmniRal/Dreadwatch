@@ -12,40 +12,40 @@ local Debris = game:GetService("Debris")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local UnitInfo = require(ServerScriptService.Source.ServerModules.Info.UnitInfo)
+local NPCInfo = require(ServerScriptService.Source.ServerModules.Info.NPCInfo)
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local SHOW_STATE = false
 
-local UPDATE_PATH_TIME = 0.25 -- in seconds of how often a unit should pathfind when going towards a target
-local SHOW_PATH = true -- If TRUE, it will create bricks to visualize a path the unit is currently using
+local UPDATE_PATH_TIME = 0.25 -- in seconds of how often a NPC should pathfind when going towards a target
+local SHOW_PATH = true -- If TRUE, it will create bricks to visualize a path the NPC is currently using
 
-local LOSE_VISION_TIME = 4 -- How long it takes for a unit to FULLY lose vision of a target
+local LOSE_VISION_TIME = 4 -- How long it takes for a NPC to FULLY lose vision of a target
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-export type UnitConstructor = {
+export type NPCConstructor = {
     Name: string,
     Module: ModuleScript,
 
-    SpawnPoints: {CFrame}, -- All the CFs the Unit can spawn at
-    PatrolPoints: Folder | Model | {Vector3}?, -- If folder or model, it should contain parts that represent the points the unit can travel between
-    PatrolStyle: UnitInfo.UnitPatrolStyle,
+    SpawnPoints: {CFrame}, -- All the CFs the NPC can spawn at
+    PatrolPoints: Folder | Model | {Vector3}?, -- If folder or model, it should contain parts that represent the points the NPC can travel between
+    PatrolStyle: NPCInfo.NPCPatrolStyle,
     UsePathfinding: boolean?,
     IdleTime: NumberRange,
-    CleanDelay: NumberRange, -- How long to wait before the unit is destroyed fully. Only once this unit is gone, can it respawn (if respawning is enabled),
+    CleanDelay: NumberRange, -- How long to wait before the NPC is destroyed fully. Only once this NPC is gone, can it respawn (if respawning is enabled),
 
     OverrideChaseRange: NumberRange?,
 }
 
-export type UnitStates = "None" | "Spawning" | "Dying" | "Fixing" | "Idling" | "Patrolling" | "Chasing" | "Attacking" | "Searching" | "Stuck" | string
+export type NPCStates = "None" | "Spawning" | "Dying" | "Fixing" | "Idling" | "Patrolling" | "Chasing" | "Attacking" | "Searching" | "Stuck" | string
 
-export type Unit = {
+export type NPC = {
     Name: string,
     Module: nil,
-    Info: UnitInfo.UnitBase,
+    Info: NPCInfo.NPCBase,
 
     DisplayName: string,
 
@@ -56,18 +56,18 @@ export type Unit = {
 
     Alive: boolean,
     Paused: boolean,
-    State: UnitStates,
-    LastState: UnitStates,
+    State: NPCStates,
+    LastState: NPCStates,
 
     Spawning: {
-        Time: number, -- When the unit spawned
-        Here: CFrame, -- Where the unit spawned in last time
-        Points: {CFrame}, -- Available points the unit can spawn
+        Time: number, -- When the NPC spawned
+        Here: CFrame, -- Where the NPC spawned in last time
+        Points: {CFrame}, -- Available points the NPC can spawn
     },
 
     Death: {
-        Time: number, -- When the unit died
-        CleanDelay: number, -- How long before the unit is destroyed in workspace fully and removed from it's spawners list
+        Time: number, -- When the NPC died
+        CleanDelay: number, -- How long before the NPC is destroyed in workspace fully and removed from it's spawners list
         ReadyToClean: boolean,
     },
 
@@ -84,7 +84,7 @@ export type Unit = {
     },
 
     Patrolling: {
-        Style: UnitInfo.UnitPatrolStyle,
+        Style: NPCInfo.NPCPatrolStyle,
         Current: number,
         Direction: number,
         Points: {Vector3},
@@ -93,7 +93,7 @@ export type Unit = {
     Goal: {
         Point: Vector3?,
         Reached: boolean,
-        LookTo: Vector3?, -- Once reached, force the unit to look towards this
+        LookTo: Vector3?, -- Once reached, force the NPC to look towards this
     }?,
 
     Path: {
@@ -142,13 +142,13 @@ export type Unit = {
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local UNSTUCK_TIME = 15 -- How long the unit can remain stuck before the system resets that unit
+local UNSTUCK_TIME = 15 -- How long the NPC can remain stuck before the system resets that NPC
 local DEFAULT_ROAM_RANGE = 50
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local Unit = {}
-Unit.__index = Unit
+local NPC = {}
+NPC.__index = NPC
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -189,8 +189,8 @@ local function StopBaseAnimation(List: {[string]: {Track: AnimationTrack, Set: b
     List[Name].Track:Stop(FadeTime)
 end
 
--- Checks which attacks for a unit are eligable to be used; not on cooldown, enemy within range, etc
-local function GetAvailableAttacks(Info: UnitInfo.UnitBase, List: {[string]: {LastTimeUsed: number, CooldownTime: number}},  Human: Humanoid, DistanceToTarget: number, VisionOfTarget: boolean): {{Choice: string, Chance: number}}?
+-- Checks which attacks for a NPC are eligable to be used; not on cooldown, enemy within range, etc
+local function GetAvailableAttacks(Info: NPCInfo.NPCBase, List: {[string]: {LastTimeUsed: number, CooldownTime: number}},  Human: Humanoid, DistanceToTarget: number, VisionOfTarget: boolean): {{Choice: string, Chance: number}}?
     if not Info or not List or not Human then return end
 
     local Available: {{Choice: string, Chance: number}} = {}
@@ -233,21 +233,21 @@ end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function Unit.new(NewUnit: UnitConstructor): Unit?
-    local Info = UnitInfo[NewUnit.Name]
+function NPC.new(NewNPC: NPCConstructor): NPC?
+    local Info = NPCInfo[NewNPC.Name]
     if not Info then return end
 
-    -- Picks an Unit model from the available selection from a specific Unit's info table
-    local UnitModel = Utility:RollPick(Info.Models)
-    if not UnitModel then return end
+    -- Picks an NPC model from the available selection from a specific NPC's info table
+    local NPCModel = Utility:RollPick(Info.Models)
+    if not NPCModel then return end
     
-    local self: Unit = setmetatable({}, Unit)
-    self.Name = NewUnit.Name
-    self.Module = require(NewUnit.Module)
+    local self: NPC = setmetatable({}, NPC)
+    self.Name = NewNPC.Name
+    self.Module = require(NewNPC.Module)
     self.Info = Info
 
     self.DisplayName = Info.DisplayName
-    self.ChosenModel = UnitModel
+    self.ChosenModel = NPCModel
     self.Model = nil
     self.Alive = false
     self.Paused = false
@@ -257,38 +257,38 @@ function Unit.new(NewUnit: UnitConstructor): Unit?
     self.Spawning = {
         Time = 0,
         Here = CFrame.new(0, 0, 0),
-        Points = NewUnit.SpawnPoints,
+        Points = NewNPC.SpawnPoints,
     }
 
     self.Death = {
         Time = 0,
-        CleanDelay = RNG:NextNumber(NewUnit.CleanDelay.Min, NewUnit.CleanDelay.Max)
+        CleanDelay = RNG:NextNumber(NewNPC.CleanDelay.Min, NewNPC.CleanDelay.Max)
     }
 
     self.Idle = {
-        Time = NewUnit.IdleTime,
+        Time = NewNPC.IdleTime,
         Until = os.clock(),
     }
 
     ---------------------------------------------------
 
-    if NewUnit.PatrolStyle ~= "Stationary" then
+    if NewNPC.PatrolStyle ~= "Stationary" then
         local Points: {Vector3} = {}
-        if typeof(NewUnit.PatrolPoints) == "Folder" or typeof(NewUnit.PatrolPoints) == "Model" then
-            for x = 1, #NewUnit.PatrolPoints:GetChildren() do
-                local Point: BasePart = NewUnit.PatrolPoints:FindFirstChild(x)
+        if typeof(NewNPC.PatrolPoints) == "Folder" or typeof(NewNPC.PatrolPoints) == "Model" then
+            for x = 1, #NewNPC.PatrolPoints:GetChildren() do
+                local Point: BasePart = NewNPC.PatrolPoints:FindFirstChild(x)
                 if not Point then continue end
                 table.insert(Points, Point.Position)
             end
         else
-            Points = NewUnit.PatrolPoints
+            Points = NewNPC.PatrolPoints
         end
         
         self.Patrolling = {
-            Style = NewUnit.PatrolStyle,
+            Style = NewNPC.PatrolStyle,
             Current = 1,
             Direction = 1,
-            Points = NewUnit.PatrolPoints,
+            Points = NewNPC.PatrolPoints,
         }
 
         self.Goal = {
@@ -299,7 +299,7 @@ function Unit.new(NewUnit: UnitConstructor): Unit?
 
         self.Path = {
             Generating = false,
-            UsePathfinding = NewUnit.UsePathfinding,
+            UsePathfinding = NewNPC.UsePathfinding,
             LastUpdated = 0,
             Points = {},
             Num = -1,
@@ -319,7 +319,7 @@ function Unit.new(NewUnit: UnitConstructor): Unit?
                 Human = nil,
                 Root = nil,
 
-                ChaseRange = NewUnit.OverrideChaseRange or Info.EnemyStats.ChaseRange,
+                ChaseRange = NewNPC.OverrideChaseRange or Info.EnemyStats.ChaseRange,
 
                 Searching = {
                     Active = false,
@@ -350,8 +350,8 @@ function Unit.new(NewUnit: UnitConstructor): Unit?
     return self
 end
 
-function Unit:ResetValues()
-    local self: Unit = self
+function NPC:ResetValues()
+    local self: NPC = self
 
     self.Human.Health = self.Info.BaseStats.Health
     self.Human.MaxHealth = self.Info.BaseStats.Health
@@ -367,8 +367,8 @@ function Unit:ResetValues()
     self.StuckChecker.Time = 0
 end
 
-function Unit:Spawn()
-    local self: Unit = self
+function NPC:Spawn()
+    local self: NPC = self
 
     if self.State == "Spawning" or self.Alive then return end
 
@@ -433,8 +433,8 @@ function Unit:Spawn()
     end)
 end
 
-function Unit:Died()
-    local self: Unit = self
+function NPC:Died()
+    local self: NPC = self
 
     if not self.Alive or self.State == "Dying" then return end
 
@@ -442,11 +442,11 @@ function Unit:Died()
     self.State = "Dying"
     self.Death.Time = os.clock()
 
-    UnitInfo.UnitDied:Fire(self.Name)
+    NPCInfo.NPCDied:Fire(self.Name)
 end
 
-function Unit:Clean()
-    local self: Unit = self
+function NPC:Clean()
+    local self: NPC = self
 
     for _, Part in self.Model:GetChildren() do
         if not Part:IsA("BasePart") then continue end
@@ -467,9 +467,9 @@ function Unit:Clean()
     Debris:AddItem(self.Model, 5)
 end
 
--- Moves the unit back to its spawn area when it's stuck
-function Unit:Fix()
-    local self: Unit = self
+-- Moves the NPC back to its spawn area when it's stuck
+function NPC:Fix()
+    local self: NPC = self
     
     self.State = "Fixing"
 
@@ -486,8 +486,8 @@ function Unit:Fix()
     end)
 end
 
-function Unit:PlayActionAnimation(Name: string, FadeTime: number?, Speed: number?, Func: () -> ()?, ForcePlay: boolean?)
-    local self: Unit = self
+function NPC:PlayActionAnimation(Name: string, FadeTime: number?, Speed: number?, Func: () -> ()?, ForcePlay: boolean?)
+    local self: NPC = self
 
     local Anim = self.Animations.Actions[Name]
     
@@ -524,8 +524,8 @@ function Unit:PlayActionAnimation(Name: string, FadeTime: number?, Speed: number
 end
 
 -- Cleanly switch between states except for Spawning, Dying and Fixing
-function Unit:SetState(NewState: UnitStates, Details: {any}, Force: boolean?)
-    local self: Unit = self
+function NPC:SetState(NewState: NPCStates, Details: {any}, Force: boolean?)
+    local self: NPC = self
 
     if (self.State == "Spawning" or self.State == "Dying" or self.State == "Fixing") and (not Force) then return end
     if self.State == NewState then return end
@@ -609,8 +609,8 @@ function Unit:SetState(NewState: UnitStates, Details: {any}, Force: boolean?)
     end
 end
 
-function Unit:ClearOldPath()
-    local self: Unit = self
+function NPC:ClearOldPath()
+    local self: NPC = self
 
     table.clear(self.Path.Points)
 
@@ -625,8 +625,8 @@ function Unit:ClearOldPath()
     self.Path.Num = 0
 end
 
-function Unit:CreateNewPath(Start: Vector3?, Goal: Vector3?): boolean?
-    local self: Unit = self
+function NPC:CreateNewPath(Start: Vector3?, Goal: Vector3?): boolean?
+    local self: NPC = self
 
     if not self.Info.PathParams then return end
 
@@ -676,8 +676,8 @@ function Unit:CreateNewPath(Start: Vector3?, Goal: Vector3?): boolean?
     return Success
 end
 
-function Unit:Patrol()
-    local self: Unit = self
+function NPC:Patrol()
+    local self: NPC = self
 
     if not self.Goal.Reached then return end
     if self.Patrolling.Style == "Stationary" then return end 
@@ -736,8 +736,8 @@ function Unit:Patrol()
     end
 end
 
-function Unit:CanSee(Position: Vector3, GoalObject: BasePart | Model, Ignore: {}?): (boolean?, number?)
-    local self: Unit = self
+function NPC:CanSee(Position: Vector3, GoalObject: BasePart | Model, Ignore: {}?): (boolean?, number?)
+    local self: NPC = self
 
     if not self.Alive or not self.Info or not self.Human or not self.Root then return end
 
@@ -786,8 +786,8 @@ function Unit:CanSee(Position: Vector3, GoalObject: BasePart | Model, Ignore: {}
     return CanSee, Distance
 end
 
-function Unit:FindTarget(): Model?
-    local self: Unit = self
+function NPC:FindTarget(): Model?
+    local self: NPC = self
 
     local ClosestEnemy, LastRange = nil, math.huge
 
@@ -814,8 +814,8 @@ function Unit:FindTarget(): Model?
     return ClosestEnemy
 end
 
-function Unit:ClearTarget(Lock: boolean?, SetIdle: boolean?, AddTime: number?)
-    local self: Unit = self
+function NPC:ClearTarget(Lock: boolean?, SetIdle: boolean?, AddTime: number?)
+    local self: NPC = self
 
     self.Target.Locked = Lock or false
     self.Target.Active = false
@@ -829,15 +829,15 @@ function Unit:ClearTarget(Lock: boolean?, SetIdle: boolean?, AddTime: number?)
     self:SetState("Idling", {AddTime = AddTime or 0})
 end
 
-function Unit:ClearTargetSearching()
-    local self: Unit = self
+function NPC:ClearTargetSearching()
+    local self: NPC = self
 
     self.Target.Searching.Active = false
     self.Target.Searching.Started = 0
 end
 
-function Unit:CheckTarget()
-    local self: Unit = self
+function NPC:CheckTarget()
+    local self: NPC = self
 
     local SetInactive = true
 
@@ -857,8 +857,8 @@ function Unit:CheckTarget()
                     end
                 end
 
-                local UnitDistanceFromSpawn = (self.Root.Position - self.Spawning.Here.Position).Magnitude
-                if UnitDistanceFromSpawn > self.Target.ChaseRange.Max then
+                local NPCDistanceFromSpawn = (self.Root.Position - self.Spawning.Here.Position).Magnitude
+                if NPCDistanceFromSpawn > self.Target.ChaseRange.Max then
                     print("Target out of range; going to SEARCH.")
                     self:SetState("Searching")
                     return
@@ -911,7 +911,7 @@ function Unit:CheckTarget()
                         print("Attack chosen : " .. ChosenAttack)
                         self:SetState("Attacking", {AttackName = ChosenAttack})
                     else
-                        -- Run unit specific conditions before attacking
+                        -- Run NPC specific conditions before attacking
                         self.Module.CheckToAttack(self, AvailableAttacks)
                     end
                 end
@@ -920,8 +920,8 @@ function Unit:CheckTarget()
     end
 end
 
-function Unit:MoveOnPath(CheckForNewPath: boolean?, AddTime: number?)
-    local self: Unit = self
+function NPC:MoveOnPath(CheckForNewPath: boolean?, AddTime: number?)
+    local self: NPC = self
 
     if self.Path.Generating then return end
 
@@ -948,8 +948,8 @@ function Unit:MoveOnPath(CheckForNewPath: boolean?, AddTime: number?)
     end
 end
 
-function Unit:Move()
-    local self: Unit = self
+function NPC:Move()
+    local self: NPC = self
 
     if not self.Alive then return end
     if not self.Human or not self.Root then return end
@@ -1056,8 +1056,8 @@ function Unit:Move()
     end
 end
 
-function Unit:CheckStuck()
-    local self: Unit = self
+function NPC:CheckStuck()
+    local self: NPC = self
 
     if self.Patrolling.Style == "Stationary" then return end
     if self.State ~= "Patrolling" and self.State ~= "Chasing" then return end
@@ -1074,8 +1074,8 @@ function Unit:CheckStuck()
     end
 end
 
-function Unit:Update()
-    local self: Unit = self
+function NPC:Update()
+    local self: NPC = self
 
     if self.Paused then return end
     if self.State == "Fixing" then return end
@@ -1134,4 +1134,4 @@ function Unit:Update()
     end
 end
 
-return Unit
+return NPC

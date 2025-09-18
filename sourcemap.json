@@ -312,6 +312,14 @@
 											"className": "ModuleScript",
 											"children": [
 												{
+													"name": "ModStoneEnum",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/ModStoneEnum.lua"
+													]
+												},
+												{
 													"name": "QuestEnum",
 													"className": "ModuleScript",
 													"children": [],
@@ -333,14 +341,6 @@
 													"children": [],
 													"filePaths": [
 														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/WeaponEnum.lua"
-													]
-												},
-												{
-													"name": "ModStoneEnum",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/ModStoneEnum.lua"
 													]
 												}
 											],
@@ -712,30 +712,6 @@
 									"className": "Folder",
 									"children": [
 										{
-											"name": "Option",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_comm@0.3.0/Option.lua"
-											]
-										},
-										{
-											"name": "Promise",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_comm@0.3.0/Promise.lua"
-											]
-										},
-										{
-											"name": "Signal",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_comm@0.3.0/Signal.lua"
-											]
-										},
-										{
 											"name": "comm",
 											"className": "ModuleScript",
 											"children": [
@@ -833,6 +809,30 @@
 											"filePaths": [
 												"Packages/_Index/sleitnick_comm@0.3.0/comm/init.lua"
 											]
+										},
+										{
+											"name": "Option",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_comm@0.3.0/Option.lua"
+											]
+										},
+										{
+											"name": "Promise",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_comm@0.3.0/Promise.lua"
+											]
+										},
+										{
+											"name": "Signal",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_comm@0.3.0/Signal.lua"
+											]
 										}
 									],
 									"filePaths": [
@@ -843,6 +843,31 @@
 									"name": "sleitnick_component@2.4.5",
 									"className": "Folder",
 									"children": [
+										{
+											"name": "component",
+											"className": "ModuleScript",
+											"children": [
+												{
+													"name": "init.spec",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Packages/_Index/sleitnick_component@2.4.5/component/init.spec.lua"
+													]
+												},
+												{
+													"name": "wally",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Packages/_Index/sleitnick_component@2.4.5/component/wally.toml"
+													]
+												}
+											],
+											"filePaths": [
+												"Packages/_Index/sleitnick_component@2.4.5/component/init.lua"
+											]
+										},
 										{
 											"name": "Promise",
 											"className": "ModuleScript",
@@ -874,31 +899,6 @@
 											"filePaths": [
 												"Packages/_Index/sleitnick_component@2.4.5/Trove.lua"
 											]
-										},
-										{
-											"name": "component",
-											"className": "ModuleScript",
-											"children": [
-												{
-													"name": "init.spec",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Packages/_Index/sleitnick_component@2.4.5/component/init.spec.lua"
-													]
-												},
-												{
-													"name": "wally",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Packages/_Index/sleitnick_component@2.4.5/component/wally.toml"
-													]
-												}
-											],
-											"filePaths": [
-												"Packages/_Index/sleitnick_component@2.4.5/component/init.lua"
-											]
 										}
 									],
 									"filePaths": [
@@ -915,14 +915,6 @@
 											"children": [],
 											"filePaths": [
 												"Packages/_Index/sleitnick_knit@1.4.7/Comm.lua"
-											]
-										},
-										{
-											"name": "Promise",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_knit@1.4.7/Promise.lua"
 											]
 										},
 										{
@@ -964,6 +956,14 @@
 											],
 											"filePaths": [
 												"Packages/_Index/sleitnick_knit@1.4.7/knit/init.lua"
+											]
+										},
+										{
+											"name": "Promise",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_knit@1.4.7/Promise.lua"
 											]
 										}
 									],
@@ -1010,14 +1010,6 @@
 									"className": "Folder",
 									"children": [
 										{
-											"name": "Trove",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_shake@0.1.7/Trove.lua"
-											]
-										},
-										{
 											"name": "shake",
 											"className": "ModuleScript",
 											"children": [
@@ -1040,6 +1032,14 @@
 											],
 											"filePaths": [
 												"Packages/_Index/sleitnick_shake@0.1.7/shake/init.lua"
+											]
+										},
+										{
+											"name": "Trove",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_shake@0.1.7/Trove.lua"
 											]
 										}
 									],
@@ -2147,6 +2147,74 @@
 							"name": "UIs",
 							"className": "Folder",
 							"children": [
+								{
+									"name": "GameplayGui",
+									"className": "ScreenGui",
+									"children": [
+										{
+											"name": "MainFrame",
+											"className": "Frame",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "HealthBar",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Bar",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "Gradient",
+																	"className": "UIGradient",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														},
+														{
+															"name": "Nums",
+															"className": "TextLabel",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "ManaBar",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Bar",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "Gradient",
+																	"className": "UIGradient",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														},
+														{
+															"name": "Nums",
+															"className": "TextLabel",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/UIs/GameplayGui.rbxm"
+									]
+								},
 								{
 									"name": "MainGui",
 									"className": "ScreenGui",
@@ -3686,6 +3754,14 @@
 									"className": "Folder",
 									"children": [
 										{
+											"name": "NPC",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Classes/NPC.lua"
+											]
+										},
+										{
 											"name": "Quest",
 											"className": "ModuleScript",
 											"children": [],
@@ -3708,14 +3784,6 @@
 											],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/Classes/QuestBoard/QuestBoard.init.lua"
-											]
-										},
-										{
-											"name": "Unit",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Classes/Unit.lua"
 											]
 										}
 									],
@@ -3752,6 +3820,40 @@
 											]
 										},
 										{
+											"name": "ModService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/ModService.lua"
+											]
+										},
+										{
+											"name": "NPCService",
+											"className": "ModuleScript",
+											"children": [
+												{
+													"name": "AllNPCs",
+													"className": "Folder",
+													"children": [
+														{
+															"name": "TestBot",
+															"className": "ModuleScript",
+															"children": [],
+															"filePaths": [
+																"Scripts/ServerScriptService/ServerModules/General/NPCService/AllNPCs/TestBot.lua"
+															]
+														}
+													],
+													"filePaths": [
+														"Scripts/ServerScriptService/ServerModules/General/NPCService/AllNPCs"
+													]
+												}
+											],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/NPCService/NPCService.init.lua"
+											]
+										},
+										{
 											"name": "ProjectileService",
 											"className": "ModuleScript",
 											"children": [],
@@ -3778,26 +3880,9 @@
 										{
 											"name": "UnitService",
 											"className": "ModuleScript",
-											"children": [
-												{
-													"name": "TestBot",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Scripts/ServerScriptService/ServerModules/General/UnitService/TestBot.lua"
-													]
-												}
-											],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/General/UnitService/UnitService.init.lua"
-											]
-										},
-										{
-											"name": "ModService",
-											"className": "ModuleScript",
 											"children": [],
 											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/General/ModService.lua"
+												"Scripts/ServerScriptService/ServerModules/General/UnitService/UnitService.init.lua"
 											]
 										}
 									],
@@ -3810,11 +3895,11 @@
 									"className": "Folder",
 									"children": [
 										{
-											"name": "UnitInfo",
+											"name": "NPCInfo",
 											"className": "ModuleScript",
 											"children": [],
 											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Info/UnitInfo.lua"
+												"Scripts/ServerScriptService/ServerModules/Info/NPCInfo.lua"
 											]
 										}
 									],
@@ -3934,14 +4019,6 @@
 											]
 										},
 										{
-											"name": "UnitAttributeService_OG",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Units/UnitAttributeService_OG.lua"
-											]
-										},
-										{
 											"name": "UnitManagerService",
 											"className": "ModuleScript",
 											"children": [],
@@ -3950,11 +4027,11 @@
 											]
 										},
 										{
-											"name": "UnitManagerService_OG",
+											"name": "UnitValuesService",
 											"className": "ModuleScript",
 											"children": [],
 											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Units/UnitManagerService_OG.lua"
+												"Scripts/ServerScriptService/ServerModules/Units/UnitValuesService.lua"
 											]
 										}
 									],
@@ -6459,18 +6536,43 @@
 							"className": "Folder",
 							"children": [
 								{
-									"name": "UnitAttributes",
+									"name": "UnitValues",
 									"className": "Folder",
 									"children": [
 										{
-											"name": "Base",
-											"className": "Configuration",
+											"name": "Current",
+											"className": "Folder",
 											"filePaths": [],
-											"children": []
+											"children": [
+												{
+													"name": "Health",
+													"className": "NumberValue",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Hidden",
+													"className": "BoolValue",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Mana",
+													"className": "NumberValue",
+													"filePaths": [],
+													"children": []
+												}
+											]
 										},
 										{
 											"name": "Effects",
 											"className": "Folder",
+											"filePaths": [],
+											"children": []
+										},
+										{
+											"name": "Base",
+											"className": "Configuration",
 											"filePaths": [],
 											"children": []
 										},
@@ -6492,29 +6594,10 @@
 													"children": []
 												}
 											]
-										},
-										{
-											"name": "Current",
-											"className": "Folder",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "Health",
-													"className": "NumberValue",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "Hidden",
-													"className": "BoolValue",
-													"filePaths": [],
-													"children": []
-												}
-											]
 										}
 									],
 									"filePaths": [
-										"Assets/Server/Misc/UnitAttributes.rbxm"
+										"Assets/Server/Misc/UnitValues.rbxm"
 									]
 								}
 							],

@@ -14,7 +14,7 @@ export type UnitValues = {
 
     Effects: {},
     History: {},
-    Config: Configuration?,
+    Folder: Configuration?,
 }
 
 export type BaseAttributes = {
@@ -23,18 +23,32 @@ export type BaseAttributes = {
 
     Mana: number,
     ManaGain: number,
+
+    Armor: number,
+    WalkSpeed: number, 
+    AttackSpeed: number,
+    CritPercent: number,
+    CritChance: number,
 }
 
 export type BaseStates = {
+    Immune: boolean,
+    Silenced: boolean,
+    Disarmed: boolean,
+    Break: boolean,
+    Rooted: boolean,
     Stunned: boolean,
+    Tracked: boolean,
+    Panic: {Active: boolean, From: Vector3?},
+    Taunt: {Active: boolean, Goal: Vector3? | BasePart?},
 }
 
 export type Effect = {
     From: Player | Model | string,
     IsBuff: boolean,
     Name: string,
-    Description: string?,
     Icon: number?,
+    Description: string?,
 
     SpawnTime: number,
     Duration: number,

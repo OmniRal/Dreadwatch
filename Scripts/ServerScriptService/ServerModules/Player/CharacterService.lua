@@ -15,7 +15,7 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
---local UnitAttributeService = require(ServerScriptService.Source.ServerModules.Units.UnitAttributeService)
+--local UnitValuesService = require(ServerScriptService.Source.ServerModules.Units.UnitValuesService)
 --local WorldUIService = require(ReplicatedStorage.Source.SharedModules.UI.WorldUIService)
 
 
@@ -149,7 +149,7 @@ function CharacterService:SpawnCharacter(Player: Player)
         end        
         
         Player:SetAttribute("Race", Race)
-        UnitAttributeService:RecalculateAttributes(Player, RacesInfo[Race].BaseStats, RacesInfo[Race].BaseAttributes)
+        UnitValuesService:RecalculateAttributes(Player, RacesInfo[Race].BaseStats, RacesInfo[Race].BaseAttributes)
     end)]]
 end
 
@@ -177,7 +177,7 @@ function CharacterService:ApplyDamage_Old(Source: Player | Model | string, Victi
 
     local SourceAttributes
     if typeof(Source) ~= "string" then
-        SourceAttributes = UnitAttributeService:Get(Source) :: CustomEnum.UnitAttributes
+        SourceAttributes = UnitValuesService:Get(Source) :: CustomEnum.UnitAttributes
 
         if DamageType == CustomEnum.DamageType.Physical then
             TotalDamage += math.clamp(SourceAttributes.Base.PhysicalDamageAmp + SourceAttributes.Offsets.PhysicalDamageAmp, CustomEnum.BaseAttributeLimits.PhysicalDamageAmp.Min, CustomEnum.BaseAttributeLimits.PhysicalDamageAmp.Max)
@@ -211,7 +211,7 @@ function CharacterService:ApplyDamage_Old(Source: Player | Model | string, Victi
         From = Source.Name
     end
 
-    local VictimAttributes = UnitAttributeService:Get(Victim) :: CustomEnum.UnitAttributes
+    local VictimAttributes = UnitValuesService:Get(Victim) :: CustomEnum.UnitAttributes
     if not VictimAttributes then return end
 
     if DamageType == CustomEnum.DamageType.Physical then
@@ -265,7 +265,7 @@ function CharacterService:ApplyDamage_Old(Source: Player | Model | string, Victi
         TimeAdded = os.clock(),
         CleanTime = CustomEnum.DefaultHistoryEntryCleanTime
     }
-    UnitAttributeService:AddHistoryEntry(Victim, HistoryEntry)
+    UnitValuesService:AddHistoryEntry(Victim, HistoryEntry)
     Remotes.VisualService.SpawnTextDisplay:FireAll(From, Affects, DisplayType, Position, OtherDetails)
 end
 
@@ -292,7 +292,7 @@ function CharacterService:ApplyHealthGain(Source: Player | Model | string, Recei
 
     if not ReceiverModel then return end
 
-    local ReceiverAttributes, AttributesFolder = UnitAttributeService:Get(Receiver) :: CustomEnum.UnitAttributes, ReceiverModel:FindFirstChild("UnitAttributes")
+    local ReceiverAttributes, AttributesFolder = UnitValuesService:Get(Receiver) :: CustomEnum.UnitAttributes, ReceiverModel:FindFirstChild("UnitAttributes")
     if not ReceiverAttributes or not AttributesFolder then return end
 
     AttributesFolder.Current.Health.Value = math.clamp(AttributesFolder.Current.Health.Value + Amount, 0, ReceiverAttributes.Base.Health + ReceiverAttributes.Offsets.Health)
@@ -322,7 +322,7 @@ function CharacterService:ApplyHealthGain(Source: Player | Model | string, Recei
         TimeAdded = os.clock(),
         CleanTime = CustomEnum.DefaultHistoryEntryCleanTime,
     }
-    UnitAttributeService:AddHistoryEntry(Receiver, HistoryEntry)
+    UnitValuesService:AddHistoryEntry(Receiver, HistoryEntry)
     Remotes.VisualService.SpawnTextDisplay:FireAll(From, Affects, DisplayType, Position, OtherDetails)
 end
 
@@ -336,7 +336,7 @@ function CharacterService:ApplyManaGain(Source: Player | Model | string, Receive
 
     if not ReceiverModel then return end
 
-    local ReceiverAttributes, AttributesFolder = UnitAttributeService:Get(Receiver) :: CustomEnum.UnitAttributes, ReceiverModel:FindFirstChild("UnitAttributes")
+    local ReceiverAttributes, AttributesFolder = UnitValuesService:Get(Receiver) :: CustomEnum.UnitAttributes, ReceiverModel:FindFirstChild("UnitAttributes")
     if not ReceiverAttributes or not AttributesFolder then return end
 
     AttributesFolder.Current.Mana.Value = math.clamp(AttributesFolder.Current.Mana.Value + Amount, 0, ReceiverAttributes.Base.Mana + ReceiverAttributes.Offsets.Mana)

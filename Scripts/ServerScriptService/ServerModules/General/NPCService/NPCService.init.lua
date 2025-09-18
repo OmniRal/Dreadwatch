@@ -1,7 +1,7 @@
 -- OmniRal
 --!nocheck
 
-local UnitService = {}
+local NPCService = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
@@ -16,10 +16,8 @@ local Workspace = game:GetService("Workspace")
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
-
-local UnitInfo = require(ServerScriptService.Source.ServerModules.Info.UnitInfo)
-local Unit = require(ServerScriptService.Source.ServerModules.Classes.Unit)
+local NPCInfo = require(ServerScriptService.Source.ServerModules.Info.NPCInfo)
+local NPC = require(ServerScriptService.Source.ServerModules.Classes.NPC)
 
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 
@@ -35,28 +33,28 @@ local RunHanlder: RBXScriptConnection? = nil
 
 local Spawners: {
     [Model]: {
-        Active: boolean, -- If TRUE, spawner will spawn / respawn and update units
-        MaxUnits: number,
-        AutoSpawn: boolean, -- If new units should auto spawn units
-        CleanDelay: NumberRange, -- How long to wait before the unit is destroyed fully. Only once this unit is gone, can it respawn (if auto spawn is enabled)
-        UsePathfinding: boolean, -- If TRUE, units will use Robloxs' Pathfinding Service to get to their target positions
+        Active: boolean, -- If TRUE, spawner will spawn / respawn and update NPCs
+        MaxNPCs: number,
+        AutoSpawn: boolean, -- If new NPCs should auto spawn NPCs
+        CleanDelay: NumberRange, -- How long to wait before the NPC is destroyed fully. Only once this NPC is gone, can it respawn (if auto spawn is enabled)
+        UsePathfinding: boolean, -- If TRUE, NPCs will use Robloxs' Pathfinding Service to get to their target positions
         PlayerDistance: number, -- Set to -1 if the system should not detect for nearby players
         
-        PatrolStyle: UnitInfo.UnitPatrolStyle,
+        PatrolStyle: NPCInfo.NPCPatrolStyle,
         -- Stationary = Don't move, ideal for NPCs
-        -- Free = Move randomly around the areas the Unit has spawned
+        -- Free = Move randomly around the areas the NPC has spawned
         -- Loop = Move through all the points in an endless loop
         -- BackNForth = Move through all the points in a loop, but once reached the last point, start walking back. Restart the cycle once reaching the first point again
         -- RandomPoints = Move between the points randomly
         
-        IdleTIme: number, -- How long the unit should pause when moving between patrol points or after killing a target 
+        IdleTIme: number, -- How long the NPC should pause when moving between patrol points or after killing a target 
         
-        SpawnPoints: {CFrame}, -- The CFs a unit can spawn at
-        PatrolPoints: {Vector3}, -- The points a unit can travel between
-        AvailableUnits: {{Choice: string, Chance: number}}, -- 
-        Units: {Unit.Unit},
+        SpawnPoints: {CFrame}, -- The CFs a NPC can spawn at
+        PatrolPoints: {Vector3}, -- The points a NPC can travel between
+        AvailableNPCs: {{Choice: string, Chance: number}}, -- 
+        NPCs: {NPC.NPC},
 
-        OverrideChaseRange: number?, -- How far the unit can chase a player from their original spawn position before stopping (This will override the chase range the unit has by default)
+        OverrideChaseRange: number?, -- How far the NPC can chase a player from their original spawn position before stopping (This will override the chase range the NPC has by default)
     }
 } = {}
 
@@ -66,28 +64,28 @@ local RNG = Random.new()
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local function UpdateSpawnersAndUnits()
+local function UpdateSpawnersAndNPCs()
     for Model, Spawner in Spawners do
         if not Spawner then continue end
         if not Spawner.Active then continue end
             
-        if #Spawner.Units < Spawner.MaxUnits then
+        if #Spawner.NPCs < Spawner.MaxNPCs then
             if Spawner.AutoSpawn then
-                UnitService:Spawn(Model)
+                NPCService:Spawn(Model)
             end
         end
 
-        if #Spawner.Units <= 0 then continue end
+        if #Spawner.NPCs <= 0 then continue end
 
-        for n, Unit in ipairs(Spawner.Units) do
-            if not Unit then continue end
+        for n, NPC in ipairs(Spawner.NPCs) do
+            if not NPC then continue end
 
-            if not Unit.Death.ReadyToClean then
-                Unit:Update()
+            if not NPC.Death.ReadyToClean then
+                NPC:Update()
 
             else
-                Unit:Clean()
-                table.remove(Spawner.Units, n)
+                NPC:Clean()
+                table.remove(Spawner.NPCs, n)
                 continue
             end
         end
@@ -98,14 +96,14 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
--- Apply damage to another unit.
+-- Apply damage to another NPC.
 -- @Source = damage APPLYER.
 -- @Victim = damage RECEIVER.
 -- @DamageAmount = how much damage.
 -- @DamageName = what the damage is called; e.g. "Thor's Hammer".
 -- @DamageType = which kind of damage type it is, based on CustomEnum.DamageTyoes; if enabled in GlobalValues.
 -- @CritPossible = if it should calculate potentially applying a crit.
-function UnitService:ApplyDamage(Source: Player | Model | string, Victim: Player | Model, DamageAmount: number, DamageName: string, DamageType: string?, CritPossible: boolean?)
+function NPCService:ApplyDamage(Source: Player | Model | string, Victim: Player | Model, DamageAmount: number, DamageName: string, DamageType: string?, CritPossible: boolean?)
     if not Source or not Victim then return end
 
     local VictimModel = Victim
@@ -119,12 +117,12 @@ function UnitService:ApplyDamage(Source: Player | Model | string, Victim: Player
     VictimModel.Humanoid:TakeDamage(DamageAmount)
 end
 
-function UnitService:AddSingleSpawner(SpawnerModel: Model)
+function NPCService:AddSingleSpawner(SpawnerModel: Model)
     if not SpawnerModel then return end
 
     local SpawnPoints: {Vector3} = {}
     local PatrolPoints: {Vector3} = {}
-    local AvailableUnits: {[string]: number} = {}
+    local AvailableNPCs: {[string]: number} = {}
 
     for _, Point: BasePart in SpawnerModel.SpawnPoints:GetChildren() do
         if not Point then continue end
@@ -139,15 +137,15 @@ function UnitService:AddSingleSpawner(SpawnerModel: Model)
     end
     SpawnerModel.PatrolPoints:Destroy()
 
-    for _, UnitVal: IntValue in SpawnerModel.AvailableUnits:GetChildren() do
-        if not UnitVal then continue end
-        table.insert(AvailableUnits, {Choice = UnitVal.Name, Chance = UnitVal.Value})
+    for _, NPCVal: IntValue in SpawnerModel.AvailableNPCs:GetChildren() do
+        if not NPCVal then continue end
+        table.insert(AvailableNPCs, {Choice = NPCVal.Name, Chance = NPCVal.Value})
     end
-    SpawnerModel.AvailableUnits:Destroy()
+    SpawnerModel.AvailableNPCs:Destroy()
 
     Spawners[SpawnerModel] = {
         Active = SpawnerModel:GetAttribute("Active"),
-        MaxUnits = SpawnerModel:GetAttribute("MaxUnits"),
+        MaxNPCs = SpawnerModel:GetAttribute("MaxNPCs"),
         AutoSpawn = SpawnerModel:GetAttribute("AutoSpawn"),
         CleanDelay = SpawnerModel:GetAttribute("CleanDelay"),
         UsePathfinding = SpawnerModel:GetAttribute("UsePathfinding"),
@@ -157,39 +155,39 @@ function UnitService:AddSingleSpawner(SpawnerModel: Model)
         
         SpawnPoints = SpawnPoints,
         PatrolPoints = PatrolPoints,
-        AvailableUnits = AvailableUnits,
-        Units = {},
+        AvailableNPCs = AvailableNPCs,
+        NPCs = {},
 
         OverrideChaseRange = SpawnerModel:GetAttribute("ChaseRange"),
     }
 
     if not SpawnerModel:GetAttribute("AutoSpawn") then return end
-    --UnitService:Spawn(SpawnerModel)
+    --NPCService:Spawn(SpawnerModel)
 end
 
-function UnitService:AddMultipleSpawners(Check: Workspace | Model | Folder)
+function NPCService:AddMultipleSpawners(Check: Workspace | Model | Folder)
     if not Check then return end
     for _, SpawnerModel: Model in Check:GetChildren() do
         if not SpawnerModel then continue end
-        if SpawnerModel.Name ~= "UnitSpawner" then continue end
-        UnitService:AddSingleSpawner(SpawnerModel)
+        if SpawnerModel.Name ~= "NPCSpawner" then continue end
+        NPCService:AddSingleSpawner(SpawnerModel)
     end
 end
 
-function UnitService:Spawn(SpawnerModel: Model, UnitName: string?, ForceSpawn: boolean?)
+function NPCService:Spawn(SpawnerModel: Model, NPCName: string?, ForceSpawn: boolean?)
     if not SpawnerModel then return end
     local Spawner = Spawners[SpawnerModel]
     if not Spawner then return end
-    if (#Spawner.Units >= Spawner.MaxUnits) and (not ForceSpawn) then return end
+    if (#Spawner.NPCs >= Spawner.MaxNPCs) and (not ForceSpawn) then return end
 
-    UnitName = UnitName or Utility:RollPick(Spawner.AvailableUnits)
-    if not UnitName then return end
+    NPCName = NPCName or Utility:RollPick(Spawner.AvailableNPCs)
+    if not NPCName then return end
 
-    local Module = script:FindFirstChild(UnitName)
+    local Module = script.AllNPCs:FindFirstChild(NPCName)
     if not Module then return end
     
-    local Constructor: Unit.UnitConstructor = {
-        Name = UnitName,
+    local Constructor: NPC.NPCConstructor = {
+        Name = NPCName,
         Module = Module, 
         SpawnPoints = Spawner.SpawnPoints,
         PatrolPoints = Spawner.PatrolPoints,
@@ -200,37 +198,37 @@ function UnitService:Spawn(SpawnerModel: Model, UnitName: string?, ForceSpawn: b
         OverrideChaseRange = Spawner.OverrideChaseRange,
     }
 
-    local NewUnit = Unit.new(Constructor)
-    if not NewUnit then return end
+    local NewNPC = NPC.new(Constructor)
+    if not NewNPC then return end
 
-    table.insert(Spawner.Units, NewUnit)
+    table.insert(Spawner.NPCs, NewNPC)
 end
 
-function UnitService:Run()
-    UnitService:Stop()
+function NPCService:Run()
+    NPCService:Stop()
 
     RunHanlder = RunService.Heartbeat:Connect(function(DeltaTime: number)
-        UpdateSpawnersAndUnits()
+        UpdateSpawnersAndNPCs()
     end)
 end
 
-function UnitService:Stop()
+function NPCService:Stop()
     if RunHanlder then
         RunHanlder:Disconnect()
     end
     RunHanlder = nil
 end
 
-function UnitService:Init()
-    --UnitService:AddMultipleSpawners(workspace)
+function NPCService:Init()
+    NPCService:AddMultipleSpawners(Workspace)
 
-    UnitInfo.UnitDied:Connect(function(UnitName: string)
-        --print(UnitName .. " died!")
+    NPCInfo.NPCDied:Connect(function(NPCName: string)
+        --print(NPCName .. " died!")
     end)
 end
 
-function UnitService:Deferred()
-    --UnitService:Run()
+function NPCService:Deferred()
+    NPCService:Run()
 end
 
-return UnitService
+return NPCService

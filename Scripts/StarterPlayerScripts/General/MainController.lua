@@ -116,19 +116,19 @@ end
 
 function MainController:UpdateChar()
     if not LocalPlayer.Character or PlayerInfo.Dead then return end
-    if not PlayerInfo.Human or not PlayerInfo.Root or not PlayerInfo.UnitAttributes then return end
+    if not PlayerInfo.Human or not PlayerInfo.Root or not PlayerInfo.UnitValues then return end
 
-    local TotalWalkSpeed = PlayerInfo.UnitAttributes.Base:GetAttribute("WalkSpeed")
+    local TotalWalkSpeed = PlayerInfo.UnitValues.Base:GetAttribute("WalkSpeed")
 
     if ControlModule then
          PlayerInfo.MoveVector = ControlModule:GetMoveVector()
     end
 
-    if PlayerInfo.UnitAttributes.States:GetAttribute("Rooted") then
+    if PlayerInfo.UnitValues.States:GetAttribute("Rooted") then
         TotalWalkSpeed = CustomEnum.RootWalkSpeed
     end
 
-    if PlayerInfo.UnitAttributes.States:GetAttribute("Stunned") then
+    if PlayerInfo.UnitValues.States:GetAttribute("Stunned") then
         TotalWalkSpeed = 0
     end
 
@@ -197,9 +197,9 @@ function MainController:SetCharacter()
     MainUIController:SetCharacter()
     WeaponController:SetCharacter()
 
-    PlayerInfo.UnitAttributes = LocalPlayer.Character:WaitForChild("UnitAttributes")
+    PlayerInfo.UnitValues = LocalPlayer.Character:WaitForChild("UnitValues")
 
-    PlayerInfo.UnitAttributes.States:GetAttributeChangedSignal("Stunned"):Connect(function()
+    PlayerInfo.UnitValues.States:GetAttributeChangedSignal("Stunned"):Connect(function()
         
     end)
 

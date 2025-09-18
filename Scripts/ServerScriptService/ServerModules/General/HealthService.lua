@@ -19,7 +19,7 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 local ItemInfo = require(ReplicatedStorage.Source.SharedModules.Info.ItemInfo)
 
---local UnitAttributeService = require(ServerScriptService.Source.ServerModules.Units.UnitAttributeService)
+--local UnitValuesService = require(ServerScriptService.Source.ServerModules.Units.UnitValuesService)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ function HealthService:ApplyDamage(Source: Player | Model | string, Victim: Play
 
     local SourceAttributes
     if typeof(Source) ~= "string" then
-        SourceAttributes = UnitAttributeService:Get(Source) :: CustomEnum.UnitAttributes
+        SourceAttributes = UnitValuesService:Get(Source) :: CustomEnum.UnitAttributes
 
         TotalDamage += math.clamp(SourceAttributes.Base.DamageAmp + SourceAttributes.Offsets.DamageAmp, CustomEnum.BaseAttributeLimits.DamageAmp.Min, CustomEnum.BaseAttributeLimits.DamageAmp.Max)
 
@@ -73,7 +73,7 @@ function HealthService:ApplyDamage(Source: Player | Model | string, Victim: Play
         From = Source.Name
     end
 
-    local VictimAttributes = UnitAttributeService:Get(Victim) :: CustomEnum.UnitAttributes
+    local VictimAttributes = UnitValuesService:Get(Victim) :: CustomEnum.UnitAttributes
     if VictimAttributes then
         local AttributesFolder = VictimModel:FindFirstChild("UnitAttributes")
         if not AttributesFolder then return end
@@ -105,7 +105,7 @@ function HealthService:ApplyDamage(Source: Player | Model | string, Victim: Play
             TimeAdded = os.clock(),
             CleanTime = CustomEnum.DefaultHistoryEntryCleanTime
         }
-        UnitAttributeService:AddHistoryEntry(Victim, HistoryEntry)
+        UnitValuesService:AddHistoryEntry(Victim, HistoryEntry)
         Remotes.VisualService.SpawnTextDisplay:FireAll(From, Affects, DisplayType, Position, OtherDetails)
     
     else
@@ -125,7 +125,7 @@ function HealthService:ApplyHeal(Source: Player | Model | string, Receiver: Play
 
     if not ReceiverModel then return end
 
-    local ReceiverAttributes, AttributesFolder = UnitAttributeService:Get(Receiver) :: CustomEnum.UnitAttributes, ReceiverModel:FindFirstChild("UnitAttributes")
+    local ReceiverAttributes, AttributesFolder = UnitValuesService:Get(Receiver) :: CustomEnum.UnitAttributes, ReceiverModel:FindFirstChild("UnitAttributes")
     if not ReceiverAttributes or not AttributesFolder then return end
 
     AttributesFolder.Current.Health.Value = math.clamp(AttributesFolder.Current.Health.Value + Heal, 0, ReceiverAttributes.Base.Health + ReceiverAttributes.Offsets.Health)
@@ -155,7 +155,7 @@ function HealthService:ApplyHeal(Source: Player | Model | string, Receiver: Play
         TimeAdded = os.clock(),
         CleanTime = CustomEnum.DefaultHistoryEntryCleanTime,
     }
-    UnitAttributeService:AddHistoryEntry(Receiver, HistoryEntry)
+    UnitValuesService:AddHistoryEntry(Receiver, HistoryEntry)
     Remotes.VisualService.SpawnTextDisplay:FireAll(From, Affects, DisplayType, Position, OtherDetails)
 end
 

@@ -12,19 +12,19 @@ local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnu
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-export type UnitPatrolStyle = "Stationary" | "Loop" | "BackNForth" | "RandomPoints" | "FreeRoam"
+export type NPCPatrolStyle = "Stationary" | "Loop" | "BackNForth" | "RandomPoints" | "FreeRoam"
         -- Stationary = Don't move, ideal for NPCs
-        -- Free = Move randomly around the areas the Unit has spawned
+        -- Free = Move randomly around the areas the NPC has spawned
         -- Loop = Move through all the points in an endless loop
         -- BackNForth = Move through all the points in a loop, but once reached the last point, start walking back. Restart the cycle once reaching the first point again
         -- RandomPoints = Move between the points randomly
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-export type UnitBase = {
+export type NPCBase = {
     DisplayName: string,
     
-    Models: {{Choice: Model, Chance: number}}, -- Use the dict if multiple Unit models to choose from (some versions with alt colors)
+    Models: {{Choice: Model, Chance: number}}, -- Use the dict if multiple NPC models to choose from (some versions with alt colors)
 
     BaseStats: {
         Health: number,
@@ -35,17 +35,17 @@ export type UnitBase = {
     EnemyStats: {
         Agro: {
             Is: boolean, -- If set to false, enemies will only attack if a player attacks them first.
-            Range: number, -- How close the player needs before the Unit starts chasing.
+            Range: number, -- How close the player needs before the NPC starts chasing.
         },
 
-        ChaseRange: NumberRange, -- How far the unit can chase a player from their original spawn position before stopping.
+        ChaseRange: NumberRange, -- How far the NPC can chase a player from their original spawn position before stopping.
 
         HealthThresholdForCombat: number, -- Set to MAX PERCENT if it should always attack. Set to ZERO PERCENT if it should only run away.
-        SearchTime: number, -- How long a unit will stand in one spot and search for a target after losing vision of them
+        SearchTime: number, -- How long a NPC will stand in one spot and search for a target after losing vision of them
     
         Attacks: {
             [string]: { -- The name of the attack
-                HealthThreshold: number, -- What health % the unit needs to be at before being allowed to use this attack
+                HealthThreshold: number, -- What health % the NPC needs to be at before being allowed to use this attack
                 Cooldown: NumberRange,
                 Chance: number, -- Chance to use this attack
                 Damage: NumberRange,
@@ -62,22 +62,22 @@ export type UnitBase = {
 
     Vision: {
         Type: "Cone" | "360",
-            -- Cone = Sees other units only when they are in front of this unit and in their field of view
-            -- 360 = Sees other untis from all direction regardless which way this unit is facing
+            -- Cone = Sees other NPCs only when they are in front of this NPC and in their field of view
+            -- 360 = Sees other untis from all direction regardless which way this NPC is facing
 
         XRay: boolean?, -- Can see through walls
         Range: number?, -- How far the enemy can see
         Angle: number?, -- In degrees of how wide the field of view is for the enemy to detect players in front of it
     }?,
 
-    RoamRange: number?, -- How far the unit will wander if the patrol style is set to FreeRoam
+    RoamRange: number?, -- How far the NPC will wander if the patrol style is set to FreeRoam
 
-    PathParams: { -- If the unit uses path finding, these need to be defined
+    PathParams: { -- If the NPC uses path finding, these need to be defined
         Radius: number, -- Min HORIZONTAL empty space required to traverse a path
         Height: number,  -- Min VERTICAL empty space required to traverse a path
         CanJump: boolean,
         Costs: {
-            [string]: number -- Example: ["Snow"] = 10, ["Grass"] = 1. A unit with these costs will prefer finding paths that go over grass while avoiding snow. Leave empty if none of that matters
+            [string]: number -- Example: ["Snow"] = 10, ["Grass"] = 1. A NPC with these costs will prefer finding paths that go over grass while avoiding snow. Leave empty if none of that matters
         }
     }?,
 
@@ -89,12 +89,12 @@ export type UnitBase = {
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local UnitInfo: {[string]: UnitBase} = {}
+local NPCInfo: {[string]: NPCBase} = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local UnitDied = New.Event()
-UnitInfo.UnitDied = UnitDied
+local NPCDied = New.Event()
+NPCInfo.NPCDied = NPCDied
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -103,7 +103,7 @@ local Enemies = ServerStorage.Assets.Enemies
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-UnitInfo["TestBot"] = {
+NPCInfo["TestBot"] = {
     DisplayName = "Test Bot",
     
     Models = {
@@ -186,4 +186,4 @@ UnitInfo["TestBot"] = {
     }
 }
 
-return UnitInfo
+return NPCInfo

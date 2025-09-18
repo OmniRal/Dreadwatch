@@ -10,9 +10,9 @@ local Workspace = game:GetService("Workspace")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local Unit = require(ServerScriptService.Source.ServerModules.Classes.Unit)
-local UnitInfo = require(ServerScriptService.Source.ServerModules.Info.UnitInfo).TestBot
-local UnitService = require(ServerScriptService.Source.ServerModules.General.UnitService)
+local NPC = require(ServerScriptService.Source.ServerModules.Classes.NPC)
+local NPCInfo = require(ServerScriptService.Source.ServerModules.Info.NPCInfo).TestBot
+local NPCService = require(ServerScriptService.Source.ServerModules.General.NPCService)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -26,20 +26,20 @@ local RNG = Random.new()
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local function AnimKeyframes(Unit: Unit.Unit, AnimName: string, Keyframe: string)
+local function AnimKeyframes(NPC: NPC.NPC, AnimName: string, Keyframe: string)
     if Keyframe == "End" then
         return
     
     elseif Keyframe == "Damage" and AnimName == "Melee_Attack" then
-        if not Unit.Root or not Unit.Target then return end
-        if not Unit.Target.Human or not Unit.Target.Root then return end
+        if not NPC.Root or not NPC.Target then return end
+        if not NPC.Target.Human or not NPC.Target.Root then return end
         
-        local AttackInfo = UnitInfo.EnemyStats.Attacks.Melee_Attack
-        local Distance = (Unit.Root.Position - Unit.Target.Root.Position).Magnitude
+        local AttackInfo = NPCInfo.EnemyStats.Attacks.Melee_Attack
+        local Distance = (NPC.Root.Position - NPC.Target.Root.Position).Magnitude
         
         if Distance > AttackInfo.DamageRange then return end
 
-        Unit.Target.Human:TakeDamage(RNG:NextNumber(AttackInfo.Damage.Min, AttackInfo.Damage.Max))
+        NPC.Target.Human:TakeDamage(RNG:NextNumber(AttackInfo.Damage.Min, AttackInfo.Damage.Max))
 
     elseif Keyframe == "Shoot" then
         local Shot = Instance.new("Part")
@@ -52,13 +52,13 @@ local function AnimKeyframes(Unit: Unit.Unit, AnimName: string, Keyframe: string
         Shot.Color = Color3.fromRGB(255, 50, 50)
         Shot.Shape = Enum.PartType.Ball
         Shot.Size = Vector3.new(1, 1, 1)
-        Shot.CFrame = Unit.Root.CFrame * CFrame.new(0, 0.5, -1)
+        Shot.CFrame = NPC.Root.CFrame * CFrame.new(0, 0.5, -1)
         Shot.Parent = Workspace
 
-        local Direction = (Unit.Target.Root.Position - Unit.Root.Position).Unit
+        local Direction = (NPC.Target.Root.Position - NPC.Root.Position).NPC
 
         local Params = RaycastParams.new()
-        Params.FilterDescendantsInstances = {Unit}
+        Params.FilterDescendantsInstances = {NPC}
         Params.FilterType = Enum.RaycastFilterType.Exclude
         Params.IgnoreWater = true
 
@@ -90,9 +90,9 @@ local function AnimKeyframes(Unit: Unit.Unit, AnimName: string, Keyframe: string
                 local Model = Hit:FindFirstAncestorWhichIsA("Model") 
                 if Model then
                     if Model:FindFirstChild("Humanoid") then
-                        local Damage = RNG:NextInteger(UnitInfo.EnemyStats.Attacks.Ranged_Attack.Damage.Min, UnitInfo.EnemyStats.Attacks.Ranged_Attack.Damage.Max)
+                        local Damage = RNG:NextInteger(NPCInfo.EnemyStats.Attacks.Ranged_Attack.Damage.Min, NPCInfo.EnemyStats.Attacks.Ranged_Attack.Damage.Max)
                         --Model.Humanoid:TakeDamage(Damage)
-                        UnitService:ApplyDamage(Unit.Model, Model, Damage, "Jizzed")
+                        NPCService:ApplyDamage(NPC.Model, Model, Damage, "Jizzed")
                     end
                 end
             end
@@ -104,14 +104,14 @@ end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function TestBot.Melee_Attack(Unit: Unit.Unit)
-    warn("Melee attack!")
-    Unit:PlayActionAnimation("Melee_Attack", nil, nil, AnimKeyframes)
+function TestBot.Melee_Attack(NPC: NPC.NPC)
+    --warn("Melee attack!")
+    NPC:PlayActionAnimation("Melee_Attack", nil, nil, AnimKeyframes)
 end
 
-function TestBot.Ranged_Attack(Unit: Unit.Unit)
-    warn("Ranged attack!")
-    Unit:PlayActionAnimation("Ranged_Attack", nil, nil, AnimKeyframes)
+function TestBot.Ranged_Attack(NPC: NPC.NPC)
+    --warn("Ranged attack!")
+    NPC:PlayActionAnimation("Ranged_Attack", nil, nil, AnimKeyframes)
 end
 
 return TestBot
