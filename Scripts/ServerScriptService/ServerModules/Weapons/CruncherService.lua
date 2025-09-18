@@ -1,4 +1,5 @@
 -- OmniRal
+--!nocheck
 
 local CruncherService = {}
 
@@ -19,7 +20,6 @@ local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnu
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
 local WeaponService = require(ServerScriptService.Source.ServerModules.Weapons.WeaponService)
 local ProjectileService = require(ServerScriptService.Source.ServerModules.General.ProjectileService)
-local HealthService = require(ServerScriptService.Source.ServerModules.General.HealthService)
 local SoundControlService = require(ReplicatedStorage.Source.SharedModules.Other.SoundControlService)
 
 local WeaponInfo = require(ReplicatedStorage.Source.SharedModules.Info.WeaponInfo).Cruncher
@@ -119,7 +119,7 @@ function CruncherService:Shoot(Player: Player, AimTo: CFrame, ThirdPersonCamera:
              if Hit then
                 local HitModel = Hit:FindFirstAncestorOfClass("Model")
                 if HitModel then
-                    HealthService:ApplyDamage(Player, HitModel, 1, "Cruncher", true)
+                    --HealthService:ApplyDamage(Player, HitModel, 1, "Cruncher", true)
                 else
 
                 end

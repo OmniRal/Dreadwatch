@@ -17,7 +17,6 @@ local WeaponInfo = require(ReplicatedStorage.Source.SharedModules.Info.WeaponInf
 
 local WeaponService = require(ServerScriptService.Source.ServerModules.Weapons.WeaponService)
 local ProjectileService = require(ServerScriptService.Source.ServerModules.General.ProjectileService)
-local HealthService = require(ServerScriptService.Source.ServerModules.General.HealthService)
 local SoundControlService = require(ReplicatedStorage.Source.SharedModules.Other.SoundControlService)
 
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)

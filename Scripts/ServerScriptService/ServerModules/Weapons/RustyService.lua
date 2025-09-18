@@ -1,4 +1,5 @@
 -- OmniRal
+--!nocheck
 
 local RustyService = {}
 
@@ -21,7 +22,6 @@ local ItemInfo = require(ReplicatedStorage.Source.SharedModules.Info.ItemInfo)
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
 local WeaponService = require(ServerScriptService.Source.ServerModules.Weapons.WeaponService)
 local ProjectileService = require(ServerScriptService.Source.ServerModules.General.ProjectileService)
-local HealthService = require(ServerScriptService.Source.ServerModules.General.HealthService)
 local SoundControlService = require(ReplicatedStorage.Source.SharedModules.Other.SoundControlService)
 
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
@@ -81,7 +81,7 @@ function RustyService:Hit(Player: Player, SwingNum: number)
     if #ItemHitList > 0 then
         for _, Item in ItemHitList do
             if not Item then continue end
-            HealthService:ApplyDamage(Player, Item, Damage, "Rusty")
+            --HealthService:ApplyDamage(Player, Item, Damage, "Rusty")
         end
     end
 end

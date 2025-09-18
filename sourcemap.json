@@ -3804,14 +3804,6 @@
 											]
 										},
 										{
-											"name": "HealthService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/General/HealthService.lua"
-											]
-										},
-										{
 											"name": "ItemService",
 											"className": "ModuleScript",
 											"children": [],
