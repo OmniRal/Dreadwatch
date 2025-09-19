@@ -20,7 +20,7 @@ local WeaponInfo = require(ReplicatedStorage.Source.SharedModules.Info.WeaponInf
 local ItemInfo = require(ReplicatedStorage.Source.SharedModules.Info.ItemInfo)
 
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
-local WeaponService = require(ServerScriptService.Source.ServerModules.Weapons.WeaponService)
+local WeaponService = require(ServerScriptService.Source.ServerModules.General.WeaponService)
 local ProjectileService = require(ServerScriptService.Source.ServerModules.General.ProjectileService)
 local SoundControlService = require(ReplicatedStorage.Source.SharedModules.Other.SoundControlService)
 

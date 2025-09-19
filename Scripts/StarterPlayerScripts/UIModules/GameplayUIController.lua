@@ -108,6 +108,7 @@ function PositionEffectBoxes(CancelDelay: boolean?)
 end
 
 function AddNewEffectBox(Effect: any)
+    if 1 == 1 then return end
     if not Effect then return end
     if not Effect:GetAttribute("Icon") or not Effect:GetAttribute("Description") or not Effect:GetAttribute("Duration") or not Effect:FindFirstChild("Timer") then return end
 

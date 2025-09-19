@@ -17,6 +17,7 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
 local CharacterService = require(ServerScriptService.Source.ServerModules.Player.CharacterService)
+local RelicService = require(ServerScriptService.Source.ServerModules.General.RelicService)
 local BadgeService = require(ServerScriptService.Source.ServerModules.Player.BadgeService)
 
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
@@ -159,6 +160,7 @@ function CoreGameService.PlayerAdded(Player: Player)
     }
     Player.CharacterAdded:Connect(function(Character: any)
         CharacterService:LoadCharacter(Player)
+        RelicService:UpdatePlayerAttributes(Player)
 
 
         --[[local Root = Character:WaitForChild("HumanoidRootPart")
@@ -183,6 +185,7 @@ function CoreGameService.PlayerAdded(Player: Player)
     --SpawnCharacter(Player)
 
     CharacterService:LoadCharacter(Player)
+    RelicService:UpdatePlayerAttributes(Player)
 end
 
 function CoreGameService.PlayerRemoving(Player: Player)

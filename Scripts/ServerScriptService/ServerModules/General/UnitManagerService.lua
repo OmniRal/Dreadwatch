@@ -20,8 +20,7 @@ local Workspace = game:GetService("Workspace")
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 local UnitEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.UnitEnum)
-
-local UnitValuesService = require(ServerScriptService.Source.ServerModules.Units.UnitValuesService)
+local UnitValuesService = require(ServerScriptService.Source.ServerModules.General.UnitValuesService)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants

@@ -1,21 +1,13 @@
 -- OmniRal
 
-local WeaponEnum = {}
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local CustomEnum = require(script.Parent)
+local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
+
+local WeaponEnum = {}
 
 export type WeaponUseType = "Single" | "Auto"
 export type WeaponStyle = "Melee" | "Ranged"
-
-export type WeaponAbility = {
-    Name: string,
-    DisplayName: string,
-    Description: string,
-    FlavorText: string,
-    Icon: number,
-
-    Damage: NumberRange,
-}
 
 export type Weapon = {
     UnlockedBy: CustomEnum.UnlockedBy,
@@ -42,8 +34,8 @@ export type Weapon = {
     Damage: NumberRange,
 
     Abilities: {
-        Innate: WeaponAbility,
-        Grand: WeaponAbility,
+        Innate: CustomEnum.Ability,
+        Grand: CustomEnum.Ability,
     },
 
     BaseAnimations: {

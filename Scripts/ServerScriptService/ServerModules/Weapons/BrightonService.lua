@@ -15,7 +15,7 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 local WeaponInfo = require(ReplicatedStorage.Source.SharedModules.Info.WeaponInfo).Brighton
 
-local WeaponService = require(ServerScriptService.Source.ServerModules.Weapons.WeaponService)
+local WeaponService = require(ServerScriptService.Source.ServerModules.General.WeaponService)
 local ProjectileService = require(ServerScriptService.Source.ServerModules.General.ProjectileService)
 local SoundControlService = require(ReplicatedStorage.Source.SharedModules.Other.SoundControlService)
 

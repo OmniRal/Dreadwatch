@@ -1,4 +1,5 @@
 --OmniRal
+--!nocheck
 
 local CharacterService = {}
 
@@ -153,122 +154,6 @@ function CharacterService:SpawnCharacter(Player: Player)
     end)]]
 end
 
-
-
-function CharacterService:ApplyDamage_Old(Source: Player | Model | string, Victim: Player | Model, Damage: number, DamageName: string, DamageType: string, CritPossible: boolean?)
-    if not Source or not Victim then return end
-
-    local VictimModel = Victim
-    if Victim:IsA("Player") then
-        VictimModel = Victim.Character
-    end
-
-    if not VictimModel then return end
-    local AttributesFolder = VictimModel:FindFirstChild("UnitAttributes")
-    if not AttributesFolder then return end
-
-    local TotalDamage = Damage
-    local IsCrit = false
-    local TrueStrike = false
-    local Missed = false
-    local Evade = false
-
-    local From, Affects, DisplayType, Position, OtherDetails = Source, Victim.Name, CustomEnum.TextDisplayType.KillerDamage, Vector3.new(0, 0, 0), {}
-
-    local SourceAttributes
-    if typeof(Source) ~= "string" then
-        SourceAttributes = UnitValuesService:Get(Source) :: CustomEnum.UnitAttributes
-
-        if DamageType == CustomEnum.DamageType.Physical then
-            TotalDamage += math.clamp(SourceAttributes.Base.PhysicalDamageAmp + SourceAttributes.Offsets.PhysicalDamageAmp, CustomEnum.BaseAttributeLimits.PhysicalDamageAmp.Min, CustomEnum.BaseAttributeLimits.PhysicalDamageAmp.Max)
-            
-            local MissChance = math.clamp(SourceAttributes.Base.MissChance + SourceAttributes.Offsets.MissChance, CustomEnum.BaseAttributeLimits.MissChance.Min, CustomEnum.BaseAttributeLimits.MissChance.Max)
-            if RNG:NextInteger(1, 100) <= MissChance then
-                Missed = true
-            end
-            
-            if CritPossible then
-                local CritChance = SourceAttributes.Base.CritChance + SourceAttributes.Offsets.CritChance
-                if RNG:NextInteger(1, 100) <= CritChance then
-                    IsCrit = true
-                    TotalDamage += (TotalDamage * ((SourceAttributes.Base.CritPercent + SourceAttributes.Offsets.CritPercent) / 100))
-
-                    DisplayType = CustomEnum.TextDisplayType.Crit
-                end
-            end
-
-        elseif DamageType == CustomEnum.DamageType.Magical then
-            TotalDamage += math.clamp(SourceAttributes.Base.MagicalDamageAmp + SourceAttributes.Offsets.MagicalDamageAmp, CustomEnum.BaseAttributeLimits.MagicalDamageAmp.Min, CustomEnum.BaseAttributeLimits.MagicalDamageAmp.Max)
-        elseif DamageType == CustomEnum.DamageType.Pure then
-            
-        end
-
-        local KillerTrueStrike = math.clamp(SourceAttributes.Base.TrueStrike + SourceAttributes.Offsets.TrueStrike, CustomEnum.BaseAttributeLimits.TrueStrike.Min, CustomEnum.BaseAttributeLimits.TrueStrike.Max)
-        if RNG:NextInteger(1, 100) <= KillerTrueStrike then
-            TrueStrike = true
-        end
-
-        From = Source.Name
-    end
-
-    local VictimAttributes = UnitValuesService:Get(Victim) :: CustomEnum.UnitAttributes
-    if not VictimAttributes then return end
-
-    if DamageType == CustomEnum.DamageType.Physical then
-        TotalDamage -= (TotalDamage * (math.clamp(VictimAttributes.Base.Armor + VictimAttributes.Offsets.Armor, CustomEnum.BaseAttributeLimits.Armor.Min, CustomEnum.BaseAttributeLimits.Armor.Max) / 100))
-    elseif DamageType == CustomEnum.DamageType.Magical then
-        TotalDamage -= (TotalDamage * math.clamp(VictimAttributes.Base.MagicalResist + VictimAttributes.Offsets.MagicalResist, CustomEnum.BaseAttributeLimits.MagicalResist.Min, CustomEnum.BaseAttributeLimits.MagicalResist.Max) / 100)
-    elseif DamageType == CustomEnum.DamageType.Pure then
-
-    end
-
-    if DamageType == CustomEnum.DamageType.Physical or DamageType == CustomEnum.DamageType.Pure then
-        local VictimEvasion = math.clamp(VictimAttributes.Base.Evasion + VictimAttributes.Offsets.Evasion, CustomEnum.BaseAttributeLimits.Evasion.Min, CustomEnum.BaseAttributeLimits.Evasion.Max)
-        if Missed or RNG:NextInteger(1, 100) <= VictimEvasion then
-            if not TrueStrike then
-                Evade = true
-                if not Missed then
-                    DisplayType = CustomEnum.TextDisplayType.Miss
-                else
-                    DisplayType = CustomEnum.TextDisplayType.AttackMiss
-                end
-            else
-                OtherDetails.TrueStrikeDamage = true
-            end
-        end
-    end
-
-    local RootPart = VictimModel.PrimaryPart
-
-    if not RootPart then return end
-
-    Position = RootPart.Position + Vector3.new(
-        math.sign(RNG:NextNumber(-1, 1)) * RNG:NextNumber(0.75, 1.25),
-        math.sign(RNG:NextNumber(-1, 1)) * RNG:NextNumber(0.75, 1.25),
-        math.sign(RNG:NextNumber(-1, 1)) * RNG:NextNumber(0.75, 1.25)
-    )
-
-    TotalDamage = math.round(TotalDamage)
-
-    if TotalDamage < 0 then return end
-    
-    if not Evade then
-        AttributesFolder.Current.Health.Value = math.clamp(AttributesFolder.Current.Health.Value - TotalDamage, 0, VictimAttributes.Base.Health + VictimAttributes.Offsets.Health)
-        OtherDetails.Amount = TotalDamage
-    end
-    
-    local HistoryEntry : CustomEnum.HistoryEntry = {
-        Source = Source,
-        Name = DamageName,
-        Type = CustomEnum.HistoryEntryType.Damage,
-        Amount = TotalDamage,
-        TimeAdded = os.clock(),
-        CleanTime = CustomEnum.DefaultHistoryEntryCleanTime
-    }
-    UnitValuesService:AddHistoryEntry(Victim, HistoryEntry)
-    Remotes.VisualService.SpawnTextDisplay:FireAll(From, Affects, DisplayType, Position, OtherDetails)
-end
-
 -- Plainly adds or subtracts to a units attribute; e.g. players passively gaining health over time.
 function CharacterService:IncrementAttribute(Source: Player | Model | string, Receiver: Player | Model, Amount: number)
     if not Source or not Receiver then return end
@@ -282,68 +167,8 @@ function CharacterService:IncrementAttribute(Source: Player | Model | string, Re
     
 end
 
-function CharacterService:ApplyHealthGain(Source: Player | Model | string, Receiver: Player | Model, Amount: number, GainName: string?)
-    if not Source or not Receiver then return end
-
-    local ReceiverModel = Receiver
-    if Receiver:IsA("Player") then
-        ReceiverModel = Receiver.Character
-    end
-
-    if not ReceiverModel then return end
-
-    local ReceiverAttributes, AttributesFolder = UnitValuesService:Get(Receiver) :: CustomEnum.UnitAttributes, ReceiverModel:FindFirstChild("UnitAttributes")
-    if not ReceiverAttributes or not AttributesFolder then return end
-
-    AttributesFolder.Current.Health.Value = math.clamp(AttributesFolder.Current.Health.Value + Amount, 0, ReceiverAttributes.Base.Health + ReceiverAttributes.Offsets.Health)
-
-    if not GainName then return end
-
-    local From, Affects, DisplayType, Position, OtherDetails = Source, Receiver.Name, CustomEnum.TextDisplayType.HealthGain, Vector3.new(0, 0, 0), {Amount = Amount}
-
-    if typeof(Source) ~= "string" then
-        From = Source.Name
-    end
-
-    local RootPart = ReceiverModel.PrimaryPart
-    if not RootPart then return end
-
-    Position = RootPart.Position + Vector3.new(
-        math.sign(RNG:NextNumber(-1, 1)) * RNG:NextNumber(0.75, 1.25),
-        math.sign(RNG:NextNumber(-1, 1)) * RNG:NextNumber(0.75, 1.25),
-        math.sign(RNG:NextNumber(-1, 1)) * RNG:NextNumber(0.75, 1.25)
-    )
-
-    local HistoryEntry : CustomEnum.HistoryEntry = {
-        Source = Source,
-        Name = GainName,
-        Type = CustomEnum.HistoryEntryType.HealthGain,
-        Amount = Amount,
-        TimeAdded = os.clock(),
-        CleanTime = CustomEnum.DefaultHistoryEntryCleanTime,
-    }
-    UnitValuesService:AddHistoryEntry(Receiver, HistoryEntry)
-    Remotes.VisualService.SpawnTextDisplay:FireAll(From, Affects, DisplayType, Position, OtherDetails)
-end
-
-function CharacterService:ApplyManaGain(Source: Player | Model | string, Receiver: Player | Model, Amount: number, GainName: string?)
-    if not Source or not Receiver then return end
-
-    local ReceiverModel = Receiver
-    if Receiver:IsA("Player") then
-        ReceiverModel = Receiver.Character
-    end
-
-    if not ReceiverModel then return end
-
-    local ReceiverAttributes, AttributesFolder = UnitValuesService:Get(Receiver) :: CustomEnum.UnitAttributes, ReceiverModel:FindFirstChild("UnitAttributes")
-    if not ReceiverAttributes or not AttributesFolder then return end
-
-    AttributesFolder.Current.Mana.Value = math.clamp(AttributesFolder.Current.Mana.Value + Amount, 0, ReceiverAttributes.Base.Mana + ReceiverAttributes.Offsets.Mana)
-end
-
 function CharacterService:Init()
-    TestButtons()
+    --TestButtons()
 end
 
 return CharacterService

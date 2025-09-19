@@ -37,4 +37,17 @@ export type Product = {
     Detail: number | string?
 }
 
+export type Ability = {
+    Name: string,
+    DisplayName: string,
+    Description: string,
+    FlavorText: string,
+    Icon: number,
+
+    Damage: NumberRange,
+    Cooldown: number,
+
+    Details: {}?
+}
+
 return CustomEnum

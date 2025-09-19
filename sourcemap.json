@@ -342,6 +342,14 @@
 													"filePaths": [
 														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/WeaponEnum.lua"
 													]
+												},
+												{
+													"name": "RelicEnum",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/RelicEnum.lua"
+													]
 												}
 											],
 											"filePaths": [
@@ -378,6 +386,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ReplicatedStorage/SharedModules/Info/WeaponInfo.lua"
+											]
+										},
+										{
+											"name": "RelicInfo",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/SharedModules/Info/RelicInfo.lua"
 											]
 										}
 									],
@@ -2179,6 +2195,12 @@
 															"className": "TextLabel",
 															"filePaths": [],
 															"children": []
+														},
+														{
+															"name": "White",
+															"className": "Frame",
+															"filePaths": [],
+															"children": []
 														}
 													]
 												},
@@ -2203,6 +2225,12 @@
 														{
 															"name": "Nums",
 															"className": "TextLabel",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "White",
+															"className": "Frame",
 															"filePaths": [],
 															"children": []
 														}
@@ -3870,11 +3898,35 @@
 											]
 										},
 										{
-											"name": "UnitService",
+											"name": "RelicService",
 											"className": "ModuleScript",
 											"children": [],
 											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/General/UnitService/UnitService.init.lua"
+												"Scripts/ServerScriptService/ServerModules/General/RelicService.lua"
+											]
+										},
+										{
+											"name": "UnitValuesService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/UnitValuesService.lua"
+											]
+										},
+										{
+											"name": "UnitManagerService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/UnitManagerService.lua"
+											]
+										},
+										{
+											"name": "WeaponService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/WeaponService.lua"
 											]
 										}
 									],
@@ -3966,6 +4018,14 @@
 									]
 								},
 								{
+									"name": "Relics",
+									"className": "Folder",
+									"children": [],
+									"filePaths": [
+										"Scripts/ServerScriptService/ServerModules/Relics"
+									]
+								},
+								{
 									"name": "Top",
 									"className": "Folder",
 									"children": [
@@ -3996,39 +4056,6 @@
 									],
 									"filePaths": [
 										"Scripts/ServerScriptService/ServerModules/Top"
-									]
-								},
-								{
-									"name": "Units",
-									"className": "Folder",
-									"children": [
-										{
-											"name": "AbilityService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Units/AbilityService.lua"
-											]
-										},
-										{
-											"name": "UnitManagerService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Units/UnitManagerService.lua"
-											]
-										},
-										{
-											"name": "UnitValuesService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Units/UnitValuesService.lua"
-											]
-										}
-									],
-									"filePaths": [
-										"Scripts/ServerScriptService/ServerModules/Units"
 									]
 								},
 								{
@@ -4065,14 +4092,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/Weapons/RustyService.lua"
-											]
-										},
-										{
-											"name": "WeaponService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Weapons/WeaponService.lua"
 											]
 										}
 									],

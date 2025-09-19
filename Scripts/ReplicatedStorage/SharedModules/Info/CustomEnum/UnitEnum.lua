@@ -18,29 +18,30 @@ export type UnitValues = {
 }
 
 export type BaseAttributes = {
-    Health: number,
-    HealthGain: number,
+    Health: number?,
+    HealthGain: number?,
 
-    Mana: number,
-    ManaGain: number,
+    Mana: number?,
+    ManaGain: number?,
 
-    Armor: number,
-    WalkSpeed: number, 
-    AttackSpeed: number,
-    CritPercent: number,
-    CritChance: number,
+    Armor: number?,
+    WalkSpeed: number?, 
+    AttackSpeed: number?,
+    CritPercent: number?,
+    CritChance: number?,
+    Damage: number?,
 }
 
 export type BaseStates = {
-    Immune: boolean,
-    Silenced: boolean,
-    Disarmed: boolean,
-    Break: boolean,
-    Rooted: boolean,
-    Stunned: boolean,
-    Tracked: boolean,
-    Panic: {Active: boolean, From: Vector3?},
-    Taunt: {Active: boolean, Goal: Vector3? | BasePart?},
+    Immune: boolean?,
+    Silenced: boolean?,
+    Disarmed: boolean?,
+    Break: boolean?,
+    Rooted: boolean?,
+    Stunned: boolean?,
+    Tracked: boolean?,
+    Panic: {Active: boolean, From: Vector3?}?,
+    Taunt: {Active: boolean, Goal: Vector3? | BasePart?}?,
 }
 
 export type Effect = {
@@ -71,9 +72,10 @@ export type EffectDetails = {
     From: Player | Model | string,
     Description: string?, 
     IsBuff: boolean, 
-    Icon: string?, 
+    Icon: number?, 
     Duration: number, 
     MaxStacks: number,
+    DoNotDisplay: boolean?,
 }
 
 export type HistoryEntry = {

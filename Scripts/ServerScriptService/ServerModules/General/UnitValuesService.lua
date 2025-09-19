@@ -32,11 +32,12 @@ local BaseAttributes : UnitEnum.BaseAttributes = {
     HealthGain = 1,
     Mana = 100,
     ManaGain = 1,
-    AttackSpeed = 0,
     Armor = 0,
+    WalkSpeed = 16,
+    AttackSpeed = 0,
     CritChance = 0,
     CritPercent = 0,
-    WalkSpeed = 0,
+    Damage = 0,
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -130,17 +131,17 @@ function TestButtons()
     end
 end
 
-function CreateStateFolder(UnitAttributes: UnitEnum.UnitValues, Unit: Model)
+function CreateStateFolder(UnitValues: UnitEnum.UnitValues, Unit: Model)
     if not Unit then return end
 
     local Folder = Assets.Misc.UnitValues:Clone()
     Folder.Parent = Unit
     
-    for Stat, Value in UnitAttributes.Base do
-        Folder.Base:SetAttribute(Stat, Value + (UnitAttributes.Offsets[Stat]))
+    for Stat, Value in UnitValues.Base do
+        Folder.Base:SetAttribute(Stat, Value + (UnitValues.Offsets[Stat]))
     end
 
-    for State, Value in UnitAttributes.States do
+    for State, Value in UnitValues.States do
         if typeof(Value) == "boolean" then
             Folder.States:SetAttribute(State, Value)
 
@@ -154,11 +155,11 @@ function CreateStateFolder(UnitAttributes: UnitEnum.UnitValues, Unit: Model)
         end
     end
 
-    Folder.Current.Health.Value = UnitAttributes.Base.Health + UnitAttributes.Offsets.Health
-    Folder.Current.Health:SetAttribute("Max", UnitAttributes.Base.Health + UnitAttributes.Offsets.Health)
+    Folder.Current.Health.Value = UnitValues.Base.Health + UnitValues.Offsets.Health
+    Folder.Current.Health:SetAttribute("Max", UnitValues.Base.Health + UnitValues.Offsets.Health)
 
-    Folder.Current.Mana.Value = UnitAttributes.Base.Mana + UnitAttributes.Offsets.Mana
-    Folder.Current.Mana:SetAttribute("Max", UnitAttributes.Base.Mana + UnitAttributes.Offsets.Mana)
+    Folder.Current.Mana.Value = UnitValues.Base.Mana + UnitValues.Offsets.Mana
+    Folder.Current.Mana:SetAttribute("Max", UnitValues.Base.Mana + UnitValues.Offsets.Mana)
 
     return Folder
 end
@@ -168,24 +169,24 @@ end
 -- Public API --
 ----------------
 
-function UnitValuesService:AddEffect(Unit: Player | Model, EffectDetails: UnitEnum.EffectDetails, BaseAttributes: UnitEnum.BaseAttributes, BaseStates: UnitEnum.BaseStates)
-    local UnitAttributes = States[Unit] :: UnitEnum.UnitValues
-    if not UnitAttributes then return end
-    if not UnitAttributes.Folder then return end
-    if UnitAttributes.Folder.Parent == nil then return end
+function UnitValuesService:AddEffect(Unit: Player | Model, EffectDetails: UnitEnum.EffectDetails, EffectAttributes: UnitEnum.BaseAttributes?, EffectStates: UnitEnum.BaseStates)
+    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    if not UnitValues then return end
+    if not UnitValues.Folder then return end
+    if UnitValues.Folder.Parent == nil then return end
 
     local SpawnTime = os.clock()
 
     local MaxStacksReached, CopyEffectFound = false, false
-    if #UnitAttributes.Effects > 0 then
+    if #UnitValues.Effects > 0 then
         local FoundEffects = {}
-        for Num, Effect in ipairs(UnitAttributes.Effects) do
+        for Num, Effect in ipairs(UnitValues.Effects) do
             if Effect.Name ~= EffectDetails.Name then continue end
             CopyEffectFound = true
             table.insert(FoundEffects, Effect)
         end
 
-        if #FoundEffects >= EffectDetails.MaxStacks then
+        if #FoundEffects >= EffectDetails.MaxStacks or 1 then
             MaxStacksReached = true
 
             local Difference = #FoundEffects - EffectDetails.MaxStacks
@@ -202,13 +203,13 @@ function UnitValuesService:AddEffect(Unit: Player | Model, EffectDetails: UnitEn
         if MaxStacksReached then return end
     end
 
-    local NewConfig = New.Instance("Configuration", EffectDetails.Name, UnitAttributes.Folder.Effects)
+    local NewConfig = New.Instance("Configuration", EffectDetails.Name, UnitValues.Folder.Effects)
     NewConfig:SetAttribute("IsBuff", EffectDetails.IsBuff)
     NewConfig:SetAttribute("Description", EffectDetails.Description)
     NewConfig:SetAttribute("Icon", EffectDetails.Icon)
     NewConfig:SetAttribute("Duration", EffectDetails.Duration)
 
-    for Key, Value in BaseStates do
+    for Key, Value in EffectStates do
         NewConfig:SetAttribute(Key, Value or nil)
     end
 
@@ -229,27 +230,28 @@ function UnitValuesService:AddEffect(Unit: Player | Model, EffectDetails: UnitEn
         MaxStacks = EffectDetails.MaxStacks,
 
         Offsets = {
-            Health = BaseAttributes.Health,
-            HealthGain = BaseAttributes.HealthGain,
-            Mana = BaseAttributes.Mana,
-            ManaGain = BaseAttributes.ManaGain,
-            Armor = BaseAttributes.Armor,
-            WalkSpeed = BaseAttributes.WalkSpeed,
-            AttackSpeed = BaseAttributes.AttackSpeed,
-            CritChance = BaseAttributes.CritChance,
-            CritPercent = BaseAttributes.CritPercent,
+            Health = EffectAttributes.Health or 0,
+            HealthGain = EffectAttributes.HealthGain or 0,
+            Mana = EffectAttributes.Mana or 0,
+            ManaGain = EffectAttributes.ManaGain or 0,
+            Armor = EffectAttributes.Armor or 0,
+            WalkSpeed = EffectAttributes.WalkSpeed or 0,
+            AttackSpeed = EffectAttributes.AttackSpeed or 0,
+            CritChance = EffectAttributes.CritChance or 0,
+            CritPercent = EffectAttributes.CritPercent or 0,
+            Damage = EffectAttributes.Damage or 0,
         },
 
         States = {
-            Immune = BaseStates.Immune or false,
-            Silenced = BaseStates.Silenced or false,
-            Disarmed = BaseStates.Disarmed or false,
-            Break = BaseStates.Break or false,
-            Rooted = BaseStates.Rooted or false,
-            Stunned = BaseStates.Stunned or false,
-            Tracked = BaseStates.Tracked or false,
-            Panic = BaseStates.Panic or false,
-            Taunt = BaseStates.Taunt or false,
+            Immune = EffectStates.Immune or false,
+            Silenced = EffectStates.Silenced or false,
+            Disarmed = EffectStates.Disarmed or false,
+            Break = EffectStates.Break or false,
+            Rooted = EffectStates.Rooted or false,
+            Stunned = EffectStates.Stunned or false,
+            Tracked = EffectStates.Tracked or false,
+            Panic = EffectStates.Panic or false,
+            Taunt = EffectStates.Taunt or false,
         },
 
         CleanFunction = function()
@@ -280,17 +282,17 @@ function UnitValuesService:AddEffect(Unit: Player | Model, EffectDetails: UnitEn
 
     NewEffect.CleanFunction()
 
-    table.insert(UnitAttributes.Effects, NewEffect)
+    table.insert(UnitValues.Effects, NewEffect)
 
-    --print(Unit.Name, " Updated States: ", UnitAttributes)
+    --print(Unit.Name, " Updated States: ", UnitValues)
     UnitValuesService:RecalculateAttributes(Unit, BaseAttributes)
 end
 
 function UnitValuesService:SetTimeOfExistingEffects(Unit: Player | Model, EffectName: string, NewDuration: number, NewSpawnTime: number?)
-    local UnitAttributes = States[Unit]
-    if not UnitAttributes then return end
+    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    if not UnitValues then return end
 
-    for _, Effect : UnitEnum.Effect in ipairs(UnitAttributes.Effects) do
+    for _, Effect : UnitEnum.Effect in ipairs(UnitValues.Effects) do
         if Effect.Name ~= EffectName then continue end
         Effect.Duration = NewDuration 
         Effect.SpawnTime = NewSpawnTime or Effect.SpawnTime
@@ -299,29 +301,29 @@ function UnitValuesService:SetTimeOfExistingEffects(Unit: Player | Model, Effect
 end
 
 function UnitValuesService:CleanThisEffect(Unit: Player | Model, ThisEffect: UnitEnum.Effect)
-    local UnitAttributes = States[Unit]
-    if not UnitAttributes then return end
+    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    if not UnitValues then return end
 
-    for Num, Effect in ipairs(UnitAttributes.Effects) do
+    for Num, Effect in ipairs(UnitValues.Effects) do
         if Effect ~= ThisEffect then continue end
         if Effect.Folder then
             Effect.Folder:Destroy()
             Effect.Folder = nil
         end
-        table.remove(UnitAttributes.Effects, Num)
+        table.remove(UnitValues.Effects, Num)
     end
 
     UnitValuesService:RecalculateAttributes(Unit, BaseAttributes)
-    --print(Unit.Name, " Updated States: ", UnitAttributes)
+    --print(Unit.Name, " Updated States: ", UnitValues)
 end
 
 function UnitValuesService:CleanAllEffectsWithNames(Unit: Player | Model, EffectName: string)
-    local UnitAttributes = States[Unit] :: UnitEnum.UnitValues
-    if not UnitAttributes then return end
+    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    if not UnitValues then return end
 
     pcall(function()
         local CleanThese = {}
-        for Num, Effect in ipairs(UnitAttributes.Effects) do
+        for Num, Effect in ipairs(UnitValues.Effects) do
             if Effect.Name ~= EffectName then continue end
             if Effect.Folder then
                 Effect.Folder:SetAttribute("Clean", true)
@@ -333,25 +335,25 @@ function UnitValuesService:CleanAllEffectsWithNames(Unit: Player | Model, Effect
 
         for _, Effect in ipairs(CleanThese) do
             if not Effect then continue end
-            local CleanNum = table.find(UnitAttributes.Effects, Effect)
+            local CleanNum = table.find(UnitValues.Effects, Effect)
             if not CleanNum then continue end
 
-            table.remove(UnitAttributes.Effects, CleanNum)
+            table.remove(UnitValues.Effects, CleanNum)
         end
 
         UnitValuesService:RecalculateAttributes(Unit, BaseAttributes)
     end)
 
-    --print(Unit.Name, " Updated States: ", UnitAttributes)
+    --print(Unit.Name, " Updated States: ", UnitValues)
 end
 
 function UnitValuesService:CleanAllEffects(Unit: Player | Model, Only: string?)
-    local UnitAttributes = States[Unit]
-    if not UnitAttributes then return end
+    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    if not UnitValues then return end
 
     pcall(function()
         local CleanThese = {}
-        for Num, Effect : UnitEnum.Effect in ipairs(UnitAttributes.Effects) do
+        for Num, Effect : UnitEnum.Effect in ipairs(UnitValues.Effects) do
             if not Effect.Folder then continue end
             if Only == "Buffs" then
                 if not Effect.IsBuff then continue end
@@ -366,10 +368,10 @@ function UnitValuesService:CleanAllEffects(Unit: Player | Model, Only: string?)
 
         for _, Effect in ipairs(CleanThese) do
             if not Effect then continue end
-            local CleanNum = table.find(UnitAttributes.Effects, Effect)
+            local CleanNum = table.find(UnitValues.Effects, Effect)
             if not CleanNum then continue end
 
-            table.remove(UnitAttributes.Effects, CleanNum)
+            table.remove(UnitValues.Effects, CleanNum)
         end
 
         UnitValuesService:RecalculateAttributes(Unit, BaseAttributes)
@@ -407,6 +409,7 @@ function UnitValuesService:RecalculateAttributes(Unit: Player | Model, NewBaseAt
         AttackSpeed = 0,
         CritPercent = 0,
         CritChance = 0,
+        Damage = 0,
     }
 
     --local PercentOffsets : UnitEnum.BaseAttributes
@@ -464,6 +467,7 @@ function UnitValuesService:RecalculateAttributes(Unit: Player | Model, NewBaseAt
 
     if UnitValues.Folder then
         for Stat, Value in UnitValues.Base do
+            print(Stat, Value)
             local Limit = UnitEnum.BaseAttributeLimits[Stat]
             if Limit then
                 --print(Stat, " limit is ", Limit)
@@ -505,45 +509,45 @@ function UnitValuesService:RecalculateAttributes(Unit: Player | Model, NewBaseAt
 end
 
 function UnitValuesService:AddHistoryEntry(Unit: Player | Model, Entry: UnitEnum.HistoryEntry)
-    local UnitAttributes = States[Unit] :: UnitEnum.UnitValues
-    if not UnitAttributes then return end
-    if not UnitAttributes.History then return end
+    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    if not UnitValues then return end
+    if not UnitValues.History then return end
 
     if not Entry.TimeAdded then
         Entry.TimeAdded = os.clock()
     end
 
-    table.insert(UnitAttributes.History, Entry)
-    --print("History: ", UnitAttributes.History)
+    table.insert(UnitValues.History, Entry)
+    --print("History: ", UnitValues.History)
 
     if Entry.CleanTime then
         task.delay(Entry.CleanTime, function()
             pcall(function()
-                for Num, OldEntry in ipairs(UnitAttributes.History) do
+                for Num, OldEntry in ipairs(UnitValues.History) do
                     if not OldEntry then continue end
                     if OldEntry ~= Entry then continue end
-                    table.remove(UnitAttributes.History, Num)
+                    table.remove(UnitValues.History, Num)
                 end
 
-                --print("History: ", UnitAttributes.History)
+                --print("History: ", UnitValues.History)
             end)
         end)
     end
 end
 
 function UnitValuesService:CleanHistroy(Unit: Player | Model)
-    local UnitAttributes = States[Unit] :: UnitEnum.UnitValues
-    if not UnitAttributes then return end
-    if not UnitAttributes.History then return end
+    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    if not UnitValues then return end
+    if not UnitValues.History then return end
 
-    table.clear(UnitAttributes.History)
+    table.clear(UnitValues.History)
 end
 
 function UnitValuesService:Get(Unit: Player | Model | string) : UnitEnum.UnitValues?
-    local UnitAttributes = States[Unit]
-    if not UnitAttributes then return end
+    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    if not UnitValues then return end
 
-    return UnitAttributes 
+    return UnitValues 
 end
 
 function UnitValuesService:New(Unit: Player | Model, BaseAttributes: {}?)
@@ -562,6 +566,7 @@ function UnitValuesService:New(Unit: Player | Model, BaseAttributes: {}?)
         AttackSpeed = 100,
         CritChance = 0,
         CritPercent = 0,
+        Damage = 0,
     }
     
     if BaseAttributes then
@@ -584,6 +589,7 @@ function UnitValuesService:New(Unit: Player | Model, BaseAttributes: {}?)
             AttackSpeed = 0,
             CritChance = 0,
             CritPercent = 0,
+            Damage = 0,
         },
 
         States = {

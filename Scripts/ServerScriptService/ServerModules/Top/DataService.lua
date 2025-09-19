@@ -52,7 +52,14 @@ local ProfileTemplate = {
     CurrentWeapon = "BasicSword",
     CurrentWeaponSkin = "Default",
 
-    CurrentRelics = {},
+    CurrentRelics = {
+        [1] = "Chungus",
+        [2] = "Dingus",
+        [3] = "None",
+        [4] = "None",
+        [5] = "None",
+        [6] = "None",
+    },
     CurrentMods = {
         [1] = "Echo",
         [2] = "Blast",
@@ -60,7 +67,7 @@ local ProfileTemplate = {
     },
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_7', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_9', ProfileTemplate)
 
 local Profiles = {}
 
@@ -156,6 +163,13 @@ function DataService:SetIndex(Player: Player, Index: string | {}, Value: string?
     end
 
     Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
+end
+
+-- Returns an array of the players relics
+function DataService:GetPlayerRelics(Player: Player): {[number]: string}
+    self:WaitForPlayerDataLoaded(Player)
+
+    return Profiles[Player].Data.CurrentRelics
 end
 
 -- Returns an array of the players current equipped Mod Stones.
