@@ -83,7 +83,7 @@ local function UpdateUnits()
             continue
         end
 
-        local UnitValues = UnitValuesService:Get(Unit)
+        local UnitValues = UnitValuesService:GetFull(Unit)
         if not UnitValues then continue end
 
         if Unit:IsA("Player") then

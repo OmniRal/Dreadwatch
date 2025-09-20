@@ -89,6 +89,7 @@ function RelicService.PlayerAdded(Player: Player)
             UnitValuesService:AddEffect(Player, EffectDetails, Info.Attributes, {})
         end
     
+        UnitValuesService:GetAttributes(Player)
     end)
 
 end

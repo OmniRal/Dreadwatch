@@ -44,7 +44,7 @@ local BaseAttributes : UnitEnum.BaseAttributes = {
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local States = {}
+local AllValues = {}
 
 local Assets = ServerStorage.Assets
 
@@ -170,23 +170,27 @@ end
 ----------------
 
 function UnitValuesService:AddEffect(Unit: Player | Model, EffectDetails: UnitEnum.EffectDetails, EffectAttributes: UnitEnum.BaseAttributes?, EffectStates: UnitEnum.BaseStates)
-    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    local UnitValues : UnitEnum.UnitValues = AllValues[Unit]
+    
     if not UnitValues then return end
     if not UnitValues.Folder then return end
-    if UnitValues.Folder.Parent == nil then return end
+    if not UnitValues.Folder.Parent then return end
 
     local SpawnTime = os.clock()
 
+    local MaxStacks = EffectDetails.MaxStacks or 1
     local MaxStacksReached, CopyEffectFound = false, false
+
     if #UnitValues.Effects > 0 then
         local FoundEffects = {}
-        for Num, Effect in ipairs(UnitValues.Effects) do
+        for _, Effect in ipairs(UnitValues.Effects) do
             if Effect.Name ~= EffectDetails.Name then continue end
             CopyEffectFound = true
+
             table.insert(FoundEffects, Effect)
         end
-
-        if #FoundEffects >= EffectDetails.MaxStacks or 1 then
+        
+        if #FoundEffects >= MaxStacks then
             MaxStacksReached = true
 
             local Difference = #FoundEffects - EffectDetails.MaxStacks
@@ -289,7 +293,7 @@ function UnitValuesService:AddEffect(Unit: Player | Model, EffectDetails: UnitEn
 end
 
 function UnitValuesService:SetTimeOfExistingEffects(Unit: Player | Model, EffectName: string, NewDuration: number, NewSpawnTime: number?)
-    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    local UnitValues : UnitEnum.UnitValues = AllValues[Unit]
     if not UnitValues then return end
 
     for _, Effect : UnitEnum.Effect in ipairs(UnitValues.Effects) do
@@ -301,7 +305,7 @@ function UnitValuesService:SetTimeOfExistingEffects(Unit: Player | Model, Effect
 end
 
 function UnitValuesService:CleanThisEffect(Unit: Player | Model, ThisEffect: UnitEnum.Effect)
-    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    local UnitValues : UnitEnum.UnitValues = AllValues[Unit]
     if not UnitValues then return end
 
     for Num, Effect in ipairs(UnitValues.Effects) do
@@ -318,7 +322,7 @@ function UnitValuesService:CleanThisEffect(Unit: Player | Model, ThisEffect: Uni
 end
 
 function UnitValuesService:CleanAllEffectsWithNames(Unit: Player | Model, EffectName: string)
-    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    local UnitValues : UnitEnum.UnitValues = AllValues[Unit]
     if not UnitValues then return end
 
     pcall(function()
@@ -348,7 +352,7 @@ function UnitValuesService:CleanAllEffectsWithNames(Unit: Player | Model, Effect
 end
 
 function UnitValuesService:CleanAllEffects(Unit: Player | Model, Only: string?)
-    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    local UnitValues : UnitEnum.UnitValues = AllValues[Unit]
     if not UnitValues then return end
 
     pcall(function()
@@ -379,7 +383,7 @@ function UnitValuesService:CleanAllEffects(Unit: Player | Model, Only: string?)
 end
 
 function UnitValuesService:RecalculateAttributes(Unit: Player | Model, NewBaseAttributes: {}?)
-    local UnitValues = States[Unit] :: UnitEnum.UnitValues
+    local UnitValues = AllValues[Unit] :: UnitEnum.UnitValues
     if not UnitValues then return end
 
     local OriginalMaxHealth = UnitValues.Base.Health + UnitValues.Offsets.Health
@@ -445,16 +449,16 @@ function UnitValuesService:RecalculateAttributes(Unit: Player | Model, NewBaseAt
         for State, Value in Effect.States :: any do
             if typeof(Value) == "boolean" then
                 if Value then
-                    States[State] = true
+                    AllValues[State] = true
                 end
             
             elseif typeof(Value) == "table" then
                 if Value.Active then
-                    States[State].Active = true
+                    AllValues[State].Active = true
                     if State == "Taunt" then
-                        States[State].Goal = Value.Goal
+                        AllValues[State].Goal = Value.Goal
                     elseif State == "Panic" then
-                        States[State].From = Value.From
+                        AllValues[State].From = Value.From
                     end
                 end
             end
@@ -467,7 +471,6 @@ function UnitValuesService:RecalculateAttributes(Unit: Player | Model, NewBaseAt
 
     if UnitValues.Folder then
         for Stat, Value in UnitValues.Base do
-            print(Stat, Value)
             local Limit = UnitEnum.BaseAttributeLimits[Stat]
             if Limit then
                 --print(Stat, " limit is ", Limit)
@@ -509,7 +512,7 @@ function UnitValuesService:RecalculateAttributes(Unit: Player | Model, NewBaseAt
 end
 
 function UnitValuesService:AddHistoryEntry(Unit: Player | Model, Entry: UnitEnum.HistoryEntry)
-    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    local UnitValues : UnitEnum.UnitValues = AllValues[Unit]
     if not UnitValues then return end
     if not UnitValues.History then return end
 
@@ -536,22 +539,40 @@ function UnitValuesService:AddHistoryEntry(Unit: Player | Model, Entry: UnitEnum
 end
 
 function UnitValuesService:CleanHistroy(Unit: Player | Model)
-    local UnitValues : UnitEnum.UnitValues = States[Unit]
+    local UnitValues : UnitEnum.UnitValues = AllValues[Unit]
     if not UnitValues then return end
     if not UnitValues.History then return end
 
     table.clear(UnitValues.History)
 end
 
-function UnitValuesService:Get(Unit: Player | Model | string) : UnitEnum.UnitValues?
-    local UnitValues : UnitEnum.UnitValues = States[Unit]
+-- Returns the entire values table of a unit.
+function UnitValuesService:GetFull(Unit: Player | Model | string) : UnitEnum.UnitValues?
+    local UnitValues : UnitEnum.UnitValues = AllValues[Unit]
     if not UnitValues then return end
 
-    return UnitValues 
+    return UnitValues
+end
+
+function UnitValuesService:GetAttributes(Unit: Player | Model | string) : UnitEnum.BaseAttributes?
+    local UnitValues : UnitEnum.UnitValues = AllValues[Unit]
+    if not UnitValues then return end
+
+    local TotalAttributes: UnitEnum.BaseAttributes = {}
+
+    for Key, Value in UnitValues.Base do
+        print("Base -", Key, " =", Value)
+        print("Offset -", Key, " =", UnitValues.Offsets[Key])
+        TotalAttributes[Key] = Value + UnitValues.Offsets[Key]
+    end
+
+    print("Total : ", TotalAttributes)
+
+    return TotalAttributes
 end
 
 function UnitValuesService:New(Unit: Player | Model, BaseAttributes: {}?)
-    if States[Unit] then
+    if AllValues[Unit] then
         warn("Attribute Values for ", Unit.Name, " already exists.")
         return
     end
@@ -616,14 +637,14 @@ function UnitValuesService:New(Unit: Player | Model, BaseAttributes: {}?)
         NewAttributes.Folder = CreateStateFolder(NewAttributes, Unit)
     end
 
-    States[Unit] = NewAttributes
+    AllValues[Unit] = NewAttributes
 
     --print(Unit.Name, " States: ", NewAttributes)
 end
 
 function UnitValuesService:Remove(Unit: Player | Model)
-    if not States[Unit] then return end
-    States[Unit] = nil
+    if not AllValues[Unit] then return end
+    AllValues[Unit] = nil
 end
 
 function UnitValuesService:Init()
@@ -631,10 +652,10 @@ function UnitValuesService:Init()
 
     Remotes:CreateToServer("SetHidden", {"boolean"}, "Reliable", function(Player: Player, Set: boolean)
         if not Player then return end
-        if not States[Player] then return end
-        if not States[Player].Folder then return end
-        if not States[Player].Folder:FindFirstChild("Current") then return end
-        States[Player].Folder.Current.Hidden.Value = Set
+        if not AllValues[Player] then return end
+        if not AllValues[Player].Folder then return end
+        if not AllValues[Player].Folder:FindFirstChild("Current") then return end
+        AllValues[Player].Folder.Current.Hidden.Value = Set
     end)
 end
 
