@@ -14,6 +14,8 @@ local NPC = require(ServerScriptService.Source.ServerModules.Classes.NPC)
 local NPCInfo = require(ServerScriptService.Source.ServerModules.Info.NPCInfo).TestBot
 local NPCService = require(ServerScriptService.Source.ServerModules.General.NPCService)
 
+local UnitManagerService = require(ServerScriptService.Source.ServerModules.General.UnitManagerService)
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local SHOT_STEPS = 10
@@ -39,7 +41,8 @@ local function AnimKeyframes(NPC: NPC.NPC, AnimName: string, Keyframe: string)
         
         if Distance > AttackInfo.DamageRange then return end
 
-        NPC.Target.Human:TakeDamage(RNG:NextNumber(AttackInfo.Damage.Min, AttackInfo.Damage.Max))
+        UnitManagerService:ApplyDamage(NPC, NPC.Target.Player or NPC.Target.Model, RNG:NextNumber(AttackInfo.Damage.Min, AttackInfo.Damage.Max), "Basic Swipe")
+        --NPC.Target.Human:TakeDamage(RNG:NextNumber(AttackInfo.Damage.Min, AttackInfo.Damage.Max))
 
     elseif Keyframe == "Shoot" then
         local Shot = Instance.new("Part")

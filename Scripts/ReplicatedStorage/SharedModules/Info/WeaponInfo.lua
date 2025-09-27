@@ -8,7 +8,9 @@ local WeaponEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnu
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local WeaponInfo: {[string]: WeaponEnum.Weapon} = {}
+local WeaponInfo: {
+    [string]: WeaponEnum.Weapon
+} = {}
 
 WeaponInfo.BasicSword = {
     UnlockedBy = "Default",
@@ -27,7 +29,7 @@ WeaponInfo.BasicSword = {
         ComboAmount = 3,
     },
 
-    Damage = NumberRange.new(10, 12),
+    Damage = NumberRange.new(1, 2),
 
     Abilities = {
         Innate = {
@@ -37,17 +39,21 @@ WeaponInfo.BasicSword = {
             FlavorText = "",
             Icon = "",
 
+            Type = "Active",
             Damage = NumberRange.new(45, 50),
+            Cooldown = 3,
         },
 
-        Grand = {
+        Awakened = {
             Name = "SuperJizz",
             DisplayName = "Super Jizz",
             Description = "",
             FlavorText = "",
             Icon = 0,
 
+            Type = "Passive",
             Damage = NumberRange.new(45, 50),
+            Cooldown = 10,
         }
     },
 
@@ -65,11 +71,14 @@ WeaponInfo.BasicSword = {
             ["Swing_1_B"] = {ID = 15502661852, Priority = Enum.AnimationPriority.Action}, -- Looping combo
             ["Swing_2"] = {ID = 15502658851, Priority = Enum.AnimationPriority.Action},
             ["Swing_3"] = {ID = 15502660636, Priority = Enum.AnimationPriority.Action},
+            ["Innate"] = {ID = 117985989016321, Priority = Enum.AnimationPriority.Action2},
         }
     },
 
     ModelAnimations = {
-
+        Using = {
+            ["Innate"] = {ID = 130472834160922, Priority = Enum.AnimationPriority.Action}
+        }
     },
 
     Skins = {

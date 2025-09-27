@@ -18,6 +18,20 @@ RelicInfo.Chungus = {
     Attributes = {
         Health = 25,
         Mana = 10,
+    },
+
+    Ability = {
+        Name = "Test Passive",
+        DisplayName = "Test Passive Display",
+        Description = "Test Passive Description",
+        FlavorText = "Test Passive Flavor Test",
+        Icon = 0,
+
+        Type = "Passive",
+        Damage = NumberRange.new(0, 0),
+        Cooldown = 3,
+
+        Details = {},
     }
 }
 
@@ -29,7 +43,21 @@ RelicInfo.Dingus = {
     Icon = 0,
     
     Attributes = {
-        Damage = 10
+        Damage = 0
+    },
+
+    Ability = {
+        Name = "Test Active",
+        DisplayName = "Test Active Display",
+        Description = "Test Active Description",
+        FlavorText = "Test Active Flavor Text",
+        Icon = 0,
+
+        Type = "Active",
+        Damage = NumberRange.new(10, 10),
+        Cooldown = 5,
+
+        Details = {},
     }
 }
 

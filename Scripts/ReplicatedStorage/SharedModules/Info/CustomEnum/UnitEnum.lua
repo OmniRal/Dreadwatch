@@ -5,6 +5,7 @@ local UnitEnum = {}
 UnitEnum.BaseAttributeLimits = {
     Health = NumberRange.new(0, math.huge),
     Mana = NumberRange.new(0, math.huge),
+    CooldownReduction = NumberRange.new(0, 75),
 }
 
 export type UnitValues = {
@@ -30,6 +31,8 @@ export type BaseAttributes = {
     CritPercent: number?,
     CritChance: number?,
     Damage: number?,
+
+    CooldownReduction: number?
 }
 
 export type BaseStates = {

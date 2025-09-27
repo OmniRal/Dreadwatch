@@ -51,6 +51,7 @@ local ProfileTemplate = {
 
     CurrentWeapon = "BasicSword",
     CurrentWeaponSkin = "Default",
+    CurrentWeaponAbility = "Innate",
 
     CurrentRelics = {
         [1] = "Chungus",
@@ -67,7 +68,7 @@ local ProfileTemplate = {
     },
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_10', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_13', ProfileTemplate)
 
 local Profiles = {}
 
@@ -163,6 +164,14 @@ function DataService:SetIndex(Player: Player, Index: string | {}, Value: string?
     end
 
     Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
+end
+
+-- Returns the players current weapon, its skin and the ability (innate or awakened) equipped
+function DataService:GetPlayerCurrentWeapons(Player: Player): (string, string, string)
+    self:WaitForPlayerDataLoaded(Player)
+
+    local PlayerData = Profiles[Player].Data
+    return PlayerData.CurrentWeapon, PlayerData.CurrentWeaponSkin, PlayerData.CurrentWeaponAbility
 end
 
 -- Returns an array of the players relics

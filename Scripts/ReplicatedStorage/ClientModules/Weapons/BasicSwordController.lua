@@ -74,6 +74,8 @@ local function AnimKeyframes(Keyframe: string, AnimName: string, Params: {}?)
         AttackActive = false
         BasicSwordController.CanContinueCombo = false
 
+    elseif Keyframe == "Shoot" then
+        warn("Jizzed Locally!")
     end 
 end
 
@@ -81,7 +83,7 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function BasicSwordController:Use(DeltaTime: number, FirstOrThirdPerson: boolean?, ComboID: string?): string?
+function BasicSwordController:Use(DeltaTime: number, ComboID: string?): string?
     if not ComboID then return end
 
     Using = true
@@ -89,6 +91,25 @@ function BasicSwordController:Use(DeltaTime: number, FirstOrThirdPerson: boolean
     AnimationController:PlayNew(LocalPlayer.Character, "BasicSwordUsingAnimations", "Swing_" .. ComboID, true, 1, AnimKeyframes)
 
     return
+end
+
+function BasicSwordController:UseAbility(AbilityName: "Innate" | "Awakened"): number?
+    warn(3)
+    local Result: number = BasicSwordService:UseAbility(if AbilityName == "Innate" then 1 else 2)
+    
+    if AbilityName == "Innate" then
+        -- Inate
+        warn(4)
+        if Result == 1 then
+            AnimationController:PlayNew(LocalPlayer.Character, "BasicSwordUsingAnimations", "Innate", true, 1, AnimKeyframes)
+        end
+
+    elseif AbilityName == "Awakened" then
+        -- Awakened
+
+    end
+
+    return Result
 end
 
 function BasicSwordController:StopUse(ForceStop: boolean?)
@@ -119,7 +140,7 @@ function BasicSwordController:RunHeartbeat(DeltaTime: number)
         if Human.Health <= 0 then continue end
 
         local Distance = (PlayerInfo.Root.Position - Root.Position).Magnitude
-        if Distance > 7 then continue end
+        if Distance > 15 then continue end
 
         table.insert(SwingHitList, Unit)
         table.insert(NewHits, Unit)

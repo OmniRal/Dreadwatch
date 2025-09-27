@@ -70,18 +70,18 @@ local function CheckComboChain(Module: ModuleScript, Info: WeaponEnum.Weapon): s
     end
 end
 
+-- To use the standard attack of the weapon
 local function UseWeapon(Action: string, InputState: Enum.UserInputState, InputObject: InputObject?)
-    if Action == "Use" .. PlayerInfo.CurrentWeapon then
-       local Module = PlayerInfo.WeaponModule
-       local Info : WeaponInfo.Weapon = WeaponInfo[PlayerInfo.CurrentWeapon]
-       if not Module or not Info then return end
+    local Module = PlayerInfo.WeaponModule
+    local Info : WeaponInfo.Weapon = WeaponInfo[PlayerInfo.CurrentWeapon]
+    if not Module or not Info then return end
 
+    if Action == "Use" .. PlayerInfo.CurrentWeapon then
        if InputState == Enum.UserInputState.Begin then
             if Info.UseType == "Single"  then
                 -- Single use weapons such as swords that combo each time you press the attack button.
-
                 local ComboID = CheckComboChain(Module, Info)
-                local Result = Module:Use(nil, nil, ComboID)
+                local Result = Module:Use(nil, ComboID)
 
                 --[[if Result == "OutOfClips" then
                     GameplayUIController:PlayAmmoAnim("Clips", "ClipsEmpty")
@@ -105,6 +105,11 @@ local function UseWeapon(Action: string, InputState: Enum.UserInputState, InputO
                UseControlState = "None"
                Module:StopUse()
             end
+        end
+
+    elseif Action == "UseAbility" .. PlayerInfo.CurrentWeapon then
+        if InputState == Enum.UserInputState.Begin then
+            local Result = Module:UseAbility(PlayerInfo.Data.CurrentWeaponAbility)
         end
     end
 end
@@ -149,6 +154,16 @@ function WeaponController:ToggleWeaponControls(Toggle: boolean, Weapon: string)
         PlayerInfo.WeaponModel = LocalPlayer.Character:FindFirstChild("Weapon", 3)
 
         ContextActionService:BindAction("Use" .. Weapon, UseWeapon, false, Enum.UserInputType.MouseButton1, Enum.KeyCode.ButtonR2)
+
+        if Info.Abilities then
+            local CurrentAbility = PlayerInfo.Data.CurrentWeaponAbility
+            if Info.Abilities[CurrentAbility] then
+                if Info.Abilities[CurrentAbility].Type == "Active" then
+                    ContextActionService:BindAction("UseAbility" .. Weapon, UseWeapon, false, Enum.KeyCode.E, Enum.KeyCode.ButtonL2)
+                end
+            end
+        end
+
         if Info.Reload then
             ContextActionService:BindAction("Reload" .. Weapon, ReloadWeapon, false, Enum.KeyCode.R, Enum.KeyCode.ButtonX)
         end
@@ -160,6 +175,7 @@ function WeaponController:ToggleWeaponControls(Toggle: boolean, Weapon: string)
         
         PlayerInfo.WeaponModule:Unload()
         ContextActionService:UnbindAction("Use" .. Weapon)
+        ContextActionService:UnbindAction("Reload" .. Weapon)
         
         PlayerInfo.WeaponModule = nil
         PlayerInfo.CurrentWeapon = "None"

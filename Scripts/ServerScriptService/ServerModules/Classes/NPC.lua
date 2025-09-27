@@ -114,6 +114,7 @@ export type NPC = {
         LastTimeSeen: number,
         LastPositionSeen: Vector3,
 
+        Player: Player?,
         Model: Model,
         Human: Humanoid,
         Root: BasePart,
@@ -587,6 +588,7 @@ function NPC:SetState(NewState: NPCStates, Details: {any}, Force: boolean?)
         self.Human.WalkSpeed = self.Info.BaseStats.RunSpeed
 
         if Details then
+            self.Target.Player = Players:FindFirstChild(Details.Target.Name) or nil
             self.Target.Model = Details.Target
             self.Target.Human = Details.Target.Humanoid
             self.Target.Root = Details.Target.HumanoidRootPart
@@ -819,6 +821,8 @@ function NPC:ClearTarget(Lock: boolean?, SetIdle: boolean?, AddTime: number?)
 
     self.Target.Locked = Lock or false
     self.Target.Active = false
+    self.Target.Player = nil
+    self.Target.Player = nil
     self.Target.Model = nil
     self.Target.Human = nil
     self.Target.Root = nil
@@ -966,6 +970,7 @@ function NPC:Move()
                     if self.Target.Locked then
                         self.Target.Locked = false
                         self.Target.Active = false
+                        self.Target.Player = nil
                         self.Target.Model = nil
                     end
                     self:SetState("Idling") 

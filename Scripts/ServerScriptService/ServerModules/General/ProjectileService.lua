@@ -79,9 +79,13 @@ function ProjectileService:New(Owner: Player | Model, Start: Vector3, Goal: Vect
             NewShot.CFrame = CFrame.new(Start, Start + OffsetDirection)
 
         else
-            -- To be used by players
-            local OffsetDirection = GetSpreadDirection(Start, Goal, Spread, CameraCF)
-            NewShot.CFrame = CFrame.new(Start, Start + OffsetDirection)
+            if math.abs(CameraCF.Position.Magnitude) <= 0.1 then
+                NewShot.CFrame = CFrame.new(Start, Goal)
+            else
+                -- To be used by players
+                local OffsetDirection = GetSpreadDirection(Start, Goal, Spread, CameraCF)
+                NewShot.CFrame = CFrame.new(Start, Start + OffsetDirection)
+            end
         end
 
         NewShot.Parent = Workspace.Projectiles

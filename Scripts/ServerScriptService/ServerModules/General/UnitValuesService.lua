@@ -38,6 +38,7 @@ local BaseAttributes : UnitEnum.BaseAttributes = {
     CritChance = 0,
     CritPercent = 0,
     Damage = 0,
+    CooldownReduction = 0,
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -165,9 +166,8 @@ function CreateStateFolder(UnitValues: UnitEnum.UnitValues, Unit: Model)
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-----------------
--- Public API --
-----------------
+-- Public API
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function UnitValuesService:AddEffect(Unit: Player | Model, EffectDetails: UnitEnum.EffectDetails, EffectAttributes: UnitEnum.BaseAttributes?, EffectStates: UnitEnum.BaseStates)
     local UnitValues : UnitEnum.UnitValues = AllValues[Unit]
@@ -244,6 +244,7 @@ function UnitValuesService:AddEffect(Unit: Player | Model, EffectDetails: UnitEn
             CritChance = EffectAttributes.CritChance or 0,
             CritPercent = EffectAttributes.CritPercent or 0,
             Damage = EffectAttributes.Damage or 0,
+            CooldownReduction = EffectAttributes.CooldownReduction or 0,
         },
 
         States = {
@@ -414,6 +415,7 @@ function UnitValuesService:RecalculateAttributes(Unit: Player | Model, NewBaseAt
         CritPercent = 0,
         CritChance = 0,
         Damage = 0,
+        CooldownReduction = 0,
     }
 
     --local PercentOffsets : UnitEnum.BaseAttributes
@@ -438,6 +440,7 @@ function UnitValuesService:RecalculateAttributes(Unit: Player | Model, NewBaseAt
     for _, Effect : UnitEnum.Effect in UnitValues.Effects do
         if not Effect then continue end
         for Stat, Change in Effect.Offsets :: any do
+            print(Stat, Change)
             Offsets[Stat] += Change
             --[[if typeof(Change) == "number" then
                 Offsets[Name] += Change
@@ -546,7 +549,7 @@ function UnitValuesService:CleanHistroy(Unit: Player | Model)
     table.clear(UnitValues.History)
 end
 
--- Returns the entire values table of a unit.
+-- Returns the entire values table of a unit; attributes, states, effects, etc.
 function UnitValuesService:GetFull(Unit: Player | Model | string) : UnitEnum.UnitValues?
     local UnitValues : UnitEnum.UnitValues = AllValues[Unit]
     if not UnitValues then return end
@@ -554,21 +557,23 @@ function UnitValuesService:GetFull(Unit: Player | Model | string) : UnitEnum.Uni
     return UnitValues
 end
 
-function UnitValuesService:GetAttributes(Unit: Player | Model | string) : UnitEnum.BaseAttributes?
+-- Returns either the whole list of the players current attributes
+-- @SingleAttribute = If you only want to know a single attribute
+function UnitValuesService:GetAttributes(Unit: Player | Model | string, SinlgeAttribute: string?) : UnitEnum.BaseAttributes | number?
     local UnitValues : UnitEnum.UnitValues = AllValues[Unit]
     if not UnitValues then return end
 
     local TotalAttributes: UnitEnum.BaseAttributes = {}
 
     for Key, Value in UnitValues.Base do
-        print("Base -", Key, " =", Value)
-        print("Offset -", Key, " =", UnitValues.Offsets[Key])
-        TotalAttributes[Key] = Value + UnitValues.Offsets[Key]
+        TotalAttributes[Key] = Value + UnitValues.Offsets[Key] -- Adds their base attribute value with the offset amount to get a true current total
     end
 
-    print("Total : ", TotalAttributes)
-
-    return TotalAttributes
+    if not TotalAttributes[SinlgeAttribute] then
+        return TotalAttributes
+    else
+        return TotalAttributes[SinlgeAttribute]
+    end
 end
 
 function UnitValuesService:New(Unit: Player | Model, BaseAttributes: {}?)
@@ -588,6 +593,7 @@ function UnitValuesService:New(Unit: Player | Model, BaseAttributes: {}?)
         CritChance = 0,
         CritPercent = 0,
         Damage = 0,
+        CooldownReduction = 0,
     }
     
     if BaseAttributes then
@@ -611,6 +617,7 @@ function UnitValuesService:New(Unit: Player | Model, BaseAttributes: {}?)
             CritChance = 0,
             CritPercent = 0,
             Damage = 0,
+            CooldownReduction = 0,
         },
 
         States = {

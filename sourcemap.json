@@ -2624,6 +2624,380 @@
 							"className": "Folder",
 							"children": [
 								{
+									"name": "BasicSword",
+									"className": "Folder",
+									"children": [
+										{
+											"name": "Default",
+											"className": "Model",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Grip",
+													"className": "MeshPart",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Blade",
+													"className": "MeshPart",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Gems",
+													"className": "MeshPart",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Bronze",
+													"className": "MeshPart",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Handle",
+													"className": "Part",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Blade",
+															"className": "Weld",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Gems",
+															"className": "Weld",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Bronze",
+															"className": "Weld",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "GemsGlow",
+															"className": "Weld",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "BladeGlow",
+															"className": "Weld",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Grip",
+															"className": "Motor6D",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "DefaultC1",
+																	"className": "CFrameValue",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														}
+													]
+												},
+												{
+													"name": "GemsGlow",
+													"className": "MeshPart",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "BladeGlow",
+													"className": "MeshPart",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "xSIXxAnimationSaves",
+													"className": "Folder",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Dreadwatch_BasicSword_Innate_Weapon",
+															"className": "Folder",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "_root",
+																	"className": "Folder",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "Handle.Grip",
+																			"className": "Folder",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "1",
+																					"className": "Folder",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "cf",
+																							"className": "CFrameValue",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "weight",
+																							"className": "NumberValue",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "easeDir",
+																							"className": "StringValue",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "frmPos",
+																							"className": "IntValue",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "easeSty",
+																							"className": "StringValue",
+																							"filePaths": [],
+																							"children": []
+																						}
+																					]
+																				},
+																				{
+																					"name": "2",
+																					"className": "Folder",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "cf",
+																							"className": "CFrameValue",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "weight",
+																							"className": "NumberValue",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "easeDir",
+																							"className": "StringValue",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "frmPos",
+																							"className": "IntValue",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "easeSty",
+																							"className": "StringValue",
+																							"filePaths": [],
+																							"children": []
+																						}
+																					]
+																				}
+																			]
+																		}
+																	]
+																},
+																{
+																	"name": "modelOrder",
+																	"className": "Folder",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "1",
+																			"className": "StringValue",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
+																},
+																{
+																	"name": "info",
+																	"className": "Folder",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "looped",
+																			"className": "BoolValue",
+																			"filePaths": [],
+																			"children": []
+																		},
+																		{
+																			"name": "hidden",
+																			"className": "Folder",
+																			"filePaths": [],
+																			"children": []
+																		},
+																		{
+																			"name": "fps",
+																			"className": "IntValue",
+																			"filePaths": [],
+																			"children": []
+																		},
+																		{
+																			"name": "camSettings",
+																			"className": "Folder",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "aniCameraRef",
+																					"className": "StringValue",
+																					"filePaths": [],
+																					"children": []
+																				}
+																			]
+																		},
+																		{
+																			"name": "name",
+																			"className": "StringValue",
+																			"filePaths": [],
+																			"children": []
+																		},
+																		{
+																			"name": "fastMode",
+																			"className": "BoolValue",
+																			"filePaths": [],
+																			"children": []
+																		},
+																		{
+																			"name": "priority",
+																			"className": "StringValue",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "enTy",
+																					"className": "StringValue",
+																					"filePaths": [],
+																					"children": []
+																				}
+																			]
+																		},
+																		{
+																			"name": "length",
+																			"className": "NumberValue",
+																			"filePaths": [],
+																			"children": []
+																		},
+																		{
+																			"name": "lockedJoints",
+																			"className": "Folder",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
+																},
+																{
+																	"name": "labels",
+																	"className": "Folder",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "1",
+																			"className": "Folder",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "color",
+																					"className": "NumberValue",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "frmPos",
+																					"className": "IntValue",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "name",
+																					"className": "StringValue",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "code",
+																					"className": "StringValue",
+																					"filePaths": [],
+																					"children": []
+																				}
+																			]
+																		},
+																		{
+																			"name": "2",
+																			"className": "Folder",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "color",
+																					"className": "NumberValue",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "frmPos",
+																					"className": "IntValue",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "name",
+																					"className": "StringValue",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "code",
+																					"className": "StringValue",
+																					"filePaths": [],
+																					"children": []
+																				}
+																			]
+																		}
+																	]
+																}
+															]
+														}
+													]
+												},
+												{
+													"name": "AnimationController",
+													"className": "AnimationController",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Animator",
+															"className": "Animator",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/Weapons/BasicSword.rbxm"
+									]
+								},
+								{
 									"name": "Brighton",
 									"className": "Folder",
 									"children": [
@@ -3824,6 +4198,14 @@
 									"className": "Folder",
 									"children": [
 										{
+											"name": "AbilityService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/AbilityService.lua"
+											]
+										},
+										{
 											"name": "CameraService",
 											"className": "ModuleScript",
 											"children": [],
@@ -4089,6 +4471,23 @@
 									],
 									"filePaths": [
 										"Scripts/ServerScriptService/ServerModules/Weapons"
+									]
+								},
+								{
+									"name": "Relics",
+									"className": "Folder",
+									"children": [
+										{
+											"name": "ChungusService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Relics/ChungusService.lua"
+											]
+										}
+									],
+									"filePaths": [
+										"Scripts/ServerScriptService/ServerModules/Relics"
 									]
 								}
 							],
@@ -7360,6 +7759,21 @@
 							"className": "Folder",
 							"children": [
 								{
+									"name": "BasicSword",
+									"className": "Folder",
+									"children": [
+										{
+											"name": "Ball",
+											"className": "Part",
+											"filePaths": [],
+											"children": []
+										}
+									],
+									"filePaths": [
+										"Assets/Server/WeaponStuff/BasicSword.rbxm"
+									]
+								},
+								{
 									"name": "Brighton",
 									"className": "Folder",
 									"children": [
@@ -7977,6 +8391,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/StarterPlayerScripts/General/WeaponController.lua"
+											]
+										},
+										{
+											"name": "RelicController",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/StarterPlayerScripts/General/RelicController.lua"
 											]
 										}
 									],

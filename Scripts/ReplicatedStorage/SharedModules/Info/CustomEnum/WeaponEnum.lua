@@ -35,8 +35,8 @@ export type Weapon = {
 
     Abilities: {
         Innate: CustomEnum.Ability,
-        Grand: CustomEnum.Ability,
-    },
+        Awakened: CustomEnum.Ability?,
+    }?,
 
     BaseAnimations: {
         ["idle"]: number?,

@@ -13,85 +13,73 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local WeaponInfo = require(ReplicatedStorage.Source.SharedModules.Info.WeaponInfo).BasicSword
+
 local ModService = require(ServerScriptService.Source.ServerModules.General.ModService)
 local WeaponService = require(ServerScriptService.Source.ServerModules.General.WeaponService)
+local AbilityService = require(ServerScriptService.Source.ServerModules.General.AbilityService)
+local UnitValuesService = require(ServerScriptService.Source.ServerModules.General.UnitValuesService)
 local UnitManagerService = require(ServerScriptService.Source.ServerModules.General.UnitManagerService)
+local ProjectileService = require(ServerScriptService.Source.ServerModules.General.ProjectileService)
 local SoundControlService = require(ReplicatedStorage.Source.SharedModules.Other.SoundControlService)
 
-local WeaponInfo = require(ReplicatedStorage.Source.SharedModules.Info.WeaponInfo).BasicSword
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local FIRE_DISTANCE = 200
-local FIRE_SPEED = 300
+local FIRE_DISTANCE = 50
+local FIRE_SPEED = 50
 local FIRE_SPREAD = 1
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local Assets = ServerStorage.Assets.WeaponStuff.Brighton
+local PlayerWeaponValues: {
+    [Player]: {
+        ShootStart: Vector3,
+        ShootGoal: Vector3,
+        ConsecutiveHits: number,
+    }
+} = {}
 
+local Assets = ServerStorage.Assets.WeaponStuff.BasicSword
 local RNG = Random.new()
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local function AnimKeyframes(Player: Player, WeaponModel: any, Keyframe: string, AnimName: string, Params: {HandMag: any})
+local function AnimKeyframes(Player: Player, WeaponModel: any, Keyframe: string, AnimName: string, Params: {})
     if Keyframe == "End" then
         return
 
-    elseif Keyframe == "GrabMag" then
-        SoundControlService:PlaySoundWithRNG(WeaponModel.Handle.GrabNewMag, 1.1, 1.15)
-    
-    elseif Keyframe == "PullMag" then
-        WeaponModel.MagBase.Transparency = 1
-        WeaponModel.MagEnd.Transparency = 1
-        Utility:ChangeModelTransparency(Params.HandMag, 0) 
-        SoundControlService:PlaySoundWithRNG(WeaponModel.Handle.PullOldMag, 1.25, 1.3)
+    elseif Keyframe == "Shoot" then
+        
+        ProjectileService:New(
+            Player, 
+            PlayerWeaponValues[Player].ShootStart, 
+            PlayerWeaponValues[Player].ShootGoal, 
+            0, 
+            {Assets.Ball}, 
+            CFrame.new(0, 0, 0),
+            FIRE_SPEED, 
+            FIRE_DISTANCE, 
+            1, 
+            true, 
+            function(Owner: Player | Model, Ball: BasePart, Hit: BasePart?) 
+                Debris:AddItem(Ball, 3)
+                Ball.Transparency = 1
 
-    elseif Keyframe == "ThrowMag" then
-        if Player.Character then
-            local Root = Player.Character:FindFirstChild("HumanoidRootPart")
-            if Root then
-                task.delay(0.1, function()
-                    local Copy = Params.HandMag:Clone()
-                    Copy.PrimaryPart.AssemblyLinearVelocity = (Root.CFrame * CFrame.new(0, -math.pi / 3, 0)).LookVector * -40 + Vector3.new(0, 10, 0)
-                    Copy.Parent = Workspace.Debris
-
-                    New.Clean(Copy, "MagWeld")
-                    for _, Part: BasePart in Copy:GetChildren() do
-                        Part.CanCollide = true
-                        Part.CollisionGroup = "Debris"
+                if Hit then
+                    local HitModel = Hit:FindFirstAncestorOfClass("Model")
+                    if HitModel then
+                        if HitModel:FindFirstChild("Humanoid") then
+                            local Damage = RNG:NextInteger(WeaponInfo.Damage.Min, WeaponInfo.Damage.Max)
+                            HitModel.Humanoid:TakeDamage(Damage)
+                        end
+                        --HealthService:ApplyDamage(Player, HitModel, 1, "Brighton", true)
                     end
-
-                    Utility:ChangeModelTransparency(Params.HandMag, 1)
-                end)
+                end
             end
-        end
-        SoundControlService:PlaySoundWithRNG(WeaponModel.Handle.ThrowOldMag, 2, 2.05)
-
-    elseif Keyframe == "CheckPocket" then
-        SoundControlService:PlaySoundWithRNG(WeaponModel.Handle.CheckPocket, 1.2, 1.25)
+        )
     
-    elseif Keyframe == "GotNewMag" then
-        if Params.HandMag then
-            Utility:ChangeModelTransparency(Params.HandMag, 0)
-        end
-        --SoundControlService:PlaySoundWithRNG(WeaponModel.Handle.GotNewMag, 1, 1.05)
-
-    elseif Keyframe == "NewMag" then
-        SoundControlService:PlaySoundWithRNG(WeaponModel.Handle.GotNewMag, 2, 2.05)
-
-    elseif Keyframe == "InsertMag" then
-        WeaponService:IncrementWeaponMags(Player, "Brighton", -1, WeaponInfo.MaxMags)
-        WeaponService:IncrementWeaponClips(Player, "Brighton", 30, WeaponInfo.MaxClips)
-        WeaponModel.Mags.Value += -1
-        WeaponModel.Clips.Value = WeaponInfo.MaxClips
-
-        WeaponModel.MagBase.Transparency = 0
-        WeaponModel.MagEnd.Transparency = 0
-        Utility:ChangeModelTransparency(Params.HandMag, 1)
-
-        SoundControlService:PlaySoundWithRNG(WeaponModel.Handle.InsertNewMag, 1.2, 1.25)
     end
 end
 
@@ -100,17 +88,50 @@ end
 function BasicSwordService:Use(Player: Player, SwingNum: number, HitList: {Model}): number?
     if not Player or not SwingNum or not HitList then return end
 
+    local DamageOffset = UnitValuesService:GetAttributes(Player, "Damage")
+
     for _, Unit in HitList do
         if not Unit then continue end
         ModService:RunThroughMods(
             Player,
             function()
-                UnitManagerService:ApplyDamage(Player, Unit, RNG:NextInteger(WeaponInfo.Damage.Min, WeaponInfo.Damage.Max), "BasicSword")
+                UnitManagerService:ApplyDamage(Player, Unit, RNG:NextInteger(WeaponInfo.Damage.Min, WeaponInfo.Damage.Max) + DamageOffset, "BasicSword")
             end,
             Unit.HumanoidRootPart.Position
         )
-        
+
+        PlayerWeaponValues[Player].ConsecutiveHits += 1
+        warn(PlayerWeaponValues[Player].ConsecutiveHits)
+        if PlayerWeaponValues[Player].ConsecutiveHits >= 4 then
+            warn("JIZZ")
+            PlayerWeaponValues[Player].ConsecutiveHits = 0
+            if BasicSwordService:UseAwakened(Player) == 1 then
+                Unit.HumanoidRootPart.AssemblyLinearVelocity += Vector3.new(0, 100, 0)
+            end
+        end
     end
+
+    return 1
+end
+
+function BasicSwordService:UseInnate(Player: Player): number
+    local Alive, _, Root, WeaponModel = Utility:CheckPlayerAlive(Player, {"Weapon"})
+    if not Alive or not WeaponModel then return -9 end -- Dead
+    if AbilityService:OnCooldown(Player, "BasicSword", "Innate") then return -9 end -- On cooldown
+
+    PlayerWeaponValues[Player].ShootStart = Root.Position
+    PlayerWeaponValues[Player].ShootGoal = (Root.CFrame * CFrame.new(0, 0, -50)).Position
+
+    AbilityService:SetCooldown(Player, "BasicSword", "Innate")
+    WeaponService:PlayAnimation(Player, WeaponModel, "Using", "Innate", true, 1, AnimKeyframes, {})
+
+    return 1
+end
+
+function BasicSwordService:UseAwakened(Player: Player)
+    if AbilityService:OnCooldown(Player, "BasicSword", "Awakened") then return -9 end -- On cooldown
+
+    AbilityService:SetCooldown(Player, "BasicSword", "Awakened")
 
     return 1
 end
@@ -127,8 +148,7 @@ function BasicSwordService:Load(Player: Player, WeaponModel: any, SkinName: stri
 
     local RightHand = Player.Character:FindFirstChild("RightHand")
     local LeftHand = Player.Character:FindFirstChild("LeftHand")
-    local MagSkin = Assets.Mags:FindFirstChild(SkinName)
-    if not RightHand or not LeftHand or not MagSkin then return end
+    if not RightHand or not LeftHand then return end
 
     WeaponModel.Handle.Anchored = false
     New.Instance("Weld", WeaponModel, "WeaponWeld", {
@@ -139,10 +159,13 @@ function BasicSwordService:Load(Player: Player, WeaponModel: any, SkinName: stri
 
     ---------------------------------------------------------------------------
 
-    for _, Sound in Assets.Sounds:GetChildren() do
+    --[[for _, Sound in Assets.Sounds:GetChildren() do
         if not Sound then continue end
         Sound:Clone().Parent = WeaponModel.Handle
-    end
+    end]]
+
+    WeaponService:LoadAnimations(WeaponModel, "Using", WeaponInfo.ModelAnimations.Using)
+
     ---------------------------------------------------------------------------
 
     return true
@@ -159,9 +182,31 @@ function BasicSwordService:Init()
         BasicSwordService:Use(Player, SwingNum, HitList)
     end)
 
-    Remotes:CreateToServer("StopUse", {}, "Returns", function(Player: Player)
+    Remotes:CreateToServer("StopUse", {}, "Reliable", function(Player: Player)
         BasicSwordService:StopUse(Player)
     end)
+
+    Remotes:CreateToServer("UseAbility", {"number"}, "Returns", function(Player: Player, AbilityNum: number)
+        if AbilityNum == 1 then
+            return BasicSwordService:UseInnate(Player)
+
+        else
+            return BasicSwordService:UseAwakened(Player)
+        end
+    end)
+end
+
+function BasicSwordService.PlayerAdded(Player: Player)
+    PlayerWeaponValues[Player] = {
+        ShootStart = Vector3.zero,
+        ShootGoal = Vector3.zero,
+        ConsecutiveHits = 0,
+    }
+end   
+    
+function BasicSwordService.PlayerRemoving(Player: Player)
+    if not PlayerWeaponValues[Player] then return end
+    PlayerWeaponValues[Player] = nil
 end
 
 return BasicSwordService

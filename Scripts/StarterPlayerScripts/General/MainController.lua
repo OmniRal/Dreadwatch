@@ -35,6 +35,7 @@ local MainUIController = require(StarterPlayer.StarterPlayerScripts.Source.Gener
 local AnimationController = require(StarterPlayer.StarterPlayerScripts.Source.General.AnimationController)
 local PlatformingController = require(StarterPlayer.StarterPlayerScripts.Source.General.PlatformingController)
 local WeaponController = require(StarterPlayer.StarterPlayerScripts.Source.General.WeaponController)
+local RelicController = require(StarterPlayer.StarterPlayerScripts.Source.General.RelicController)
 
 local SoundControlService = require(ReplicatedStorage.Source.SharedModules.Other.SoundControlService)
 

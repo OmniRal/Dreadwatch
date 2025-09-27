@@ -18,9 +18,11 @@ local Workspace = game:GetService("Workspace")
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
-local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
-local WeapnEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.WeaponEnum)
 local WeaponInfo = require(ReplicatedStorage.Source.SharedModules.Info.WeaponInfo)
+local WeapnEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.WeaponEnum)
+
+local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
+local AbilityService = require(ServerScriptService.Source.ServerModules.General.AbilityService)
 
 local WeaponModules = {}
 
@@ -280,10 +282,31 @@ function WeaponService:LoadWeapon(Player: Player, WeaponName: string, SkinName: 
     end
     if not Assets.Weapons[WeaponName][SkinName] then return end
 
+    
     --[[local PlayerData = DataService:GetProfileTable(Player)
     assert(PlayerData ~= nil, Player.Name .. " data does not exist to load weapon!")]]
-
+    
     WeaponService:UnloadWeapon(Player)
+
+    if Info.Abilities then
+        local _, _, AbilityEquipped = DataService:GetPlayerCurrentWeapons(Player)
+
+        local Innate: {}?, Awakened: {}?
+        if Info.Abilities.Innate then
+            Innate = {
+                Equipped = if AbilityEquipped == "Innate" then true else false,
+                BaseCooldown = Info.Abilities.Innate.Cooldown,
+            }
+        end
+        if Info.Abilities.Awakened then
+            Awakened = {
+                Equipped = if AbilityEquipped == "Awakened" then true else false,
+                BaseCooldown = Info.Abilities.Awakened.Cooldown,
+            }
+        end
+        
+        AbilityService:AddNew(Player, WeaponName, {["Innate"] = Innate, ["Awakened"] = Awakened})
+    end
 
     local NewWeapon = Assets.Weapons[WeaponName][SkinName]:Clone()
     NewWeapon.Name = "Weapon"

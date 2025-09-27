@@ -10,6 +10,7 @@ export type UnlockedBy = "Default" | "Coins" | "Robux" | "Other"
 
 export type AttackType = "Melee" | "Ranged"
 export type DamageType = "Physical" | "Magical" | "Pure"
+export type AbilityType = "Active" | "Passive"
 
 CustomEnum.RayType = {
     LineRaycast = "LineRaycast",
@@ -44,6 +45,7 @@ export type Ability = {
     FlavorText: string,
     Icon: number,
 
+    Type: AbilityType,
     Damage: NumberRange,
     Cooldown: number,
 
