@@ -47,6 +47,7 @@ local BaseAttributes : UnitEnum.BaseAttributes = {
 
 local AllValues = {}
 
+local Events = ServerStorage.Events
 local Assets = ServerStorage.Assets
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -440,7 +441,6 @@ function UnitValuesService:RecalculateAttributes(Unit: Player | Model, NewBaseAt
     for _, Effect : UnitEnum.Effect in UnitValues.Effects do
         if not Effect then continue end
         for Stat, Change in Effect.Offsets :: any do
-            print(Stat, Change)
             Offsets[Stat] += Change
             --[[if typeof(Change) == "number" then
                 Offsets[Name] += Change
@@ -539,6 +539,8 @@ function UnitValuesService:AddHistoryEntry(Unit: Player | Model, Entry: UnitEnum
             end)
         end)
     end
+
+    Events.Unit.NewHistoryEntry:Fire(Unit, Entry)
 end
 
 function UnitValuesService:CleanHistroy(Unit: Player | Model)

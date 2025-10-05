@@ -1,6 +1,6 @@
 -- OmniRal
 
-local ChungusService = {}
+local DingusService = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
@@ -9,27 +9,33 @@ local ChungusService = {}
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
-local TweenService = game:GetService("TweenService")
-local Workspace = game:GetService("Workspace")
+local ServerStorage = game:GetService("ServerStorage")
 local Debris = game:GetService("Debris")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local AbilityService = require(ServerScriptService.Source.ServerModules.General.AbilityService)
-local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
-
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
-local UnitEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.UnitEnum)
+local RelicInfo = require(ReplicatedStorage.Source.SharedModules.Info.RelicInfo).Dingus
+
+local AbilityService = require(ServerScriptService.Source.ServerModules.General.AbilityService)
+local ProjectileService = require(ServerScriptService.Source.ServerModules.General.ProjectileService)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local FIRE_DISTANCE = 50
+local FIRE_SPEED = 50
+local FIRE_SPREAD = 1
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local Assets = ServerStorage.Assets.RelicStuff.Dingus
+local RNG = Random.new()
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
@@ -39,42 +45,48 @@ local UnitEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function ChungusService:UsePassive(Player: Player, Entry: UnitEnum.HistoryEntry): number?
-    if not Player or not Entry then return end
-    if Entry.Type ~= "DamageDealt" then return end
-    local Alive, _, Root = Utility:CheckPlayerAlive(Player)
-    if not Alive or not Root then return end
+function DingusService:UseActive(Player: Player, ShootStart: Vector3, ShootGoal: Vector3): number
+    if AbilityService:OnCooldown(Player, "Dingus", "Active") then return CustomEnum.ReturnCodes.OnCooldown end
 
-    if AbilityService:OnCooldown(Player, "Chungus", "Passive") then return CustomEnum.ReturnCodes.OnCooldown end
+    AbilityService:SetCooldown(Player, "Dingus", "Active")
 
-    AbilityService:SetCooldown(Player, "Chungus", "Passive")
-
-    local Ball = Instance.new("Part")
-    Ball.Name = "PassiveBall"
-    Ball.Anchored = true
-    Ball.CanCollide = false
-    Ball.CanQuery = false
-    Ball.CanTouch = false
-    Ball.Locked = true
-    Ball.Material = Enum.Material.Neon
-    Ball.Color = Color3.fromRGB(255, 50, 50)
-    Ball.Size = Vector3.new(3, 3, 3)
-    Ball.Shape = Enum.PartType.Ball
-    Ball.CFrame = Root.CFrame
-    Ball.Parent = Workspace
-
-    TweenService:Create(Ball, TweenInfo.new(1), {Size = Vector3.new(15, 15, 15), Transparency = 1}):Play()
-    Debris:AddItem(Ball, 1.1)
+    ProjectileService:New(
+        Player, 
+        ShootStart, 
+        ShootGoal, 
+        0, 
+        {Assets.Ball}, 
+        CFrame.new(0, 0, 0),
+        FIRE_SPEED, 
+        FIRE_DISTANCE, 
+        1, 
+        true, 
+        function(Owner: Player | Model, Ball: BasePart, Hit: BasePart?) 
+            Debris:AddItem(Ball, 3)
+            Ball.Transparency = 1
+            
+            if Hit then
+                local HitModel = Hit:FindFirstAncestorOfClass("Model")
+                if HitModel then
+                    if HitModel:FindFirstChild("Humanoid") then
+                        local Damage = RNG:NextInteger(RelicInfo.Ability.Damage.Min, RelicInfo.Ability.Damage.Max)
+                        HitModel.Humanoid:TakeDamage(Damage)
+                    end
+                    --HealthService:ApplyDamage(Player, HitModel, 1, "Brighton", true)
+                end
+            end
+        end
+    )
 
     return 1
 end
 
-function ChungusService:Init()
-	print("ChungusService initialized...")
+function DingusService:Init()
+	print("DingusService initialized...")
 end
 
-function ChungusService:Deferred()
-    print("ChungusService deferred...")
+function DingusService:Deferred()
+    print("DingusService deferred...")
 end
 
-return ChungusService
+return DingusService

@@ -113,7 +113,7 @@ local function AdjustCharacterTransparency(transparency: number)
 				if not string.find(part.Name, "Arm") and not string.find(part.Name, "Hand") then
 					part.LocalTransparencyModifier = transparency
 				elseif string.find(part.Name, "Arm") or string.find(part.Name, "Hand") then
-					print(part.Name, " ! ! !")
+					--print(part.Name, " ! ! !")
 					local ySize, goalSize = part.Size.Y, 1
 					if transparency == 1 then
 						goalSize = 0.5

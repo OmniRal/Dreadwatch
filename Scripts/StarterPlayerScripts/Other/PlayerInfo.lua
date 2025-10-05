@@ -2,14 +2,14 @@
 
 local PlayerInfo = {}
 
-local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 export type UILockType = "None" | "ConfirmScreen" | "NewToyScreen" | "ToyEquipScreen"
 
 PlayerInfo.Data = nil
 
-PlayerInfo.Human = nil
-PlayerInfo.Root = nil
+PlayerInfo.Human = nil :: Humanoid?
+PlayerInfo.Root = nil :: BasePart?
 PlayerInfo.Dead = false
 PlayerInfo.UnitAttributes = nil
 PlayerInfo.IsRunning = false

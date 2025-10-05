@@ -8,6 +8,8 @@ UnitEnum.BaseAttributeLimits = {
     CooldownReduction = NumberRange.new(0, 75),
 }
 
+UnitEnum.DefaultHistoryEntryCleanTime = 7
+
 export type UnitValues = {
     Base: BaseAttributes,
     Offsets: BaseAttributes,
@@ -81,14 +83,17 @@ export type EffectDetails = {
     DoNotDisplay: boolean?,
 }
 
+export type HistoryEntryType = "DamageDealt" | "DamageTaken" | "CastedHeal" | "ReceivedHeal"
+
 export type HistoryEntry = {
     Source: string?,
     
     Name: string,
-    Type: string,
-    Amount: number,
+    Type: HistoryEntryType,
     TimeAdded: number?,
     CleanTime: number?,
+
+    Amount: number?,
 }
 
 return UnitEnum

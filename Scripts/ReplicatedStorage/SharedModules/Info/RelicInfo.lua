@@ -29,7 +29,7 @@ RelicInfo.Chungus = {
 
         Type = "Passive",
         Damage = NumberRange.new(0, 0),
-        Cooldown = 3,
+        Cooldown = 7,
 
         Details = {},
     }

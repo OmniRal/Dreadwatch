@@ -1,6 +1,8 @@
 -- OmnIRal
 --!nocheck
 
+-- Start history in units; able to track
+
 local UnitManagerService = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -133,6 +135,30 @@ function UnitManagerService:ApplyDamage(Source: Player | Model | string, Victim:
 
     if not VictimModel:FindFirstChild("Humanoid") then return end
     VictimModel.Humanoid:TakeDamage(DamageAmount)
+
+    if Source:IsA("Player") then
+        local SourceHistoryEntry : UnitEnum.HistoryEntry = {
+            Source = Source,
+            Name = DamageName,
+            Type = "DamageDealt",
+            TimeAdded = os.time(),
+            CleanTime = UnitEnum.DefaultHistoryEntryCleanTime,
+            Amount = DamageAmount
+        }
+        UnitValuesService:AddHistoryEntry(Source, SourceHistoryEntry)
+    end
+
+    if Victim:IsA("Player") then
+        local VictimHistoryEntry : UnitEnum.HistoryEntry = {
+            Source = Source,
+            Name = DamageName,
+            Type = "DamageDealt",
+            TimeAdded = os.time(),
+            CleanTime = UnitEnum.DefaultHistoryEntryCleanTime,
+            Amount = DamageAmount,
+        }
+        UnitValuesService:AddHistoryEntry(Victim, VictimHistoryEntry)
+    end
 end
 
 function UnitManagerService:ApplyHealthGain(Source: Player | Model | string, Receiver: Player | Model, Amount: number, GainName: string?)
@@ -171,9 +197,9 @@ function UnitManagerService:ApplyHealthGain(Source: Player | Model | string, Rec
         Source = Source,
         Name = GainName,
         Type = UnitEnum.HistoryEntryType.HealthGain,
-        Amount = Amount,
-        TimeAdded = os.clock(),
+        TimeAdded = os.time(),
         CleanTime = UnitEnum.DefaultHistoryEntryCleanTime,
+        Amount = Amount,
     }
 
     UnitValuesService:AddHistoryEntry(Receiver, HistoryEntry)

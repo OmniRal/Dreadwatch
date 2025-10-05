@@ -117,7 +117,7 @@ end
 function BasicSwordService:UseInnate(Player: Player): number
     local Alive, _, Root, WeaponModel = Utility:CheckPlayerAlive(Player, {"Weapon"})
     if not Alive or not WeaponModel then return -9 end -- Dead
-    if AbilityService:OnCooldown(Player, "BasicSword", "Innate") then return -9 end -- On cooldown
+    if AbilityService:OnCooldown(Player, "BasicSword", "Innate") then return -8 end -- On cooldown
 
     PlayerWeaponValues[Player].ShootStart = Root.Position
     PlayerWeaponValues[Player].ShootGoal = (Root.CFrame * CFrame.new(0, 0, -50)).Position
@@ -129,7 +129,7 @@ function BasicSwordService:UseInnate(Player: Player): number
 end
 
 function BasicSwordService:UseAwakened(Player: Player)
-    if AbilityService:OnCooldown(Player, "BasicSword", "Awakened") then return -9 end -- On cooldown
+    if AbilityService:OnCooldown(Player, "BasicSword", "Awakened") then return -8 end -- On cooldown
 
     AbilityService:SetCooldown(Player, "BasicSword", "Awakened")
 

@@ -4400,6 +4400,31 @@
 									]
 								},
 								{
+									"name": "Relics",
+									"className": "Folder",
+									"children": [
+										{
+											"name": "ChungusService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Relics/ChungusService.lua"
+											]
+										},
+										{
+											"name": "DingusService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Relics/DingusService.lua"
+											]
+										}
+									],
+									"filePaths": [
+										"Scripts/ServerScriptService/ServerModules/Relics"
+									]
+								},
+								{
 									"name": "Top",
 									"className": "Folder",
 									"children": [
@@ -4471,23 +4496,6 @@
 									],
 									"filePaths": [
 										"Scripts/ServerScriptService/ServerModules/Weapons"
-									]
-								},
-								{
-									"name": "Relics",
-									"className": "Folder",
-									"children": [
-										{
-											"name": "ChungusService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Relics/ChungusService.lua"
-											]
-										}
-									],
-									"filePaths": [
-										"Scripts/ServerScriptService/ServerModules/Relics"
 									]
 								}
 							],
@@ -7008,6 +7016,28 @@
 							]
 						},
 						{
+							"name": "RelicStuff",
+							"className": "Folder",
+							"children": [
+								{
+									"name": "Dingus",
+									"className": "Folder",
+									"filePaths": [],
+									"children": [
+										{
+											"name": "Ball",
+											"className": "Part",
+											"filePaths": [],
+											"children": []
+										}
+									]
+								}
+							],
+							"filePaths": [
+								"Assets/Server/RelicStuff.rbxm"
+							]
+						},
+						{
 							"name": "Vehicles",
 							"className": "Folder",
 							"children": [
@@ -8299,6 +8329,31 @@
 						"Assets/Server",
 						"default.project.json"
 					]
+				},
+				{
+					"name": "Events",
+					"className": "Folder",
+					"children": [
+						{
+							"name": "Unit",
+							"className": "Folder",
+							"children": [
+								{
+									"name": "NewHistoryEntry",
+									"className": "BindableEvent",
+									"filePaths": [],
+									"children": []
+								}
+							],
+							"filePaths": [
+								"Events/Server/Unit.rbxm"
+							]
+						}
+					],
+					"filePaths": [
+						"Events/Server",
+						"default.project.json"
+					]
 				}
 			],
 			"filePaths": [
@@ -8386,19 +8441,19 @@
 											]
 										},
 										{
-											"name": "WeaponController",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/StarterPlayerScripts/General/WeaponController.lua"
-											]
-										},
-										{
 											"name": "RelicController",
 											"className": "ModuleScript",
 											"children": [],
 											"filePaths": [
 												"Scripts/StarterPlayerScripts/General/RelicController.lua"
+											]
+										},
+										{
+											"name": "WeaponController",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/StarterPlayerScripts/General/WeaponController.lua"
 											]
 										}
 									],

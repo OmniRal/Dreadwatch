@@ -197,6 +197,7 @@ function MainController:SetCharacter()
     CameraController:SetCharacter()
     MainUIController:SetCharacter()
     WeaponController:SetCharacter()
+    RelicController:SetCharacter()
 
     PlayerInfo.UnitValues = LocalPlayer.Character:WaitForChild("UnitValues")
 

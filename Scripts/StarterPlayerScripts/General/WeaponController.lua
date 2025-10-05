@@ -136,10 +136,10 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function WeaponController:ToggleWeaponControls(Toggle: boolean, Weapon: string)
+function WeaponController:ToggleWeaponControls(Set: boolean, Weapon: string)
     UseControlState = "None"
 
-    if Toggle then
+    if Set then
         if PlayerInfo.WeaponModule then
             PlayerInfo.WeaponModule:Unload()
         end

@@ -12,6 +12,12 @@ export type AttackType = "Melee" | "Ranged"
 export type DamageType = "Physical" | "Magical" | "Pure"
 export type AbilityType = "Active" | "Passive"
 
+CustomEnum.ReturnCodes = {
+    ["ComplexError"] = -9,
+    ["Dead"] = -8,
+    ["OnCooldown"] = -7,
+}
+
 CustomEnum.RayType = {
     LineRaycast = "LineRaycast",
     BlockRaycast = "BlockRaycast",
@@ -27,10 +33,6 @@ CustomEnum.TextDisplayType = {
     Crit = "Crit",
 }
 
-CustomEnum.HistoryEntryType = {
-    Damage = "Damage",
-    HealthGain = "HealthGain",
-}
 
 export type Product = {
     Type: "Coins" | "Toy",
