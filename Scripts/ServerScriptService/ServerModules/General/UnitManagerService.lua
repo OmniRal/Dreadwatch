@@ -132,9 +132,11 @@ function UnitManagerService:ApplyDamage(Source: Player | Model | string, Victim:
     end
 
     if not VictimModel then return end
-
     if not VictimModel:FindFirstChild("Humanoid") then return end
-    VictimModel.Humanoid:TakeDamage(DamageAmount)
+    local VictimValues = UnitValuesService:GetFull(Victim)
+    if not VictimValues then return end
+
+    VictimValues.Folder.Current.Health.Value -= DamageAmount
 
     if Source:IsA("Player") then
         local SourceHistoryEntry : UnitEnum.HistoryEntry = {

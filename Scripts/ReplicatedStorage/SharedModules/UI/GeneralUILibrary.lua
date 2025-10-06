@@ -196,7 +196,6 @@ function GeneralUILibrary:MatchUIStrokeToTextTransparency(Object: TextLabel | Te
 	end)
 end
 
-
 function GeneralUILibrary:SetCloseButton(CloseButton: any, CloseAction: () -> ())
 	if not CloseButton then return end
 
@@ -243,22 +242,38 @@ function GeneralUILibrary:SetCloseButton(CloseButton: any, CloseAction: () -> ()
 	end)
 end
 
-function GeneralUILibrary:UpdateBar(Current: number, Max: number, Bar: Frame, WhiteBar: Frame, WhiteBarDelay: number?)
+-- Used for UI elements such as health or mana bars. Smoothly animates the bar to display the players current stat
+-- @Current : Current value of the stat (the bar represents this number) (e.g. Current health = 100)
+-- @Max : Max this stat can be (e.g. Max health = 150)
+-- @Bar : The UI element (frame, imagelabel, etc) the gets tweened
+-- @WhiteBar : This is a bar hidden under the main bar (Bar) that shows the difference in the stat change
+-- @WhiteBarDelay : How long before the white bar gets resized to be the same as the main bar
+-- @Instant : If true, skips the tweening
+function GeneralUILibrary:UpdateBar(Current: number, Max: number, Bar: Frame, WhiteBar: Frame?, WhiteBarDelay: number?, Instant: boolean?)
     if not Bar or not WhiteBar then return end
 
     local LastMax = Bar:GetAttribute("LastMax") or Max
     local LastCurrent = Bar:GetAttribute("LastCurrent") or Max
     WhiteBarDelay = WhiteBarDelay or UIBasics.WhiteBarDelay
 
-    TweenService:Create(Bar, TweenInfo.new(BASE_TWEEN_TIME / 2, Enum.EasingStyle.Linear), {Size = UDim2.fromScale(math.clamp(Current / Max, 0, 1), 1)}):Play()
+	if not Instant then
+		TweenService:Create(Bar, TweenInfo.new(BASE_TWEEN_TIME / 2, Enum.EasingStyle.Linear), {Size = UDim2.fromScale(math.clamp(Current / Max, 0, 1), 1)}):Play()
 
-    if LastMax == Max then
-        if Current < LastCurrent then
-            TweenService:Create(WhiteBar, TweenInfo.new(BASE_TWEEN_TIME / 2, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false, WhiteBarDelay), {Size = UDim2.fromScale(math.clamp(Current / Max, 0, 1), 1)}):Play()
-        else
-            TweenService:Create(WhiteBar, TweenInfo.new(BASE_TWEEN_TIME / 2, Enum.EasingStyle.Linear), {Size = UDim2.fromScale(math.clamp(Current / Max, 0, 1), 1)}):Play()
-        end
-    end
+		if LastMax == Max and WhiteBar then
+			if Current < LastCurrent then
+				TweenService:Create(WhiteBar, TweenInfo.new(BASE_TWEEN_TIME / 2, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false, WhiteBarDelay), {Size = UDim2.fromScale(math.clamp(Current / Max, 0, 1), 1)}):Play()
+			else
+				TweenService:Create(WhiteBar, TweenInfo.new(BASE_TWEEN_TIME / 2, Enum.EasingStyle.Linear), {Size = UDim2.fromScale(math.clamp(Current / Max, 0, 1), 1)}):Play()
+			end
+		end
+	
+	else
+		Bar.Size = UDim2.fromScale(math.clamp(Current / Max, 0, 1), 1)
+
+		if WhiteBar then
+			WhiteBar.Size = UDim2.fromScale(math.clamp(Current / Max, 0, 1), 1)
+		end
+	end
 
     Bar:SetAttribute("LastMax", Max)
     Bar:SetAttribute("LastCurrent", Current)

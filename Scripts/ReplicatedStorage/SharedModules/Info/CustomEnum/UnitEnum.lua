@@ -17,7 +17,7 @@ export type UnitValues = {
 
     Effects: {},
     History: {},
-    Folder: Configuration?,
+    Folder: Folder,
 }
 
 export type BaseAttributes = {

@@ -181,6 +181,23 @@ function GameplayUIController:SetCharacter(Character: any)
     UnitValues.Current.Health.Changed:Connect(function()
         task.wait()
         GeneralUILibrary:UpdateBar(UnitValues.Current.Health.Value, UnitValues.Current.Health:GetAttribute("Max"), MainFrame.HealthBar.Bar, MainFrame.HealthBar.White)
+        MainFrame.HealthBar.Nums.Text = math.floor(UnitValues.Current.Health.Value) .. " / " .. UnitValues.Current.Health:GetAttribute("Max")
+    end)
+
+    UnitValues.Current.Health:GetAttributeChangedSignal("Max"):Connect(function()
+        task.wait()
+        GeneralUILibrary:UpdateBar(UnitValues.Current.Health.Value, UnitValues.Current.Health:GetAttribute("Max"), MainFrame.HealthBar.Bar, MainFrame.HealthBar.White, nil, true)
+    end)
+
+    UnitValues.Current.Mana.Changed:Connect(function()
+        task.wait()
+        GeneralUILibrary:UpdateBar(UnitValues.Current.Mana.Value, UnitValues.Current.Mana:GetAttribute("Max"), MainFrame.ManaBar.Bar, MainFrame.ManaBar.White)
+        MainFrame.ManaBar.Nums.Text = math.floor(UnitValues.Current.Mana.Value) .. " / " .. UnitValues.Current.Mana:GetAttribute("Max")
+    end)
+
+    UnitValues.Current.Mana:GetAttributeChangedSignal("Max"):Connect(function()
+        task.wait()
+        GeneralUILibrary:UpdateBar(UnitValues.Current.Mana.Value, UnitValues.Current.Mana:GetAttribute("Max"), MainFrame.ManaBar.Bar, MainFrame.ManaBar.White, nil, true)
     end)
 
     UnitValues.Effects.ChildAdded:Connect(function(Effect: any)
