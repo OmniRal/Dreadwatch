@@ -1,6 +1,6 @@
 -- OmniRal
 
-local ModService = {}
+local ModStoneService = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
@@ -13,6 +13,8 @@ local Workspace = game:GetService("Workspace")
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
 
@@ -44,9 +46,10 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function ModService:RunThroughMods(Player: Player, BaseAction: () -> (), Position: Vector3)
+
+function ModStoneService:RunThroughMods(Player: Player, BaseAction: () -> (), Position: Vector3)
     if not Player or not BaseAction then return end
-    local Mods : ModStoneEnum.ModList = DataService:GetPlayerMods(Player)
+    local Mods = DataService:GetPlayerMods(Player)
     if not Mods then return end
 
     local AddedActions: {() -> ()} = {BaseAction}
@@ -74,12 +77,20 @@ function ModService:RunThroughMods(Player: Player, BaseAction: () -> (), Positio
     end
 end
 
-function ModService:Init()
-	print("ModService initialized...")
+function ModStoneService:Init()
+    Remotes:CreateToClient("ModStonesUpdated", {"table"}, "Reliable")
+
+	print("ModStoneService initialized...")
 end
 
-function ModService:Deferred()
-    print("ModService deferred...")
+function ModStoneService.PlayerAdded(Player: Player)
+    if not Player then return end
+    
+    task.delay(1, function()
+        local CurrentMods = DataService:GetPlayerMods(Player)
+        Remotes.ModStoneService.ModStonesUpdated:Fire(Player, CurrentMods)
+    end)
+
 end
 
-return ModService
+return ModStoneService

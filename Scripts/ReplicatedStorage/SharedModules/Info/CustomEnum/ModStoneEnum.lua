@@ -2,10 +2,11 @@
 
 local ModStoneEnum = {}
 
-export type Mod = "None" | "Echo" | "Blast"
-
-export type ModList = {
-    [number]: Mod,
+export type ModStone = {
+    Name: string,
+    Description: string,
+    FlavorText: string,
+    Icon: number,
 }
 
 return ModStoneEnum

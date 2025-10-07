@@ -15,11 +15,16 @@ local TweenService = game:GetService("TweenService")
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
+local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
-local UIBasics = require(ReplicatedStorage.Source.SharedModules.UI.UIBasics)
+local ModStoneService = Remotes.ModStoneService
 
 local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
+
+local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
+local ModStonesInfo = require(ReplicatedStorage.Source.SharedModules.Info.ModStonesInfo)
+
+local UIBasics = require(ReplicatedStorage.Source.SharedModules.UI.UIBasics)
 local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Other.ColorPalette)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -160,14 +165,28 @@ function CleanEffectBox(Effect: any)
     PositionEffectBoxes()
 end
 
-function UpdateMainFrame()
+function UpdateBars()
     if not Gui or not UnitValues then return end
 
 end
 
+
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+function GameplayUIController:UpdateModStoneFrame(List: {[number]: string})
+    local Mods = Gui:WaitForChild("ModStonesFrame")
+
+    for Num, Name in ipairs(List) do
+        local Frame = Mods:FindFirstChild("Mod_" .. Num)
+        local Info = ModStonesInfo[Name]
+        if not Frame or not Info then continue end
+
+        Frame.Icon.Image = "rbxassetid://" .. Info.Icon
+    end
+end
 
 function GameplayUIController:SetCharacter(Character: any)
     while not Gui do
@@ -176,28 +195,28 @@ function GameplayUIController:SetCharacter(Character: any)
     UnitValues = Character:WaitForChild("UnitValues", 3)
     if not UnitValues then return end
 
-    local MainFrame = Gui:WaitForChild("MainFrame")
+    local Bars = Gui:WaitForChild("BarsFrame")
 
     UnitValues.Current.Health.Changed:Connect(function()
         task.wait()
-        GeneralUILibrary:UpdateBar(UnitValues.Current.Health.Value, UnitValues.Current.Health:GetAttribute("Max"), MainFrame.HealthBar.Bar, MainFrame.HealthBar.White)
-        MainFrame.HealthBar.Nums.Text = math.floor(UnitValues.Current.Health.Value) .. " / " .. UnitValues.Current.Health:GetAttribute("Max")
+        GeneralUILibrary:UpdateBar(UnitValues.Current.Health.Value, UnitValues.Current.Health:GetAttribute("Max"), Bars.HealthBar.Bar, Bars.HealthBar.White)
+        Bars.HealthBar.Nums.Text = math.floor(UnitValues.Current.Health.Value) .. " / " .. UnitValues.Current.Health:GetAttribute("Max")
     end)
 
     UnitValues.Current.Health:GetAttributeChangedSignal("Max"):Connect(function()
         task.wait()
-        GeneralUILibrary:UpdateBar(UnitValues.Current.Health.Value, UnitValues.Current.Health:GetAttribute("Max"), MainFrame.HealthBar.Bar, MainFrame.HealthBar.White, nil, true)
+        GeneralUILibrary:UpdateBar(UnitValues.Current.Health.Value, UnitValues.Current.Health:GetAttribute("Max"), Bars.HealthBar.Bar, Bars.HealthBar.White, nil, true)
     end)
 
     UnitValues.Current.Mana.Changed:Connect(function()
         task.wait()
-        GeneralUILibrary:UpdateBar(UnitValues.Current.Mana.Value, UnitValues.Current.Mana:GetAttribute("Max"), MainFrame.ManaBar.Bar, MainFrame.ManaBar.White)
-        MainFrame.ManaBar.Nums.Text = math.floor(UnitValues.Current.Mana.Value) .. " / " .. UnitValues.Current.Mana:GetAttribute("Max")
+        GeneralUILibrary:UpdateBar(UnitValues.Current.Mana.Value, UnitValues.Current.Mana:GetAttribute("Max"), Bars.ManaBar.Bar, Bars.ManaBar.White)
+        Bars.ManaBar.Nums.Text = math.floor(UnitValues.Current.Mana.Value) .. " / " .. UnitValues.Current.Mana:GetAttribute("Max")
     end)
 
     UnitValues.Current.Mana:GetAttributeChangedSignal("Max"):Connect(function()
         task.wait()
-        GeneralUILibrary:UpdateBar(UnitValues.Current.Mana.Value, UnitValues.Current.Mana:GetAttribute("Max"), MainFrame.ManaBar.Bar, MainFrame.ManaBar.White, nil, true)
+        GeneralUILibrary:UpdateBar(UnitValues.Current.Mana.Value, UnitValues.Current.Mana:GetAttribute("Max"), Bars.ManaBar.Bar, Bars.ManaBar.White, nil, true)
     end)
 
     UnitValues.Effects.ChildAdded:Connect(function(Effect: any)
@@ -209,11 +228,11 @@ function GameplayUIController:SetCharacter(Character: any)
         CleanEffectBox(Effect)
     end)
 
-    UpdateMainFrame()
+    UpdateBars()
 end
 
 function GameplayUIController:RunHeartbeat(DeltaTime: number)
-    UpdateMainFrame()
+    UpdateBars()
 end
 
 function GameplayUIController:Init()
@@ -224,7 +243,9 @@ function GameplayUIController:Init()
 end
 
 function GameplayUIController:Deferred()
-    
+    ModStoneService.ModStonesUpdated:Connect(function(Current: {[number]: string})
+        GameplayUIController:UpdateModStoneFrame(Current)
+    end)
 end
 
 return GameplayUIController

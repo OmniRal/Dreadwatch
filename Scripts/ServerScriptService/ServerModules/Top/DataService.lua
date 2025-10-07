@@ -166,6 +166,21 @@ function DataService:SetIndex(Player: Player, Index: string | {}, Value: string?
     Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
 end
 
+function DataService:SetWeapon(Player: Player, WeaponName: string, SkinName: string?)
+    self:WaitForPlayerDataLoaded(Player)
+    assert(WeaponInfo[WeaponName] ~= nil, "Trying to set invalid weapon.")
+    
+    if not SkinName then
+        SkinName = "Default"
+    end
+    assert(WeaponInfo[WeaponName].Skins[SkinName] ~= nil, "Trying to set invalid weapon skin.")
+
+    Profiles[Player].Data.CurrentWeapon = WeaponName
+    Profiles[Player].Data.CurrentWeaponSkin = SkinName or "Default"
+
+    Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
+end
+
 -- Returns the players current weapon, its skin and the ability (innate or awakened) equipped
 function DataService:GetPlayerCurrentWeapons(Player: Player): (string, string, string)
     self:WaitForPlayerDataLoaded(Player)
@@ -181,27 +196,18 @@ function DataService:GetPlayerRelics(Player: Player): {[number]: string}
     return Profiles[Player].Data.CurrentRelics
 end
 
+function DataService:SetPlayerMod(Player: Player, Slot: number, NewMod: "None" | string)
+    
+end
+
 -- Returns an array of the players current equipped Mod Stones.
-function DataService:GetPlayerMods(Player: Player): ModStoneEnum.ModList
+function DataService:GetPlayerMods(Player: Player): {[number]: string}
     self:WaitForPlayerDataLoaded(Player)
 
     return Profiles[Player].Data.CurrentMods
 end
 
-function DataService:SetWeapon(Player: Player, WeaponName: string, SkinName: string?)
-    self:WaitForPlayerDataLoaded(Player)
-    assert(WeaponInfo[WeaponName] ~= nil, "Trying to set invalid weapon.")
-    
-    if not SkinName then
-        SkinName = "Default"
-    end
-    assert(WeaponInfo[WeaponName].Skins[SkinName] ~= nil, "Trying to set invalid weapon skin.")
 
-    Profiles[Player].Data.CurrentWeapon = WeaponName
-    Profiles[Player].Data.CurrentWeaponSkin = SkinName or "Default"
-
-    Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
-end
 
 function DataService:IncrementIndex(Player, Index, Increment)
 	self:WaitForPlayerDataLoaded(Player)

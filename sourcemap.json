@@ -395,6 +395,14 @@
 											"filePaths": [
 												"Scripts/ReplicatedStorage/SharedModules/Info/WeaponInfo.lua"
 											]
+										},
+										{
+											"name": "ModStonesInfo",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/SharedModules/Info/ModStonesInfo.lua"
+											]
 										}
 									],
 									"filePaths": [
@@ -2237,6 +2245,183 @@
 													]
 												}
 											]
+										},
+										{
+											"name": "BarsFrame",
+											"className": "Frame",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "HealthBar",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Bar",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "Gradient",
+																	"className": "UIGradient",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														},
+														{
+															"name": "Nums",
+															"className": "TextLabel",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "White",
+															"className": "Frame",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "ManaBar",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Bar",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "Gradient",
+																	"className": "UIGradient",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														},
+														{
+															"name": "Nums",
+															"className": "TextLabel",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "White",
+															"className": "Frame",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "ModsFrame",
+											"className": "Frame",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Mod_1",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "UIAspectRatioConstraint",
+															"className": "UIAspectRatioConstraint",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Button",
+															"className": "ImageButton",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Icon",
+															"className": "ImageLabel",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "UIListLayout",
+													"className": "UIListLayout",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Mod_2",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "UIAspectRatioConstraint",
+															"className": "UIAspectRatioConstraint",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Button",
+															"className": "ImageButton",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Icon",
+															"className": "ImageLabel",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "Mod_3",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "UIAspectRatioConstraint",
+															"className": "UIAspectRatioConstraint",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Button",
+															"className": "ImageButton",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Icon",
+															"className": "ImageLabel",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
 										}
 									],
 									"filePaths": [
@@ -2246,370 +2431,7 @@
 								{
 									"name": "MainGui",
 									"className": "ScreenGui",
-									"children": [
-										{
-											"name": "HealthFrame",
-											"className": "Frame",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "Back",
-													"className": "ImageLabel",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Gradient",
-															"className": "UIGradient",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "BarFrame",
-													"className": "CanvasGroup",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Top",
-															"className": "ImageLabel",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "Gradient",
-																	"className": "UIGradient",
-																	"filePaths": [],
-																	"children": [
-																		{
-																			"name": "ColorA",
-																			"className": "Color3Value",
-																			"filePaths": [],
-																			"children": []
-																		}
-																	]
-																}
-															]
-														},
-														{
-															"name": "Gradient",
-															"className": "UIGradient",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "Percent",
-																	"className": "NumberValue",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														}
-													]
-												},
-												{
-													"name": "WhiteFrame",
-													"className": "CanvasGroup",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Top",
-															"className": "ImageLabel",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Gradient",
-															"className": "UIGradient",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "Percent",
-																	"className": "NumberValue",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														}
-													]
-												},
-												{
-													"name": "UIAspectRatioConstraint",
-													"className": "UIAspectRatioConstraint",
-													"filePaths": [],
-													"children": []
-												}
-											]
-										},
-										{
-											"name": "CurrentWeaponFrame",
-											"className": "Frame",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "Icon",
-													"className": "ImageLabel",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "Clips",
-													"className": "TextLabel",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "Mags",
-													"className": "TextLabel",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "UIAspectRatioConstraint",
-													"className": "UIAspectRatioConstraint",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "GroupTransparency",
-													"className": "NumberValue",
-													"filePaths": [],
-													"children": []
-												}
-											]
-										},
-										{
-											"name": "WeaponSlotsFrame",
-											"className": "Frame",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "UIAspectRatioConstraint",
-													"className": "UIAspectRatioConstraint",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "UIListLayout",
-													"className": "UIListLayout",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "Slot1",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "UIAspectRatioConstraint",
-															"className": "UIAspectRatioConstraint",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Icon",
-															"className": "ImageLabel",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "KeyNum",
-															"className": "TextLabel",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "Stroke",
-																	"className": "UIStroke",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														}
-													]
-												},
-												{
-													"name": "Slot2",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "UIAspectRatioConstraint",
-															"className": "UIAspectRatioConstraint",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Icon",
-															"className": "ImageLabel",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "KeyNum",
-															"className": "TextLabel",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "Stroke",
-																	"className": "UIStroke",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														}
-													]
-												},
-												{
-													"name": "Slot3",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "UIAspectRatioConstraint",
-															"className": "UIAspectRatioConstraint",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Icon",
-															"className": "ImageLabel",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "KeyNum",
-															"className": "TextLabel",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "Stroke",
-																	"className": "UIStroke",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														}
-													]
-												}
-											]
-										},
-										{
-											"name": "Aimer",
-											"className": "Frame",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "UICorner",
-													"className": "UICorner",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "UIStroke",
-													"className": "UIStroke",
-													"filePaths": [],
-													"children": []
-												}
-											]
-										},
-										{
-											"name": "Basic",
-											"className": "Frame",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "Level",
-													"className": "TextLabel",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "Padding",
-													"className": "UIPadding",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "XP",
-													"className": "TextLabel",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												}
-											]
-										},
-										{
-											"name": "Quests",
-											"className": "CanvasGroup",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "Padding",
-													"className": "UIPadding",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "OG",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Check",
-															"className": "Frame",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "UIAspectRatioConstraint",
-																	"className": "UIAspectRatioConstraint",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														},
-														{
-															"name": "Info",
-															"className": "TextLabel",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "Stroke",
-																	"className": "UIStroke",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														}
-													]
-												}
-											]
-										}
-									],
+									"children": [],
 									"filePaths": [
 										"Assets/Replicated/UIs/MainGui.rbxm"
 									]
@@ -4222,14 +4044,6 @@
 											]
 										},
 										{
-											"name": "ModService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/General/ModService.lua"
-											]
-										},
-										{
 											"name": "NPCService",
 											"className": "ModuleScript",
 											"children": [
@@ -4309,6 +4123,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/General/WeaponService.lua"
+											]
+										},
+										{
+											"name": "ModStoneService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/ModStoneService.lua"
 											]
 										}
 									],
