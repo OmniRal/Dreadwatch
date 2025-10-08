@@ -40,6 +40,10 @@
 
 			"Assets": {
 				"$path": "Assets/Replicated"	
+			},
+
+			"Events": {
+				"$path": "Events/Replicated"
 			}
 		},
 

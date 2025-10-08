@@ -365,6 +365,14 @@
 											]
 										},
 										{
+											"name": "ModStonesInfo",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/SharedModules/Info/ModStonesInfo.lua"
+											]
+										},
+										{
 											"name": "ProductInfo",
 											"className": "ModuleScript",
 											"children": [],
@@ -394,14 +402,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ReplicatedStorage/SharedModules/Info/WeaponInfo.lua"
-											]
-										},
-										{
-											"name": "ModStonesInfo",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/SharedModules/Info/ModStonesInfo.lua"
 											]
 										}
 									],
@@ -2176,77 +2176,6 @@
 									"className": "ScreenGui",
 									"children": [
 										{
-											"name": "MainFrame",
-											"className": "Frame",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "HealthBar",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Bar",
-															"className": "Frame",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "Gradient",
-																	"className": "UIGradient",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														},
-														{
-															"name": "Nums",
-															"className": "TextLabel",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "White",
-															"className": "Frame",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "ManaBar",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Bar",
-															"className": "Frame",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "Gradient",
-																	"className": "UIGradient",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														},
-														{
-															"name": "Nums",
-															"className": "TextLabel",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "White",
-															"className": "Frame",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												}
-											]
-										},
-										{
 											"name": "BarsFrame",
 											"className": "Frame",
 											"filePaths": [],
@@ -2318,7 +2247,7 @@
 											]
 										},
 										{
-											"name": "ModsFrame",
+											"name": "ModStonesFrame",
 											"className": "Frame",
 											"filePaths": [],
 											"children": [
@@ -3947,6 +3876,37 @@
 						"Assets/Replicated",
 						"default.project.json"
 					]
+				},
+				{
+					"name": "Events",
+					"className": "Folder",
+					"children": [
+						{
+							"name": "UI",
+							"className": "Folder",
+							"children": [
+								{
+									"name": "StartDraggingUI",
+									"className": "BindableEvent",
+									"filePaths": [],
+									"children": []
+								},
+								{
+									"name": "StopDraggingUI",
+									"className": "BindableEvent",
+									"filePaths": [],
+									"children": []
+								}
+							],
+							"filePaths": [
+								"Events/Replicated/UI.rbxm"
+							]
+						}
+					],
+					"filePaths": [
+						"Events/Replicated",
+						"default.project.json"
+					]
 				}
 			],
 			"filePaths": [
@@ -4044,6 +4004,14 @@
 											]
 										},
 										{
+											"name": "ModStoneService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/ModStoneService.lua"
+											]
+										},
+										{
 											"name": "NPCService",
 											"className": "ModuleScript",
 											"children": [
@@ -4123,14 +4091,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/General/WeaponService.lua"
-											]
-										},
-										{
-											"name": "ModStoneService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/General/ModStoneService.lua"
 											]
 										}
 									],

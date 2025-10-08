@@ -1,4 +1,5 @@
 -- OmniRal
+--!nocheck
 
 local GeneralUILibrary = {}
 
@@ -22,9 +23,16 @@ local BASE_TWEEN_TIME = UIBasics.BaseTweenTime
 
 local WhiteBarTweens = {}
 
+local Events = ReplicatedStorage.Events
 local Assets = ReplicatedStorage.Assets
 
 local RNG = Random.new()
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local function UpdateDrag(Input: InputObject)
+	
+end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -104,8 +112,23 @@ function GeneralUILibrary:SpawnSparkle(Parent: any, StartSize: NumberRange, Fini
 	Tween1:Play()
 end
 
--- Adds attributes that are triggered by toggling a button, hovering on it, and pressing it.
-function GeneralUILibrary:AddBaseButtonInteractions(ButtonFrame: Frame | CanvasGroup, Button: ImageButton, BasicTextButtonAnimations: boolean?, DisableTurningOff: boolean?)
+-- Adds attributes that are triggered by toggling a button, hovering on it, and pressing it
+-- @ButtonFrame : The main GUI object container
+-- @Button : The _actual_ button object the player can click / tap
+-- @ToggleFromActivation : When true, the ON attribute will toggle when the button is activated. Otherwise, the ON attribute can _only_ be set to true if it's not already
+-- @DraggingElement : If set to a GuiObject, this will be allowed to be dragged around
+-- @DragDelay : How long the button needs to be held down before being dragging is allowed
+-- @StartDrag : What should happen at the start of dragging it
+-- @StopDrag : What should happen when the drag is released
+function GeneralUILibrary:AddBaseButtonInteractions(
+	ButtonFrame: GuiObject, 
+	Button: GuiObject, 
+	ToggleFromActivation: boolean?, 
+	DraggingElement: boolean?,
+	DragDelay: number?,
+	StartDrag: (GuiObject, GuiObject?) -> ()?,
+	StopDrag: (GuiObject, GuiObject?) -> ()?
+)
 	if not ButtonFrame or not Button then return end
 
 	ButtonFrame:SetAttribute("On", false) -- For toggle / state of the button.
@@ -113,9 +136,13 @@ function GeneralUILibrary:AddBaseButtonInteractions(ButtonFrame: Frame | CanvasG
 	ButtonFrame:SetAttribute("Pressed", false) -- For clicking down on the button.
 	ButtonFrame:SetAttribute("Locked", false)
 
-	local InputHandler = nil
+	if DraggingElement then
+		ButtonFrame:SetAttribute("Dragging", false)
+	end
 
-	warn(Button.Parent)
+	local InputHandler = nil
+	local DragDelayThread: thread? = nil
+
 	Button.MouseEnter:Connect(function()
 		if Button:GetAttribute("Locked") then return end
 		ButtonFrame:SetAttribute("Hover", true)
@@ -135,10 +162,31 @@ function GeneralUILibrary:AddBaseButtonInteractions(ButtonFrame: Frame | CanvasG
 
 		ButtonFrame:SetAttribute("Pressed", true)
 
+		if DraggingElement then
+			if not DragDelay then
+				Button:SetAttribute("Dragging", true)
+				Events.UI.StartDraggingUI:Fire(Input.Position, Button, if DraggingElement == Button then Button else DraggingElement, StartDrag)
+			
+			else
+				if DragDelayThread then
+					task.cancel(DragDelayThread)
+				end
+
+				DragDelayThread = task.delay(DragDelay, function()
+					Button:SetAttribute("Dragging", true)
+					Events.UI.StartDraggingUI:Fire(Input.Position, Button, if DraggingElement == Button then Button else DraggingElement, StartDrag)
+				end)
+			end
+		end
+
 		InputHandler = Input.Changed:Connect(function()
 			if Input.UserInputState ~= Enum.UserInputState.End then return end
 			if InputHandler then
 				InputHandler:Disconnect()
+
+				if DraggingElement then
+					Events.UI.StopDraggingUI:Fire(Button, if DraggingElement == Button then Button else DraggingElement, StopDrag)
+				end
 			end
 
 			InputHandler = nil
@@ -148,7 +196,7 @@ function GeneralUILibrary:AddBaseButtonInteractions(ButtonFrame: Frame | CanvasG
 
 	Button.Activated:Connect(function()
 		if Button:GetAttribute("Locked") then return end
-		if not DisableTurningOff then
+		if ToggleFromActivation then
 			ButtonFrame:SetAttribute("On", not ButtonFrame:GetAttribute("On"))
 		else
 			if not ButtonFrame:GetAttribute("On") then
@@ -164,27 +212,6 @@ function GeneralUILibrary:AddBaseButtonInteractions(ButtonFrame: Frame | CanvasG
 			Button:SetAttribute("Pressed", false)
 		end
 	end)
-
-	if BasicTextButtonAnimations then
-		local LabelOriginalSize = ButtonFrame.Label.Size
-		local LabelPressedSize = UDim2.fromScale(ButtonFrame.Label.Size.X.Scale * 0.75, ButtonFrame.Label.Size.Y.Scale * 0.75)
-
-		ButtonFrame:GetAttributeChangedSignal("Hover"):Connect(function()
-			if ButtonFrame:GetAttribute("Hover") or not ButtonFrame.Button.Active then
-				TweenService:Create(ButtonFrame.Stroke, TweenInfo.new(BASE_TWEEN_TIME, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Thickness = 3}):Play()
-			elseif not ButtonFrame:GetAttribute("Hover") and ButtonFrame.Button.Active then
-				TweenService:Create(ButtonFrame.Stroke, TweenInfo.new(BASE_TWEEN_TIME, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Thickness = 0}):Play()
-			end
-		end)
-
-		ButtonFrame:GetAttributeChangedSignal("Pressed"):Connect(function()
-			if ButtonFrame:GetAttribute("Pressed") and ButtonFrame.Button.Active then
-				TweenService:Create(ButtonFrame.Label, TweenInfo.new(BASE_TWEEN_TIME / 2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = LabelPressedSize}):Play()
-			elseif not ButtonFrame:GetAttribute("Pressed") or not ButtonFrame.Button.Active then
-				TweenService:Create(ButtonFrame.Label, TweenInfo.new(BASE_TWEEN_TIME / 2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = LabelOriginalSize}):Play()
-			end
-		end)
-	end
 end
 
 -- Checks if a Text UI Object has a UI Stroke in it. If it does, whenever the Texts' transparency changes, the UI Stroke transparency will match it.
@@ -207,7 +234,7 @@ function GeneralUILibrary:SetCloseButton(CloseButton: any, CloseAction: () -> ()
 
 		CloseButton:SetAttribute("On", false)
 		
-		UISounds.CloseConfirm:Play()
+		--UISounds.CloseConfirm:Play()
 		TweenService:Create(CloseButton.Main.Stroke, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, true), {Thickness = 6}):Play()
 		TweenService:Create(CloseButton.Back.Stroke, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, true), {Thickness = 9}):Play()
 		TweenService:Create(CloseButton.Shadow.Stroke, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, true), {Thickness = 9}):Play()
@@ -221,7 +248,7 @@ function GeneralUILibrary:SetCloseButton(CloseButton: any, CloseAction: () -> ()
 			TweenService:Create(CloseButton.Main, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.fromScale(1.1, 1.1)}):Play()
 			TweenService:Create(CloseButton.Back, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.fromScale(1.1, 1.1)}):Play()
 			TweenService:Create(CloseButton.Shadow, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.fromScale(1.1, 1.1)}):Play()
-			UISounds.GeneralHover_2:Play()
+			--UISounds.GeneralHover_2:Play()
 
 		else
 			TweenService:Create(CloseButton.Main, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.fromScale(1, 1)}):Play()
@@ -234,7 +261,7 @@ function GeneralUILibrary:SetCloseButton(CloseButton: any, CloseAction: () -> ()
 		if CloseButton:GetAttribute("Pressed") then
 			if PlayerInfo.UILock.Set ~= "None" then return end
 			TweenService:Create(CloseButton.Main.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.fromScale(0.4, 0.4)}):Play()
-			UISounds.ClosePress:Play()
+			--UISounds.ClosePress:Play()
 		else
 			TweenService:Create(CloseButton.Main.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.fromScale(0.7, 0.7)}):Play()
 
@@ -322,8 +349,8 @@ function GeneralUILibrary:UpdateBarPercent(Current: number, Max: number, BarPerc
         end
     end
 
-    Bar:SetAttribute("LastMax", Max)
-    Bar:SetAttribute("LastCurrent", Current)
+    BarPercent:SetAttribute("LastMax", Max)
+    BarPercent:SetAttribute("LastCurrent", Current)
 end
 
 function GeneralUILibrary:GetNumberSingleDec(Num: number, Add: number?): string?

@@ -59,7 +59,35 @@ local Assets = ReplicatedStorage.Assets
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local function SetGui()
-    -- For later
+    local Mods = Gui:WaitForChild("ModStonesFrame")
+
+    for _, Frame in Mods:GetChildren() do
+        if not Frame then continue end
+        if Frame.Name == "UIListLayout" then continue end
+
+        local IconDrag = Frame.Icon:Clone()
+        IconDrag.Name = "IconDrag"
+        IconDrag.Visible = false
+        IconDrag.Parent = Frame
+
+        GeneralUILibrary:AddBaseButtonInteractions(
+            Frame, 
+            Frame.Button, 
+            false,
+            IconDrag,
+            1,
+            function()
+                Frame.Icon.ImageTransparency = 0.5
+                IconDrag.Visible = true
+            end,
+            function()
+                Frame.Icon.ImageTransparency = 0
+                IconDrag.Visible = false
+                IconDrag.Position = Frame.Icon.Position
+            end
+        )
+
+    end
 end
 
 function PositionEffectBoxes(CancelDelay: boolean?)
@@ -182,9 +210,15 @@ function GameplayUIController:UpdateModStoneFrame(List: {[number]: string})
     for Num, Name in ipairs(List) do
         local Frame = Mods:FindFirstChild("Mod_" .. Num)
         local Info = ModStonesInfo[Name]
-        if not Frame or not Info then continue end
+        if not Frame then continue end
 
-        Frame.Icon.Image = "rbxassetid://" .. Info.Icon
+        if Info then
+            Frame.Icon.Image = "rbxassetid://" .. Info.Icon
+        else
+            Frame.Icon.Image = ""
+        end
+
+        Frame.IconDrag.Image = Frame.Icon.Image
     end
 end
 
@@ -240,6 +274,8 @@ function GameplayUIController:Init()
     NewGui.Parent = LocalPlayer.PlayerGui
 
     Gui = NewGui
+
+    SetGui()
 end
 
 function GameplayUIController:Deferred()
