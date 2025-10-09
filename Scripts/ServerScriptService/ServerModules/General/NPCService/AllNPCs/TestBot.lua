@@ -41,7 +41,7 @@ local function AnimKeyframes(NPC: NPC.NPC, AnimName: string, Keyframe: string)
         
         if Distance > AttackInfo.DamageRange then return end
 
-        UnitManagerService:ApplyDamage(NPC.Model, NPC.Target.Player or NPC.Target.Model, RNG:NextNumber(AttackInfo.Damage.Min, AttackInfo.Damage.Max), "Basic Swipe")
+        --UnitManagerService:ApplyDamage(NPC.Model, NPC.Target.Player or NPC.Target.Model, RNG:NextNumber(AttackInfo.Damage.Min, AttackInfo.Damage.Max), "Basic Swipe")
         --NPC.Target.Human:TakeDamage(RNG:NextNumber(AttackInfo.Damage.Min, AttackInfo.Damage.Max))
 
     elseif Keyframe == "Shoot" then

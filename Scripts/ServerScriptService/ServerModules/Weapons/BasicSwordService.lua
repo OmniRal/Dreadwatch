@@ -101,10 +101,8 @@ function BasicSwordService:Use(Player: Player, SwingNum: number, HitList: {Model
         )
 
         PlayerWeaponValues[Player].ConsecutiveHits += 1
-        warn(PlayerWeaponValues[Player].ConsecutiveHits)
         if PlayerWeaponValues[Player].ConsecutiveHits >= 4 then
-            warn("JIZZ")
-            PlayerWeaponValues[Player].ConsecutiveHits = 0
+                PlayerWeaponValues[Player].ConsecutiveHits = 0
             if BasicSwordService:UseAwakened(Player) == 1 then
                 Unit.HumanoidRootPart.AssemblyLinearVelocity += Vector3.new(0, 100, 0)
             end

@@ -124,11 +124,16 @@ end
 -- @DamageType = which kind of damage type it is, based on UnitEnum.DamageTyoes; if enabled in GlobalValues.
 -- @CritPossible = if it should calculate potentially applying a crit.
 function UnitManagerService:ApplyDamage(Source: Player | Model | string, Victim: Player | Model, DamageAmount: number, DamageName: string, DamageType: string?, CritPossible: boolean?)
+    warn(Source, Victim)
     if not Source or not Victim then return end
 
     local VictimModel = Victim
     if Victim:IsA("Player") then
         VictimModel = Victim.Character
+    end
+
+    if Victim.Name == "T1" or Victim.Name == "T2" then
+        VictimModel.Humanoid:TakeDamage(DamageAmount)
     end
 
     if not VictimModel then return end
@@ -137,6 +142,7 @@ function UnitManagerService:ApplyDamage(Source: Player | Model | string, Victim:
     if not VictimValues then return end
 
     VictimValues.Folder.Current.Health.Value -= DamageAmount
+
 
     if Source:IsA("Player") then
         local SourceHistoryEntry : UnitEnum.HistoryEntry = {

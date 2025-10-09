@@ -22,11 +22,9 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
-local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
-
 local DataService = Remotes.DataService
 local CoreGameService = Remotes.CoreGameService
+local ModStoneService = Remotes.ModStoneService
 local RagdollService = Remotes.RagdollService
 
 local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
@@ -37,9 +35,11 @@ local PlatformingController = require(StarterPlayer.StarterPlayerScripts.Source.
 local WeaponController = require(StarterPlayer.StarterPlayerScripts.Source.General.WeaponController)
 local RelicController = require(StarterPlayer.StarterPlayerScripts.Source.General.RelicController)
 
+local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 local SoundControlService = require(ReplicatedStorage.Source.SharedModules.Other.SoundControlService)
 
-local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
+local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
+local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 
 local ControlModule
 
@@ -64,6 +64,8 @@ local GroundParams = RaycastParams.new()
 GroundParams.FilterType = Enum.RaycastFilterType.Include
 GroundParams.FilterDescendantsInstances = {Workspace}
 GroundParams.IgnoreWater = true
+
+local PickupDebounce = false
 
 local Assets = ReplicatedStorage.Assets
 
@@ -108,6 +110,28 @@ local function CheckGrounded()
     if LocalPlayer.Character then
         LocalPlayer.Character:SetAttribute("CurrentSurface", SurfaceType)
     end
+end
+
+local function CheckPickupItems()
+    warn(1)
+    if PickupDebounce then return end
+
+    warn(2)
+    local Target = Mouse.Target
+    if not Target then return end
+
+    warn(3, Target)
+    if Target.Parent:HasTag("ModStone") then
+        warn(4)
+        PickupDebounce = true
+        ModStoneService:RequestPickupStone(Target.Parent)
+    end 
+
+    if not PickupDebounce then return end
+
+    task.delay(1, function()
+        PickupDebounce = false
+    end)
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -218,6 +242,10 @@ function MainController:Init()
     UserGameSettings.RotationType = Enum.RotationType.MovementRelative
 
     UserInputService.InputBegan:Connect(function(Input)
+        if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+            CheckPickupItems()
+        end
+
         if Input.KeyCode == Enum.KeyCode.K then
             local CameraType = CameraController.CameraType:Get()
 

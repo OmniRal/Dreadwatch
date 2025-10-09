@@ -8,6 +8,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TextService = game:GetService("TextService")
 local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
+local Workspace = game:GetService("Workspace")
 
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
@@ -20,6 +21,8 @@ local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Other.ColorP
 local BASE_TWEEN_TIME = UIBasics.BaseTweenTime
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local Camera = Workspace.CurrentCamera
 
 local WhiteBarTweens = {}
 
@@ -110,6 +113,36 @@ function GeneralUILibrary:SpawnSparkle(Parent: any, StartSize: NumberRange, Fini
 	end)
 
 	Tween1:Play()
+end
+
+-- Checks to see if the current dragging element is positioned outside of its original bounding box. Intended to drop items of your inventory
+-- @Element : The gui object that was dragged
+-- @Box : The gui object that is used as the bounding box
+function GeneralUILibrary:CheckDragElementDropped(Element: GuiObject, Box: GuiObject, DropPhysically: boolean?): (boolean, Vector3?)
+	if not Element or not Box then return false end
+
+	local Position = Element.AbsolutePosition
+	local BoxPosition, BoxSize = Box.AbsolutePosition, Box.AbsoluteSize
+
+	-- Check if Element is out inside the Box
+	if Position.X >= BoxPosition.X - (BoxSize.X / 2) and Position.X <= BoxPosition.X + (BoxSize.X / 2) and Position.Y >= BoxPosition.Y - (BoxSize.Y / 2) and Position.Y <= BoxPosition.Y + (BoxSize.Y / 2) then
+		return false
+	end
+
+	if DropPhysically then
+		-- Convert the Element's screen position to a 3D world position; for where to drop the item
+		local CameraRay = Camera:ViewportPointToRay(Position.X, Position.Y, 1000)
+		local NewRay = Workspace:Raycast(CameraRay.Origin, CameraRay.Direction * -1000)
+		if NewRay then
+			if NewRay.Position then
+				return true, NewRay.Position
+			end
+		end
+
+		return false
+	end
+
+	return true
 end
 
 -- Adds attributes that are triggered by toggling a button, hovering on it, and pressing it

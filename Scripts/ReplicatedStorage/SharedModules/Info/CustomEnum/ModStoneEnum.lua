@@ -7,6 +7,8 @@ export type ModStone = {
     Description: string,
     FlavorText: string,
     Icon: number,
+    
+    StoneColor: Color3,
 }
 
 return ModStoneEnum

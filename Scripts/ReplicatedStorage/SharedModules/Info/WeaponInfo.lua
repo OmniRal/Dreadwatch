@@ -29,7 +29,7 @@ WeaponInfo.BasicSword = {
         ComboAmount = 3,
     },
 
-    Damage = NumberRange.new(1, 2),
+    Damage = NumberRange.new(10, 11),
 
     Abilities = {
         Innate = {

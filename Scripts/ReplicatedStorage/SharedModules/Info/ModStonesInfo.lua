@@ -11,6 +11,8 @@ ModStonesInfo.Echo = {
     Description = "",
     FlavorText = "",
     Icon = 77310075815750,
+
+    StoneColor = Color3.fromRGB(255, 39, 133),
 }
 
 ModStonesInfo.Blast = {
@@ -18,6 +20,8 @@ ModStonesInfo.Blast = {
     Description = "",
     FlavorText = "",
     Icon = 123228184913688,
+
+    StoneColor = Color3.fromRGB(255, 118, 39)
 }
 
 return ModStonesInfo

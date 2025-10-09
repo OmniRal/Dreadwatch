@@ -68,7 +68,7 @@ local ProfileTemplate = {
     },
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_13', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_19', ProfileTemplate)
 
 local Profiles = {}
 
@@ -196,8 +196,18 @@ function DataService:GetPlayerRelics(Player: Player): {[number]: string}
     return Profiles[Player].Data.CurrentRelics
 end
 
-function DataService:SetPlayerMod(Player: Player, Slot: number, NewMod: "None" | string)
-    
+-- Set a specific mod stone slot in the players data
+-- @NewMod : The name of the mod stone, or "None"
+-- @DoNotSendSignalToPlayer : If true, it will NOT fire an event to the client, giving them their updated mod stone slots
+function DataService:SetPlayerMod(Player: Player, SlotNum: number, NewMod: "None" | string, DoNotSendSignalToPlayer: boolean?)
+    self:WaitForPlayerDataLoaded(Player)
+
+    if not Profiles[Player].Data.CurrentMods then return end
+    if not Profiles[Player].Data.CurrentMods[SlotNum] then return end
+    Profiles[Player].Data.CurrentMods[SlotNum] = NewMod
+
+    if DoNotSendSignalToPlayer then return end
+    Remotes.ModStoneService.ModStonesUpdated:Fire(Player, Profiles[Player].Data.CurrentMods)
 end
 
 -- Returns an array of the players current equipped Mod Stones.
@@ -207,7 +217,19 @@ function DataService:GetPlayerMods(Player: Player): {[number]: string}
     return Profiles[Player].Data.CurrentMods
 end
 
+-- Checks to see if the players mod stone slots are all taken
+function DataService:ArePlayerModsFull(Player: Player): (boolean, number?)
+    self:WaitForPlayerDataLoaded(Player)
 
+    local CurrentMods = Profiles[Player].Data.CurrentMods
+
+    for x = 1, 3 do
+        if CurrentMods[x] ~= "None" then continue end
+        return false, x
+    end
+
+    return true
+end
 
 function DataService:IncrementIndex(Player, Index, Increment)
 	self:WaitForPlayerDataLoaded(Player)

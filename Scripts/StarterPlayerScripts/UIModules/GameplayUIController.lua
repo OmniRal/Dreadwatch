@@ -11,6 +11,8 @@ local Players = game:GetService("Players")
 local StarterPlayer = game:GetService("StarterPlayer")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -19,13 +21,13 @@ local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 local ModStoneService = Remotes.ModStoneService
 
+local UIBasics = require(ReplicatedStorage.Source.SharedModules.UI.UIBasics)
 local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
+
+local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Other.ColorPalette)
 
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 local ModStonesInfo = require(ReplicatedStorage.Source.SharedModules.Info.ModStonesInfo)
-
-local UIBasics = require(ReplicatedStorage.Source.SharedModules.UI.UIBasics)
-local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Other.ColorPalette)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -65,6 +67,8 @@ local function SetGui()
         if not Frame then continue end
         if Frame.Name == "UIListLayout" then continue end
 
+        local SlotNum = tonumber(string.sub(Frame.Name, 5, 5))
+
         local IconDrag = Frame.Icon:Clone()
         IconDrag.Name = "IconDrag"
         IconDrag.Visible = false
@@ -83,10 +87,15 @@ local function SetGui()
             function()
                 Frame.Icon.ImageTransparency = 0
                 IconDrag.Visible = false
+
+                local CanDrop, DropTo = GeneralUILibrary:CheckDragElementDropped(IconDrag, Frame, true)
+                if CanDrop and DropTo then
+                    ModStoneService:RequestDropStone(SlotNum, DropTo)
+                end
+
                 IconDrag.Position = Frame.Icon.Position
             end
         )
-
     end
 end
 
