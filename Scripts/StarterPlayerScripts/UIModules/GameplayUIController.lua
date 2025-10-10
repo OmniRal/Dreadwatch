@@ -60,43 +60,89 @@ local Assets = ReplicatedStorage.Assets
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local function SetGui()
+local function SetModStonesFrame()
     local Mods = Gui:WaitForChild("ModStonesFrame")
+    
+    for _, Slot in Mods:GetChildren() do
+        if not Slot then continue end
+        if Slot.Name == "UIListLayout" then continue end
 
-    for _, Frame in Mods:GetChildren() do
-        if not Frame then continue end
-        if Frame.Name == "UIListLayout" then continue end
+        local SlotNum = tonumber(string.sub(Slot.Name, 5, 5))
 
-        local SlotNum = tonumber(string.sub(Frame.Name, 5, 5))
-
-        local IconDrag = Frame.Icon:Clone()
+        -- This is a copy of the icon that can actually be dragged
+        local IconDrag = Slot.Icon:Clone()
         IconDrag.Name = "IconDrag"
         IconDrag.Visible = false
-        IconDrag.Parent = Frame
+        IconDrag.Parent = Slot
 
+        -- Connect interaction for each mod slot
         GeneralUILibrary:AddBaseButtonInteractions(
-            Frame, 
-            Frame.Button, 
+            Slot, 
+            Slot.Button, 
             false,
             IconDrag,
             1,
+
             function()
-                Frame.Icon.ImageTransparency = 0.5
+                Slot.Icon.ImageTransparency = 0.5
                 IconDrag.Visible = true
             end,
+
             function()
-                Frame.Icon.ImageTransparency = 0
+                Slot.Icon.ImageTransparency = 0
                 IconDrag.Visible = false
 
-                local CanDrop, DropTo = GeneralUILibrary:CheckDragElementDropped(IconDrag, Frame, true)
+                -- Check to drop the stone
+                local CanDrop, DropTo = GeneralUILibrary:CheckDragElementDropped(IconDrag, Slot, true)
                 if CanDrop and DropTo then
                     ModStoneService:RequestDropStone(SlotNum, DropTo)
                 end
 
-                IconDrag.Position = Frame.Icon.Position
+                IconDrag.Position = Slot.Icon.Position
             end
         )
     end
+end
+
+local function SetRelicsFrame()
+    local Relics = Gui:WaitForChild("RelicsFrame")
+
+    -- Active
+    for _, Slot in Relics.Top:GetChildren() do
+        if not Slot then continue end
+        if Slot.Name == "UIListLayout" then continue end
+
+        local SlotNum = tonumber(string.sub(Slot.Name, 5, 5))
+
+        -- This is a copy of the icon that can actually be dragged
+        local IconDrag = Slot.Icon:Clone()
+        IconDrag.Name = "IconDrag"
+        IconDrag.Visible = false
+        IconDrag.Parent = Slot
+
+        Slot.Icon.Image = ""
+    end
+
+    -- Inactive (backpack)
+    for _, Slot in Relics.Bottom:GetChildren() do
+        if not Slot then continue end
+        if Slot.Name == "UIListLayout" then continue end
+
+        local SlotNum = tonumber(string.sub(Slot.Name, 5, 5))
+
+        -- This is a copy of the icon that can actually be dragged
+        local IconDrag = Slot.Icon:Clone()
+        IconDrag.Name = "IconDrag"
+        IconDrag.Visible = false
+        IconDrag.Parent = Slot
+
+        Slot.Icon.Image = ""
+    end
+end
+
+local function SetGui()
+    SetModStonesFrame()
+    SetRelicsFrame()
 end
 
 function PositionEffectBoxes(CancelDelay: boolean?)
