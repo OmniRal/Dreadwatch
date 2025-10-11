@@ -105,6 +105,7 @@ end
 function RelicService:Init()
     Remotes:CreateToClient("Equipped", {"string"}, "Reliable")
     Remotes:CreateToClient("Unequipped", {"string"}, "Reliable")
+    Remotes:CreateToClient("RelicSlotsUpdated", {"table"}, "Reliable")
 
     Remotes:CreateToServer("UseActive", {"number", "Vector3?", "Vector3?"}, "Returns", function(Player: Player, SlotNum: number, ShootFrom: Vector3?, ShootGoal: Vector3?)
         return RelicService:UseActive(Player, SlotNum, ShootFrom, ShootGoal)
@@ -156,6 +157,10 @@ function RelicService.PlayerAdded(Player: Player)
         end
     
         UnitValuesService:GetAttributes(Player)
+
+        local CurrentRelics = DataService:GetPlayerRelics(Player)
+        if not CurrentRelics then return end
+        Remotes.RelicService.RelicSlotsUpdated:Fire(Player, CurrentRelics)
     end)
 
 end

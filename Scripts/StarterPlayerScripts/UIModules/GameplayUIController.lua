@@ -20,6 +20,7 @@ local Workspace = game:GetService("Workspace")
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 local ModStoneService = Remotes.ModStoneService
+local RelicsService = Remotes.RelicService
 
 local UIBasics = require(ReplicatedStorage.Source.SharedModules.UI.UIBasics)
 local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
@@ -28,6 +29,7 @@ local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Other.ColorP
 
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 local ModStonesInfo = require(ReplicatedStorage.Source.SharedModules.Info.ModStonesInfo)
+local RelicsInfo = require(ReplicatedStorage.Source.SharedModules.Info.RelicInfo)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -259,21 +261,46 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function GameplayUIController:UpdateModStoneFrame(List: {[number]: string})
+-- Update the mod stone slots
+function GameplayUIController:UpdateModStoneSlots(List: {[number]: string})
     local Mods = Gui:WaitForChild("ModStonesFrame")
 
     for Num, Name in ipairs(List) do
-        local Frame = Mods:FindFirstChild("Mod_" .. Num)
+        local Slot = Mods:FindFirstChild("Mod_" .. Num)
         local Info = ModStonesInfo[Name]
-        if not Frame then continue end
+        if not Slot then continue end
 
         if Info then
-            Frame.Icon.Image = "rbxassetid://" .. Info.Icon
+            Slot.Icon.Image = "rbxassetid://" .. Info.Icon
         else
-            Frame.Icon.Image = ""
+            Slot.Icon.Image = ""
         end
 
-        Frame.IconDrag.Image = Frame.Icon.Image
+        Slot.IconDrag.Image = Slot.Icon.Image
+    end
+end
+
+-- Update the relic slots
+function GameplayUIController:UpdateRelicSlots(List: {[number]: string})
+    local Relics = Gui:WaitForChild("RelicsFrame")
+
+    for Num, Name in ipairs(List) do
+        local Section = Relics.Top
+        if Num > 3 then
+            Section = Relics.Bottom
+        end
+
+        local Slot = Section:FindFirstChild("Relic_" .. Num)
+        local Info = RelicsInfo[Name]
+        if not Slot then continue end
+
+        if Info then
+            Slot.Icon.Image = "rbxassetid://" .. Info.Icon
+        else
+            Slot.Icon.Image = ""
+        end
+
+        Slot.IconDrag.Image = Slot.Icon.Image
     end
 end
 
@@ -334,8 +361,12 @@ function GameplayUIController:Init()
 end
 
 function GameplayUIController:Deferred()
-    ModStoneService.ModStonesUpdated:Connect(function(Current: {[number]: string})
-        GameplayUIController:UpdateModStoneFrame(Current)
+    ModStoneService.ModStoneSlotsUpdated:Connect(function(Current: {[number]: string})
+        GameplayUIController:UpdateModStoneSlots(Current)
+    end)
+
+    RelicsService.RelicSlotsUpdated:Connect(function(Current: {[number]: string})
+        GameplayUIController:UpdateRelicSlots(Current)
     end)
 end
 

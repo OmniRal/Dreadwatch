@@ -13,7 +13,7 @@ RelicInfo.Chungus = {
     DisplayName = "Chungus",
     Description = "Chungus",
     FlavorText = "Chungus",
-    Icon = 0,
+    Icon = 70759788824615,
 
     Attributes = {
         Health = 25,
@@ -40,7 +40,7 @@ RelicInfo.Dingus = {
     DisplayName = "Dingus",
     Description = "Dingus",
     FlavorText = "Dingus",
-    Icon = 0,
+    Icon = 128112961203002,
     
     Attributes = {
         Damage = 0

@@ -160,7 +160,7 @@ function ModStoneService:RunThroughMods(Player: Player, BaseAction: () -> (), Po
 end
 
 function ModStoneService:Init()
-    Remotes:CreateToClient("ModStonesUpdated", {"table"}, "Reliable")
+    Remotes:CreateToClient("ModStoneSlotsUpdated", {"table"}, "Reliable")
 
     Remotes:CreateToServer("RequestDropStone", {"number", "Vector3?"}, "Returns", function(Player: Player, SlotNum: number, DropTo: Vector3?)
         return ModStoneService:RequestDropStone(Player, SlotNum, DropTo)
@@ -178,7 +178,7 @@ function ModStoneService.PlayerAdded(Player: Player)
     
     task.delay(1, function()
         local CurrentMods = DataService:GetPlayerMods(Player)
-        Remotes.ModStoneService.ModStonesUpdated:Fire(Player, CurrentMods)
+        Remotes.ModStoneService.ModStoneSlotsUpdated:Fire(Player, CurrentMods)
     end)
 
 end

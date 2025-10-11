@@ -2566,6 +2566,99 @@
 																	"children": []
 																}
 															]
+														},
+														{
+															"name": "Slot_4",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "UIAspectRatioConstraint",
+																	"className": "UIAspectRatioConstraint",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Stroke",
+																	"className": "UIStroke",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Button",
+																	"className": "ImageButton",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Icon",
+																	"className": "ImageLabel",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														},
+														{
+															"name": "Slot_5",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "UIAspectRatioConstraint",
+																	"className": "UIAspectRatioConstraint",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Stroke",
+																	"className": "UIStroke",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Button",
+																	"className": "ImageButton",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Icon",
+																	"className": "ImageLabel",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														},
+														{
+															"name": "Slot_6",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "UIAspectRatioConstraint",
+																	"className": "UIAspectRatioConstraint",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Stroke",
+																	"className": "UIStroke",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Button",
+																	"className": "ImageButton",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Icon",
+																	"className": "ImageLabel",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
 														}
 													]
 												}

@@ -189,13 +189,6 @@ function DataService:GetPlayerCurrentWeapons(Player: Player): (string, string, s
     return PlayerData.CurrentWeapon, PlayerData.CurrentWeaponSkin, PlayerData.CurrentWeaponAbility
 end
 
--- Returns an array of the players relics
-function DataService:GetPlayerRelics(Player: Player): {[number]: string}
-    self:WaitForPlayerDataLoaded(Player)
-
-    return Profiles[Player].Data.CurrentRelics
-end
-
 -- Set a specific mod stone slot in the players data
 -- @NewMod : The name of the mod stone, or "None"
 -- @DoNotSendSignalToPlayer : If true, it will NOT fire an event to the client, giving them their updated mod stone slots
@@ -229,6 +222,13 @@ function DataService:ArePlayerModsFull(Player: Player): (boolean, number?)
     end
 
     return true
+end
+
+-- Returns an array of the players relics
+function DataService:GetPlayerRelics(Player: Player): {[number]: string}
+    self:WaitForPlayerDataLoaded(Player)
+
+    return Profiles[Player].Data.CurrentRelics
 end
 
 function DataService:IncrementIndex(Player, Index, Increment)
