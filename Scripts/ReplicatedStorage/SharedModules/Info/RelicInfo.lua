@@ -18,6 +18,7 @@ RelicInfo.Chungus = {
     Attributes = {
         Health = 25,
         Mana = 10,
+        WalkSpeed = 25,
     },
 
     Ability = {
@@ -43,7 +44,8 @@ RelicInfo.Dingus = {
     Icon = 128112961203002,
     
     Attributes = {
-        Damage = 0
+        Damage = 0,
+        WalkSpeed = 10,
     },
 
     Ability = {

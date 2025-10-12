@@ -4,7 +4,9 @@
 local GeneralUILibrary = {}
 
 local StarterPlayer = game:GetService("StarterPlayer")
+local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local GuiService = game:GetService("GuiService")
 local TextService = game:GetService("TextService")
 local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
@@ -118,7 +120,7 @@ end
 -- Checks to see if the current dragging element is positioned outside of its original bounding box. Intended to drop items of your inventory
 -- @Element : The gui object that was dragged
 -- @Box : The gui object that is used as the bounding box
-function GeneralUILibrary:CheckDragElementDropped(Element: GuiObject, Box: GuiObject, DropPhysically: boolean?): (boolean, Vector3?)
+function GeneralUILibrary:CheckDragElementDropped(PlayerGui: PlayerGui, Element: GuiObject, Box: GuiObject, DropPhysically: boolean?): (boolean, GuiObject?, Vector3?)
 	if not Element or not Box then return false end
 
 	local Position = Element.AbsolutePosition
@@ -129,13 +131,28 @@ function GeneralUILibrary:CheckDragElementDropped(Element: GuiObject, Box: GuiOb
 		return false
 	end
 
+	-- Check if the mouse is hovering over another UI element
+	local MousePosition = UserInputService:GetMouseLocation()
+	local GuiInset = GuiService:GetGuiInset()
+
+	local GuiObjects = PlayerGui:GetGuiObjectsAtPosition(MousePosition.X - GuiInset.X, MousePosition.Y - GuiInset.Y)
+	for n, Object in GuiObjects do
+		if Object ~= Element then continue end
+		table.remove(GuiObjects, n)
+	end
+
+	if #GuiObjects > 0 then
+
+		return false, GuiObjects[1]
+	end
+
 	if DropPhysically then
 		-- Convert the Element's screen position to a 3D world position; for where to drop the item
 		local CameraRay = Camera:ViewportPointToRay(Position.X, Position.Y, 1000)
 		local NewRay = Workspace:Raycast(CameraRay.Origin, CameraRay.Direction * -1000)
 		if NewRay then
 			if NewRay.Position then
-				return true, NewRay.Position
+				return true, nil, NewRay.Position
 			end
 		end
 
@@ -159,6 +176,7 @@ function GeneralUILibrary:AddBaseButtonInteractions(
 	ToggleFromActivation: boolean?, 
 	DraggingElement: boolean?,
 	DragDelay: number?,
+	DragCondition: () -> (boolean),
 	StartDrag: (GuiObject, GuiObject?) -> ()?,
 	StopDrag: (GuiObject, GuiObject?) -> ()?
 )
@@ -196,6 +214,7 @@ function GeneralUILibrary:AddBaseButtonInteractions(
 		ButtonFrame:SetAttribute("Pressed", true)
 
 		if DraggingElement then
+			if not DragCondition() then return end
 			if not DragDelay then
 				Button:SetAttribute("Dragging", true)
 				Events.UI.StartDraggingUI:Fire(Input.Position, Button, if DraggingElement == Button then Button else DraggingElement, StartDrag)

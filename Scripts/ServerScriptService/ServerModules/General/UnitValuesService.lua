@@ -170,7 +170,7 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function UnitValuesService:AddEffect(Unit: Player | Model, EffectDetails: UnitEnum.EffectDetails, EffectAttributes: UnitEnum.BaseAttributes?, EffectStates: UnitEnum.BaseStates)
+function UnitValuesService:AddEffect(Unit: Player | Model, EffectDetails: UnitEnum.EffectDetails, EffectAttributes: UnitEnum.BaseAttributes?, EffectStates: UnitEnum.BaseStates): UnitEnum.Effect
     local UnitValues : UnitEnum.UnitValues = AllValues[Unit]
     
     if not UnitValues then return end
@@ -292,6 +292,8 @@ function UnitValuesService:AddEffect(Unit: Player | Model, EffectDetails: UnitEn
 
     --print(Unit.Name, " Updated States: ", UnitValues)
     UnitValuesService:RecalculateAttributes(Unit, BaseAttributes)
+
+    return NewEffect
 end
 
 function UnitValuesService:SetTimeOfExistingEffects(Unit: Player | Model, EffectName: string, NewDuration: number, NewSpawnTime: number?)

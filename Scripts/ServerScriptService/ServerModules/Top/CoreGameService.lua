@@ -160,7 +160,6 @@ function CoreGameService.PlayerAdded(Player: Player)
     }
     Player.CharacterAdded:Connect(function(Character: any)
         CharacterService:LoadCharacter(Player)
-        RelicService:UpdatePlayerAttributes(Player)
 
 
         --[[local Root = Character:WaitForChild("HumanoidRootPart")
@@ -185,7 +184,6 @@ function CoreGameService.PlayerAdded(Player: Player)
     --SpawnCharacter(Player)
 
     CharacterService:LoadCharacter(Player)
-    RelicService:UpdatePlayerAttributes(Player)
 end
 
 function CoreGameService.PlayerRemoving(Player: Player)

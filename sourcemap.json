@@ -2460,6 +2460,99 @@
 																	"children": []
 																}
 															]
+														},
+														{
+															"name": "Relic_3",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "UIAspectRatioConstraint",
+																	"className": "UIAspectRatioConstraint",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Stroke",
+																	"className": "UIStroke",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Button",
+																	"className": "ImageButton",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Icon",
+																	"className": "ImageLabel",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														},
+														{
+															"name": "Relic_1",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "UIAspectRatioConstraint",
+																	"className": "UIAspectRatioConstraint",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Stroke",
+																	"className": "UIStroke",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Button",
+																	"className": "ImageButton",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Icon",
+																	"className": "ImageLabel",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														},
+														{
+															"name": "Relic_2",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "UIAspectRatioConstraint",
+																	"className": "UIAspectRatioConstraint",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Stroke",
+																	"className": "UIStroke",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Button",
+																	"className": "ImageButton",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Icon",
+																	"className": "ImageLabel",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
 														}
 													]
 												},
@@ -2468,105 +2561,6 @@
 													"className": "Frame",
 													"filePaths": [],
 													"children": [
-														{
-															"name": "Slot_1",
-															"className": "Frame",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "UIAspectRatioConstraint",
-																	"className": "UIAspectRatioConstraint",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Stroke",
-																	"className": "UIStroke",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Button",
-																	"className": "ImageButton",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Icon",
-																	"className": "ImageLabel",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														},
-														{
-															"name": "Slot_2",
-															"className": "Frame",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "UIAspectRatioConstraint",
-																	"className": "UIAspectRatioConstraint",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Stroke",
-																	"className": "UIStroke",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Button",
-																	"className": "ImageButton",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Icon",
-																	"className": "ImageLabel",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														},
-														{
-															"name": "UIListLayout",
-															"className": "UIListLayout",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Slot_3",
-															"className": "Frame",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "UIAspectRatioConstraint",
-																	"className": "UIAspectRatioConstraint",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Stroke",
-																	"className": "UIStroke",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Button",
-																	"className": "ImageButton",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Icon",
-																	"className": "ImageLabel",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														},
 														{
 															"name": "Slot_4",
 															"className": "Frame",
@@ -2630,7 +2624,106 @@
 															]
 														},
 														{
+															"name": "UIListLayout",
+															"className": "UIListLayout",
+															"filePaths": [],
+															"children": []
+														},
+														{
 															"name": "Slot_6",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "UIAspectRatioConstraint",
+																	"className": "UIAspectRatioConstraint",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Stroke",
+																	"className": "UIStroke",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Button",
+																	"className": "ImageButton",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Icon",
+																	"className": "ImageLabel",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														},
+														{
+															"name": "Relic_4",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "UIAspectRatioConstraint",
+																	"className": "UIAspectRatioConstraint",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Stroke",
+																	"className": "UIStroke",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Button",
+																	"className": "ImageButton",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Icon",
+																	"className": "ImageLabel",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														},
+														{
+															"name": "Relic_5",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "UIAspectRatioConstraint",
+																	"className": "UIAspectRatioConstraint",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Stroke",
+																	"className": "UIStroke",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Button",
+																	"className": "ImageButton",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Icon",
+																	"className": "ImageLabel",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														},
+														{
+															"name": "Relic_6",
 															"className": "Frame",
 															"filePaths": [],
 															"children": [

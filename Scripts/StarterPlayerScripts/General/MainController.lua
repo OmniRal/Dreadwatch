@@ -25,6 +25,7 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 local DataService = Remotes.DataService
 local CoreGameService = Remotes.CoreGameService
 local ModStoneService = Remotes.ModStoneService
+local RelicService = Remotes.RelicService
 local RagdollService = Remotes.RagdollService
 
 local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
@@ -113,18 +114,19 @@ local function CheckGrounded()
 end
 
 local function CheckPickupItems()
-    warn(1)
     if PickupDebounce then return end
 
-    warn(2)
     local Target = Mouse.Target
     if not Target then return end
 
-    warn(3, Target)
+    -- Try to pick up a mod stone
     if Target.Parent:HasTag("ModStone") then
-        warn(4)
         PickupDebounce = true
         ModStoneService:RequestPickupStone(Target.Parent)
+
+    elseif Target.Parent:HasTag("Relic") then
+        PickupDebounce = true
+        RelicService:RequestPickupRelic(Target.Parent)
     end 
 
     if not PickupDebounce then return end

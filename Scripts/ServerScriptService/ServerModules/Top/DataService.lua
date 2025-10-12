@@ -68,7 +68,7 @@ local ProfileTemplate = {
     },
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_19', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_27', ProfileTemplate)
 
 local Profiles = {}
 
@@ -200,7 +200,7 @@ function DataService:SetPlayerMod(Player: Player, SlotNum: number, NewMod: "None
     Profiles[Player].Data.CurrentMods[SlotNum] = NewMod
 
     if DoNotSendSignalToPlayer then return end
-    Remotes.ModStoneService.ModStonesUpdated:Fire(Player, Profiles[Player].Data.CurrentMods)
+    Remotes.ModStoneService.ModStoneSlotsUpdated:Fire(Player, Profiles[Player].Data.CurrentMods)
 end
 
 -- Returns an array of the players current equipped Mod Stones.
@@ -229,6 +229,45 @@ function DataService:GetPlayerRelics(Player: Player): {[number]: string}
     self:WaitForPlayerDataLoaded(Player)
 
     return Profiles[Player].Data.CurrentRelics
+end
+
+-- Set a players relic slot to a specific relic
+function DataService:SetRelic(Player: Player, SlotNum: number, RelicName: "None" | string)
+    self:WaitForPlayerDataLoaded(Player)
+
+    local PlayerData = Profiles[Player].Data
+    PlayerData.CurrentRelics[SlotNum] = RelicName
+    Remotes.RelicService.RelicSlotsUpdated:Fire(Player, PlayerData.CurrentRelics)
+end
+
+-- Swaps the relic from one slot to another in the players data
+function DataService:SwapRelics(Player: Player, SlotNum_A: number, SlotNum_B: number): boolean?
+    self:WaitForPlayerDataLoaded(Player)
+
+    local PlayerData = Profiles[Player].Data
+    local From_Relic = PlayerData.CurrentRelics[SlotNum_A]
+    local To_Relic = PlayerData.CurrentRelics[SlotNum_B]
+    
+    PlayerData.CurrentRelics[SlotNum_A] = To_Relic
+    PlayerData.CurrentRelics[SlotNum_B] = From_Relic
+
+    Remotes.RelicService.RelicSlotsUpdated:Fire(Player, PlayerData.CurrentRelics)
+
+    return true
+end
+
+-- Checks to see if the players mod stone slots are all taken
+function DataService:AreRelicSlotsFull(Player: Player): (boolean, number?)
+    self:WaitForPlayerDataLoaded(Player)
+
+    local CurrentRelics = Profiles[Player].Data.CurrentRelics
+
+    for x = 1, 6 do
+        if CurrentRelics[x] ~= "None" then continue end
+        return false, x
+    end
+
+    return true
 end
 
 function DataService:IncrementIndex(Player, Index, Increment)

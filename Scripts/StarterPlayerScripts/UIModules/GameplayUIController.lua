@@ -85,6 +85,11 @@ local function SetModStonesFrame()
             IconDrag,
             1,
 
+            function(): boolean
+                if Slot.Icon.Image == "" then return false end
+                return true
+            end,
+
             function()
                 Slot.Icon.ImageTransparency = 0.5
                 IconDrag.Visible = true
@@ -95,7 +100,7 @@ local function SetModStonesFrame()
                 IconDrag.Visible = false
 
                 -- Check to drop the stone
-                local CanDrop, DropTo = GeneralUILibrary:CheckDragElementDropped(IconDrag, Slot, true)
+                local CanDrop, _, DropTo = GeneralUILibrary:CheckDragElementDropped(LocalPlayer.PlayerGui, IconDrag, Slot, true)
                 if CanDrop and DropTo then
                     ModStoneService:RequestDropStone(SlotNum, DropTo)
                 end
@@ -109,36 +114,65 @@ end
 local function SetRelicsFrame()
     local Relics = Gui:WaitForChild("RelicsFrame")
 
-    -- Active
-    for _, Slot in Relics.Top:GetChildren() do
-        if not Slot then continue end
-        if Slot.Name == "UIListLayout" then continue end
+    local Sections = {"Top", "Bottom"}
+    for _, Name in ipairs(Sections) do
+        local Section = Relics:FindFirstChild(Name)
+        if not Section then continue end
 
-        local SlotNum = tonumber(string.sub(Slot.Name, 5, 5))
+        for _, Slot in Section:GetChildren() do
+            if not Slot then continue end
+            if Slot.Name == "UIListLayout" then continue end
 
-        -- This is a copy of the icon that can actually be dragged
-        local IconDrag = Slot.Icon:Clone()
-        IconDrag.Name = "IconDrag"
-        IconDrag.Visible = false
-        IconDrag.Parent = Slot
+            local SlotNum = tonumber(string.sub(Slot.Name, 7, 7))
 
-        Slot.Icon.Image = ""
-    end
+            -- This is a copy of the icon that can actually be dragged
+            local IconDrag = Slot.Icon:Clone()
+            IconDrag.Name = "IconDrag"
+            IconDrag.Visible = false
+            IconDrag.ImageColor3 = ColorPalette.JetWhite
+            IconDrag.Parent = Slot
+            
+            Slot.Icon.Image = ""
 
-    -- Inactive (backpack)
-    for _, Slot in Relics.Bottom:GetChildren() do
-        if not Slot then continue end
-        if Slot.Name == "UIListLayout" then continue end
+            -- Connect interaction for each relic slot
+            GeneralUILibrary:AddBaseButtonInteractions(
+                Slot, 
+                Slot.Button, 
+                false,
+                IconDrag,
+                1,
 
-        local SlotNum = tonumber(string.sub(Slot.Name, 5, 5))
+                function(): boolean
+                    if Slot.Icon.Image == "" then return false end
+                    return true
+                end,
 
-        -- This is a copy of the icon that can actually be dragged
-        local IconDrag = Slot.Icon:Clone()
-        IconDrag.Name = "IconDrag"
-        IconDrag.Visible = false
-        IconDrag.Parent = Slot
+                function()
+                    Slot.Icon.ImageTransparency = 0.5
+                    IconDrag.Visible = true
+                end,
 
-        Slot.Icon.Image = ""
+                function()
+                    Slot.Icon.ImageTransparency = 0
+                    IconDrag.Visible = false
+                    
+                    -- Check to swap or drop the relic
+                    local CanDrop, HoveringElement, DropTo = GeneralUILibrary:CheckDragElementDropped(LocalPlayer.PlayerGui, IconDrag, Slot, true)
+                    if not CanDrop and HoveringElement then
+                        if not string.find(HoveringElement.Parent.Name, "Relic_") then return end
+                        local OtherSlotNum = tonumber(string.sub(HoveringElement.Parent.Name, 7, 7))
+                        local Result_A, Result_B = RelicsService:RequestSwapRelics(SlotNum, OtherSlotNum)
+                        print("Swap Results :", Result_A, Result_B)
+                        
+                        elseif CanDrop and DropTo then
+                            --ModStoneService:RequestDropStone(SlotNum, DropTo)
+                            RelicsService:RequestDropRelic(SlotNum, DropTo)    
+                        end
+                        
+                    IconDrag.Position = Slot.Icon.Position
+                end
+            )
+        end
     end
 end
 

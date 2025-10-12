@@ -730,8 +730,8 @@ function NPC:Patrol()
     if not self.Path.UsePathfinding then return end
 
     local GoalBlocked = IsGoalBlocked(self.Root.Position, self.Goal.Point, {self.Model})
-    print("Patrolling to point :", self.Goal.Point)
-    print("Point Blocked :", GoalBlocked)
+    --print("Patrolling to point :", self.Goal.Point)
+    --print("Point Blocked :", GoalBlocked)
 
     if GoalBlocked then
         self:CreateNewPath()
