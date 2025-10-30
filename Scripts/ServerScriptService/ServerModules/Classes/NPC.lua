@@ -961,7 +961,7 @@ function NPC:Move()
     if self.State == "Patrolling" then
         
         if not self.Goal.Reached then
-            if self.Path.Num <= 0 then
+            if self.Path.Num <= 0 and self.Root and self.Goal.Point then
                 if (self.Root.Position - self.Goal.Point).Magnitude > 5 then
                     self.Human:MoveTo(self.Goal.Point)
                     

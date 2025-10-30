@@ -143,7 +143,6 @@ function UnitManagerService:ApplyDamage(Source: Player | Model | string, Victim:
 
     VictimValues.Folder.Current.Health.Value -= DamageAmount
 
-
     if Source:IsA("Player") then
         local SourceHistoryEntry : UnitEnum.HistoryEntry = {
             Source = Source,
