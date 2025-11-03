@@ -1,6 +1,6 @@
 -- OmniRal
 
-local RelicController = {}
+local ItemController = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
@@ -18,10 +18,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
-local RelicService = Remotes.RelicService
+local ItemService = Remotes.ItemService
 
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
-local RelicInfo = require(ReplicatedStorage.Source.SharedModules.Info.RelicInfo)
+local ItemInfo = require(ReplicatedStorage.Source.SharedModules.Info.ItemInfo)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -38,15 +38,14 @@ local Mouse = LocalPlayer:GetMouse()
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local function UseRelic(Action: string, InputState: Enum.UserInputState, InputObject: InputObject?)
+local function UseItem(Action: string, InputState: Enum.UserInputState, InputObject: InputObject?)
     warn(1)
     if InputState ~= Enum.UserInputState.Begin then return end
     warn(2)
     if PlayerInfo.Dead or not PlayerInfo.Root then return end
-    warn(3)
-
-    local SlotNum = tonumber(string.sub(Action, 10, 10))
-    local Result_1, Result_2 = RelicService:UseActive(SlotNum, PlayerInfo.Root.Position, Mouse.Hit.Position)
+    
+    local SlotNum = tonumber(string.sub(Action, 9, 9))
+    local Result_1, Result_2 = ItemService:UseActive(SlotNum, PlayerInfo.Root.Position, Mouse.Hit.Position)
 
     warn("Result : ", Result_1, Result_2)
     return Result_1, Result_2
@@ -56,38 +55,38 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function RelicController:SetCharacter()
-    RelicController:ToggleControls(true)
+function ItemController:SetCharacter()
+    ItemController:ToggleControls(true)
 end
 
-function RelicController:ToggleControls(Set: boolean)
+function ItemController:ToggleControls(Set: boolean)
 
     if Set then
-        ContextActionService:BindAction("UseRelic_1", UseRelic, false, Enum.KeyCode.One)
-        ContextActionService:BindAction("UseRelic_2", UseRelic, false, Enum.KeyCode.Two)
-        ContextActionService:BindAction("UseRelic_3", UseRelic, false, Enum.KeyCode.Three)
+        ContextActionService:BindAction("UseItem_1", UseItem, false, Enum.KeyCode.One)
+        ContextActionService:BindAction("UseItem_2", UseItem, false, Enum.KeyCode.Two)
+        ContextActionService:BindAction("UseItem_3", UseItem, false, Enum.KeyCode.Three)
 
     else
-        ContextActionService:UnbindAction("UseRelic_1")
-        ContextActionService:UnbindAction("UseRelic_2")
-        ContextActionService:UnbindAction("UseRelic_3")
+        ContextActionService:UnbindAction("UseItem_1")
+        ContextActionService:UnbindAction("UseItem_2")
+        ContextActionService:UnbindAction("UseItem_3")
     end
 end
 
-function RelicController:Init()
-    RelicService.Equipped:Connect(function(RelicName: string)
-        print("Equipped ", RelicName)
+function ItemController:Init()
+    ItemService.Equipped:Connect(function(ItemName: string)
+        print("Equipped ", ItemName)
     end)
 
-    RelicService.Unequipped:Connect(function(RelicName: string)
-        print("Unequipped ", RelicName)
+    ItemService.Unequipped:Connect(function(ItemName: string)
+        print("Unequipped ", ItemName)
     end)
 
-	print("RelicController initialized...")
+	print("ItemController initialized...")
 end
 
-function RelicController:Deferred()
-    print("RelicController deferred...")
+function ItemController:Deferred()
+    print("ItemController deferred...")
 end
 
-return RelicController
+return ItemController

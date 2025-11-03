@@ -1,44 +1,66 @@
 -- OmniRal
 
-local ItemInfo = {}
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerStorage = game:GetService("ServerStorage")
-local CollectionService = game:GetService("CollectionService")
 
-local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
+local ItemEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.ItemEnum)
 
+local ItemInfo: {
+    [string]: ItemEnum.Item
+} = {}
 
-local RNG = Random.new()
-local Sides = {-1, 1}
+ItemInfo.Chungus = {
+    Name = "Chungus",
+    DisplayName = "Chungus",
+    Description = "Chungus",
+    FlavorText = "Chungus",
+    Icon = 70759788824615,
 
-ItemInfo.NormalCrate = {
-    Name = "NormalCrate",
-    DisplayName = "Crate",
-    Setup = function(Crate: Model)
-        local MaxHealth = 10
-        local Base = Crate:FindFirstChild("Base") :: Part
-        
-        CollectionService:AddTag(Crate, "Breakable")
-        CollectionService:AddTag(Crate, "Crate")
-        Crate:SetAttribute("Health", MaxHealth)
+    Attributes = {
+        Health = 25,
+        Mana = 10,
+        WalkSpeed = 25,
+    },
 
-        Crate:GetAttributeChangedSignal("Health"):Connect(function()
-            local CurrentHealth = Crate:GetAttribute("Health") :: number
-            if CurrentHealth > 0 then
-                Base.AssemblyLinearVelocity = Vector3.new(0, RNG:NextInteger(5, 6), 0)
-                Base.AssemblyAngularVelocity = Vector3.new(
-                    RNG:NextInteger(5, 10) * Sides[RNG:NextInteger(1, 2)],
-                    RNG:NextInteger(5, 10) * Sides[RNG:NextInteger(1, 2)],
-                    RNG:NextInteger(5, 10) * Sides[RNG:NextInteger(1, 2)]
-                )
-            else
-                Crate:Destroy()
-            end
-        end)
+    Ability = {
+        Name = "Test Passive",
+        DisplayName = "Test Passive Display",
+        Description = "Test Passive Description",
+        FlavorText = "Test Passive Flavor Test",
+        Icon = 0,
 
-        return Crate
-    end
-} :: CustomEnum.Crate
+        Type = "Passive",
+        Damage = NumberRange.new(0, 0),
+        Cooldown = 7,
+
+        Details = {},
+    }
+}
+
+ItemInfo.Dingus = {
+    Name = "Dingus",
+    DisplayName = "Dingus",
+    Description = "Dingus",
+    FlavorText = "Dingus",
+    Icon = 128112961203002,
+    
+    Attributes = {
+        Damage = 0,
+        WalkSpeed = 10,
+    },
+
+    Ability = {
+        Name = "Test Active",
+        DisplayName = "Test Active Display",
+        Description = "Test Active Description",
+        FlavorText = "Test Active Flavor Text",
+        Icon = 0,
+
+        Type = "Active",
+        Damage = NumberRange.new(10, 10),
+        Cooldown = 5,
+
+        Details = {},
+    }
+}
 
 return ItemInfo

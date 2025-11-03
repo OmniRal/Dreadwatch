@@ -24,8 +24,8 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 local DataService = Remotes.DataService
 local CoreGameService = Remotes.CoreGameService
-local ModStoneService = Remotes.ModStoneService
 local RelicService = Remotes.RelicService
+local ItemService = Remotes.ItemService
 local RagdollService = Remotes.RagdollService
 
 local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
@@ -34,7 +34,7 @@ local MainUIController = require(StarterPlayer.StarterPlayerScripts.Source.Gener
 local AnimationController = require(StarterPlayer.StarterPlayerScripts.Source.General.AnimationController)
 local PlatformingController = require(StarterPlayer.StarterPlayerScripts.Source.General.PlatformingController)
 local WeaponController = require(StarterPlayer.StarterPlayerScripts.Source.General.WeaponController)
-local RelicController = require(StarterPlayer.StarterPlayerScripts.Source.General.RelicController)
+local ItemController = require(StarterPlayer.StarterPlayerScripts.Source.General.ItemController)
 
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 local SoundControlService = require(ReplicatedStorage.Source.SharedModules.Other.SoundControlService)
@@ -119,14 +119,14 @@ local function CheckPickupItems()
     local Target = Mouse.Target
     if not Target then return end
 
-    -- Try to pick up a mod stone
-    if Target.Parent:HasTag("ModStone") then
-        PickupDebounce = true
-        ModStoneService:RequestPickupStone(Target.Parent)
-
-    elseif Target.Parent:HasTag("Relic") then
+    -- Try to pick up a relic
+    if Target.Parent:HasTag("Relic") then
         PickupDebounce = true
         RelicService:RequestPickupRelic(Target.Parent)
+
+    elseif Target.Parent:HasTag("Item") then
+        PickupDebounce = true
+        ItemService:RequestPickupRelic(Target.Parent)
     end 
 
     if not PickupDebounce then return end
@@ -223,7 +223,7 @@ function MainController:SetCharacter()
     CameraController:SetCharacter()
     MainUIController:SetCharacter()
     WeaponController:SetCharacter()
-    RelicController:SetCharacter()
+    ItemController:SetCharacter()
 
     PlayerInfo.UnitValues = LocalPlayer.Character:WaitForChild("UnitValues")
 

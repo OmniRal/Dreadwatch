@@ -65,21 +65,34 @@ end
 -- Public API --
 ----------------
 
-function CharacterService:LoadCharacter(Player: Player)
+function CharacterService:SetupCharacter(Player: Player, SpawnHere: CFrame?)
     task.spawn(function()
-        while Player.Character == nil do task.wait() end
+        while Player.Character == nil do 
+            task.wait() 
+        end
 
         local Character = Player.Character
         if Character:GetAttribute("Loaded") then return end
+
+        warn("Loading", Player, "'s character!")
         Character:SetAttribute("Loaded", true)
 
         local Human, Root = Character:WaitForChild("Humanoid"), Character:WaitForChild("HumanoidRootPart")
+
+        if SpawnHere then
+            Character:PivotTo(SpawnHere)
+        end
 
         for _, Part in pairs(Character:GetDescendants()) do
             if Part:IsA("BasePart") then
                 Part.CollisionGroup = "Players"
             end
         end
+
+        --[[for _, Sound in pairs(Assets.Misc.CharacterSounds:GetChildren()) do
+            print(Sound.Name, " added to ", Player.Name)
+            Sound:Clone().Parent = Root
+        end]]
 
         --AddNewAnimateScript(Character)
     end)

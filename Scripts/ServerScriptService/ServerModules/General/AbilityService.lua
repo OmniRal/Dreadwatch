@@ -26,7 +26,7 @@ local UnitValuesService = require(ServerScriptService.Source.ServerModules.Gener
 
 local PlayerAbilities: {
     [Player]: {
-        [string]: { -- Source; such as a Weapon (BasicSword) or a Relic (Amplifier)
+        [string]: { -- Source; such as a weapon (BasicSword) or an item (Amplifier)
             [string]: { -- Ability name
                 Equipped: boolean, -- If that ability is equipped
                 BaseCooldown: number, -- What the cooldown is of that ability
@@ -72,7 +72,7 @@ function AbilityService:SetCooldown(Player: Player, Source: string, AbilityName:
     local CooldownReduction = UnitValuesService:GetAttributes(Player, "CooldownReduction") or 0
     local Limits = UnitEnum.BaseAttributeLimits.CooldownReduction
 
-    -- Taking into account the base cooldown of that ability and how much cooldown reduction the player has from relics, items, etc
+    -- Taking into account the base cooldown of that ability and how much cooldown reduction the player has from items
     local TotalCooldown = Ability.BaseCooldown - (Ability.BaseCooldown * (math.clamp(CooldownReduction, Limits.Min, Limits.Max) / 100))
 
     Ability.TimeAvailable = os.time() + TotalCooldown
@@ -81,7 +81,7 @@ end
 
 -- Add a new abilities under the players list to keep track of
 -- Refer to PlayerAbilities at the top
--- @Source = Either a weapon, relic, or something
+-- @Source = Either a weapon, items, or something
 -- @Abilities = A list with the relevant data for that ability
 function AbilityService:AddNew(
     Player: Player,

@@ -208,7 +208,7 @@ function Utility:CheckForUnits(Type: "Players" | "Bots" | "All", List: {}, From:
 end
 
 function Utility:CheckForItems(List: {}, From: CFrame, Range: number)
-    for _, Item : Model in Workspace.Items:GetChildren() do
+    for _, Item: Model in Workspace.Items:GetChildren() do
         if not Item then continue end
         if table.find(List, Item) then continue end
 

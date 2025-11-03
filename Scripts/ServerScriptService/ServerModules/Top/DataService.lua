@@ -16,7 +16,7 @@ local ShopInfo = require(ReplicatedStorage.Source.SharedModules.Info.ShopInfo)
 local BadgeInfo = require(ReplicatedStorage.Source.SharedModules.Info.BadgeInfo)
 local WeaponInfo = require(ReplicatedStorage.Source.SharedModules.Info.WeaponInfo)
 
-local ModStoneEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.ModStoneEnum)
+local RelicEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.RelicEnum)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -47,13 +47,19 @@ local ProfileTemplate = {
 
     Weapons = {},
     Relics = {},
-    Mods = {},
+    Items = {},
 
     CurrentWeapon = "BasicSword",
     CurrentWeaponSkin = "Default",
     CurrentWeaponAbility = "Innate",
 
     CurrentRelics = {
+        [1] = "Echo",
+        [2] = "Blast",
+        [3] = "None",
+    },
+
+    CurrentItems = {
         [1] = "Chungus",
         [2] = "Dingus",
         [3] = "None",
@@ -61,14 +67,9 @@ local ProfileTemplate = {
         [5] = "None",
         [6] = "None",
     },
-    CurrentMods = {
-        [1] = "Echo",
-        [2] = "Blast",
-        [3] = "None",
-    },
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_27', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_29', ProfileTemplate)
 
 local Profiles = {}
 
@@ -189,75 +190,75 @@ function DataService:GetPlayerCurrentWeapons(Player: Player): (string, string, s
     return PlayerData.CurrentWeapon, PlayerData.CurrentWeaponSkin, PlayerData.CurrentWeaponAbility
 end
 
--- Set a specific mod stone slot in the players data
--- @NewMod : The name of the mod stone, or "None"
--- @DoNotSendSignalToPlayer : If true, it will NOT fire an event to the client, giving them their updated mod stone slots
-function DataService:SetPlayerMod(Player: Player, SlotNum: number, NewMod: "None" | string, DoNotSendSignalToPlayer: boolean?)
+-- Set a specific relic slot in the players data
+-- @NewMod : The name of the relic, or "None"
+-- @DoNotSendSignalToPlayer : If true, it will NOT fire an event to the client, giving them their updated relic slots
+function DataService:SetPlayerRelic(Player: Player, SlotNum: number, NewMod: "None" | string, DoNotSendSignalToPlayer: boolean?)
     self:WaitForPlayerDataLoaded(Player)
 
-    if not Profiles[Player].Data.CurrentMods then return end
-    if not Profiles[Player].Data.CurrentMods[SlotNum] then return end
-    Profiles[Player].Data.CurrentMods[SlotNum] = NewMod
+    if not Profiles[Player].Data.CurrentRelics then return end
+    if not Profiles[Player].Data.CurrentRelics[SlotNum] then return end
+    Profiles[Player].Data.CurrentRelics[SlotNum] = NewMod
 
     if DoNotSendSignalToPlayer then return end
-    Remotes.ModStoneService.ModStoneSlotsUpdated:Fire(Player, Profiles[Player].Data.CurrentMods)
+    Remotes.RelicService.RelicSlotsUpdated:Fire(Player, Profiles[Player].Data.CurrentRelics)
 end
 
--- Returns an array of the players current equipped Mod Stones.
-function DataService:GetPlayerMods(Player: Player): {[number]: string}
-    self:WaitForPlayerDataLoaded(Player)
-
-    return Profiles[Player].Data.CurrentMods
-end
-
--- Checks to see if the players mod stone slots are all taken
-function DataService:ArePlayerModsFull(Player: Player): (boolean, number?)
-    self:WaitForPlayerDataLoaded(Player)
-
-    local CurrentMods = Profiles[Player].Data.CurrentMods
-
-    for x = 1, 3 do
-        if CurrentMods[x] ~= "None" then continue end
-        return false, x
-    end
-
-    return true
-end
-
--- Returns an array of the players relics
+-- Returns an array of the players current equipped relic.
 function DataService:GetPlayerRelics(Player: Player): {[number]: string}
     self:WaitForPlayerDataLoaded(Player)
 
     return Profiles[Player].Data.CurrentRelics
 end
 
--- Set a players relic slot to a specific relic
-function DataService:SetRelic(Player: Player, SlotNum: number, RelicName: "None" | string)
+-- Checks to see if the players relic slots are all taken
+function DataService:ArePlayerRelicsFull(Player: Player): (boolean, number?)
     self:WaitForPlayerDataLoaded(Player)
 
-    local PlayerData = Profiles[Player].Data
-    PlayerData.CurrentRelics[SlotNum] = RelicName
-    Remotes.RelicService.RelicSlotsUpdated:Fire(Player, PlayerData.CurrentRelics)
-end
+    local CurrentRelics = Profiles[Player].Data.CurrentRelics
 
--- Swaps the relic from one slot to another in the players data
-function DataService:SwapRelics(Player: Player, SlotNum_A: number, SlotNum_B: number): boolean?
-    self:WaitForPlayerDataLoaded(Player)
-
-    local PlayerData = Profiles[Player].Data
-    local From_Relic = PlayerData.CurrentRelics[SlotNum_A]
-    local To_Relic = PlayerData.CurrentRelics[SlotNum_B]
-    
-    PlayerData.CurrentRelics[SlotNum_A] = To_Relic
-    PlayerData.CurrentRelics[SlotNum_B] = From_Relic
-
-    Remotes.RelicService.RelicSlotsUpdated:Fire(Player, PlayerData.CurrentRelics)
+    for x = 1, 3 do
+        if CurrentRelics[x] ~= "None" then continue end
+        return false, x
+    end
 
     return true
 end
 
--- Checks to see if the players mod stone slots are all taken
-function DataService:AreRelicSlotsFull(Player: Player): (boolean, number?)
+-- Returns an array of the players items
+function DataService:GetPlayerItems(Player: Player): {[number]: string}
+    self:WaitForPlayerDataLoaded(Player)
+
+    return Profiles[Player].Data.CurrentItems
+end
+
+-- Set a players item slot to a specific items
+function DataService:SetItem(Player: Player, SlotNum: number, ItemName: "None" | string)
+    self:WaitForPlayerDataLoaded(Player)
+
+    local PlayerData = Profiles[Player].Data
+    PlayerData.CurrentItems[SlotNum] = ItemName
+    Remotes.ItemService.ItemSlotsUpdated:Fire(Player, PlayerData.CurrentItems)
+end
+
+-- Swaps the item from one slot to another in the players data
+function DataService:SwapItems(Player: Player, SlotNum_A: number, SlotNum_B: number): boolean?
+    self:WaitForPlayerDataLoaded(Player)
+
+    local PlayerData = Profiles[Player].Data
+    local From_Relic = PlayerData.CurrentItems[SlotNum_A]
+    local To_Relic = PlayerData.CurrentItems[SlotNum_B]
+    
+    PlayerData.CurrentItems[SlotNum_A] = To_Relic
+    PlayerData.CurrentItems[SlotNum_B] = From_Relic
+
+    Remotes.ItemService.ItemSlotsUpdated:Fire(Player, PlayerData.CurrentItems)
+
+    return true
+end
+
+-- Checks to see if the players item slots are all taken
+function DataService:AreItemSlotsFull(Player: Player): (boolean, number?)
     self:WaitForPlayerDataLoaded(Player)
 
     local CurrentRelics = Profiles[Player].Data.CurrentRelics

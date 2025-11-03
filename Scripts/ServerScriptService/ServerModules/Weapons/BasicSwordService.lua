@@ -15,7 +15,7 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 local WeaponInfo = require(ReplicatedStorage.Source.SharedModules.Info.WeaponInfo).BasicSword
 
-local ModStoneService = require(ServerScriptService.Source.ServerModules.General.ModStoneService)
+local RelicService = require(ServerScriptService.Source.ServerModules.General.RelicService)
 local WeaponService = require(ServerScriptService.Source.ServerModules.General.WeaponService)
 local AbilityService = require(ServerScriptService.Source.ServerModules.General.AbilityService)
 local UnitValuesService = require(ServerScriptService.Source.ServerModules.General.UnitValuesService)
@@ -92,7 +92,7 @@ function BasicSwordService:Use(Player: Player, SwingNum: number, HitList: {Model
 
     for _, Unit in HitList do
         if not Unit then continue end
-        ModStoneService:RunThroughMods(
+        RelicService:RunThroughMods(
             Player,
             function()
                 UnitManagerService:ApplyDamage(Player, Unit, RNG:NextInteger(WeaponInfo.Damage.Min, WeaponInfo.Damage.Max) + DamageOffset, "BasicSword")

@@ -220,7 +220,7 @@ function NPCService:Stop()
 end
 
 function NPCService:Init()
-    NPCService:AddMultipleSpawners(Workspace)
+    NPCService:AddMultipleSpawners(Workspace.RemoveOnPlay)
 
     NPCInfo.NPCDied:Connect(function(NPCName: string)
         --print(NPCName .. " died!")

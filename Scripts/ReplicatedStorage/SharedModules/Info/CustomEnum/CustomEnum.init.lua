@@ -33,6 +33,10 @@ CustomEnum.TextDisplayType = {
     Crit = "Crit",
 }
 
+export type TeleportData = {
+    MissionID: number,
+    ExpectedPlayers: {Player}
+}
 
 export type Product = {
     Type: "Coins" | "Toy",

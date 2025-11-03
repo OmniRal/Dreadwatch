@@ -59,20 +59,19 @@ export type Room = {
 }
 
 export type Chunk = {
-    SystemType: SystemType?,
-
-    Biome: string,
+    SystemType: SystemType,
     
-    Amount_Rooms: NumberRange, -- Amount of rooms that can be in this chunk
-    Amount_Choices: NumberRange, -- Amount of choices that can be given
+    Model: Model, -- Easy reference 
+    Rooms: {Room},
+    Halls: {Hall},
+
+    Biome: string?,
+    
+    Amount_Rooms: NumberRange?, -- Amount of rooms that can be in this chunk
+    Amount_Choices: NumberRange?, -- Amount of choices that can be given
     SpecificRooms: {string}?,
-
-    Rooms: {Room}?,
-    Halls: {Hall}?,
-
-    ChunkFolder: Folder?, -- Easy reference 
     
-    TitleCard: string?, -- If there is a title card, this will show up in the players UI when they first enter the chunk. Ideal for biome transitions
+    TitleCard: string?, -- If there is a title card, this will show up in the players UI when they first enter the chunk. Ideal for biome transitions    
 }
 
 export type BiomeTypes = "Test"
@@ -100,22 +99,28 @@ export type Grid = {
     Occupied: {Vector2}, -- Spaces taken up
 }
 
-export type DifficulyScale = "Routine" | "Hazard" | "Disaster" | "Fallout" | "Cataclysm"
+export type LevelScale = "Routine" | "Hazard" | "Crisis" | "Disaster" | "Cataclysm"
 
 -- Contains everything that is within the level. From chunks, to flavor details.
 export type Level = {
-    Name: string,
-    Grid: Grid?,
+    Details: LevelDetails,
     Chunks: {Chunk},
+    Rooms: {Room},
+    Halls: {Hall},
+    Grid: Grid,
 
-    Description: string,
-    Difficulty: number,
+    Model: Model
 }
 
-export type LevelConstruct = {
+export type LevelDetails = {
+    ID: number,
     Name: string,
     Description: string,
-    Difficulty: DifficulyScale
+    Scale: LevelScale,
+
+    ModelID: number,
+
+    RandomizedLayout: boolean? -- If true, it will generate a random amount of rooms
 }
 
 -- When a biome or room has custom lighting, it can use these parameters. From their, the system can adjust the lighting accordingly

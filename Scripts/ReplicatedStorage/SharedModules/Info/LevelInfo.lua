@@ -8,40 +8,15 @@ local LevelEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local Levelinfo: {[string]: LevelEnum.Level} = {}
+local LevelInfo: {[string]: LevelEnum.LevelDetails} = {}
 
-Levelinfo.Mission_1 = {
+LevelInfo.Level_1 = {
+    ID = 1,
     Name = "They Crawl Within",
-    Chunks = {
-        {
-            Biome = "Forest", 
-            Amount_Rooms = NumberRange.new(1, 1), 
-            Amount_Choices = NumberRange.new(2, 2), 
-            TitleCard = "The Forest"
-        },
+    Description = "Spider outbreak",
+    Scale = "Routine",
 
-        {
-            Biome = "Forest", 
-            Amount_Rooms = NumberRange.new(2, 3), 
-            Amount_Choices = NumberRange.new(1, 3), 
-        },
-
-        { -- Transition
-            Biome = "Forest", 
-            Amount_Rooms = NumberRange.new(1, 1), 
-            Amount_Choices = NumberRange.new(1, 1),
-            SpecificRooms = {"Transition_Room"} -- Use this specific room for this chunk
-        },
-
-        { 
-            Biome = "Town", 
-            Amount_Rooms = NumberRange.new(2, 4), 
-            Amount_Choices = NumberRange.new(2, 3),
-        },
-    },
-
-    Description = "They do",
-    Difficulty = "1",
+    ModelID = 118181639092449,
 }
 
-return Levelinfo
+return LevelInfo

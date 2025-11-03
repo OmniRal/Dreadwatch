@@ -19,8 +19,8 @@ local Workspace = game:GetService("Workspace")
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
-local ModStoneService = Remotes.ModStoneService
-local RelicsService = Remotes.RelicService
+local RelicService = Remotes.RelicService
+local ItemsService = Remotes.ItemService
 
 local UIBasics = require(ReplicatedStorage.Source.SharedModules.UI.UIBasics)
 local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
@@ -28,8 +28,8 @@ local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.Gener
 local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Other.ColorPalette)
 
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
-local ModStonesInfo = require(ReplicatedStorage.Source.SharedModules.Info.ModStonesInfo)
-local RelicsInfo = require(ReplicatedStorage.Source.SharedModules.Info.RelicInfo)
+local RelicInfo = require(ReplicatedStorage.Source.SharedModules.Info.RelicInfo)
+local ItemInfo = require(ReplicatedStorage.Source.SharedModules.Info.ItemInfo)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -62,14 +62,14 @@ local Assets = ReplicatedStorage.Assets
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local function SetModStonesFrame()
-    local Mods = Gui:WaitForChild("ModStonesFrame")
+local function SetRelicsFrame()
+    local Relics = Gui:WaitForChild("RelicsFrame")
     
-    for _, Slot in Mods:GetChildren() do
+    for _, Slot in Relics:GetChildren() do
         if not Slot then continue end
         if Slot.Name == "UIListLayout" then continue end
 
-        local SlotNum = tonumber(string.sub(Slot.Name, 5, 5))
+        local SlotNum = tonumber(string.sub(Slot.Name, 7, 7))
 
         -- This is a copy of the icon that can actually be dragged
         local IconDrag = Slot.Icon:Clone()
@@ -102,7 +102,7 @@ local function SetModStonesFrame()
                 -- Check to drop the stone
                 local CanDrop, _, DropTo = GeneralUILibrary:CheckDragElementDropped(LocalPlayer.PlayerGui, IconDrag, Slot, true)
                 if CanDrop and DropTo then
-                    ModStoneService:RequestDropStone(SlotNum, DropTo)
+                    RelicService:RequestDropRelic(SlotNum, DropTo)
                 end
 
                 IconDrag.Position = Slot.Icon.Position
@@ -111,19 +111,19 @@ local function SetModStonesFrame()
     end
 end
 
-local function SetRelicsFrame()
-    local Relics = Gui:WaitForChild("RelicsFrame")
+local function SetItemsFrame()
+    local Items = Gui:WaitForChild("ItemsFrame")
 
     local Sections = {"Top", "Bottom"}
     for _, Name in ipairs(Sections) do
-        local Section = Relics:FindFirstChild(Name)
+        local Section = Items:FindFirstChild(Name)
         if not Section then continue end
 
         for _, Slot in Section:GetChildren() do
             if not Slot then continue end
             if Slot.Name == "UIListLayout" then continue end
 
-            local SlotNum = tonumber(string.sub(Slot.Name, 7, 7))
+            local SlotNum = tonumber(string.sub(Slot.Name, 6, 6))
 
             -- This is a copy of the icon that can actually be dragged
             local IconDrag = Slot.Icon:Clone()
@@ -134,7 +134,7 @@ local function SetRelicsFrame()
             
             Slot.Icon.Image = ""
 
-            -- Connect interaction for each relic slot
+            -- Connect interaction for each Item slot
             GeneralUILibrary:AddBaseButtonInteractions(
                 Slot, 
                 Slot.Button, 
@@ -156,17 +156,16 @@ local function SetRelicsFrame()
                     Slot.Icon.ImageTransparency = 0
                     IconDrag.Visible = false
                     
-                    -- Check to swap or drop the relic
+                    -- Check to swap or drop the Item
                     local CanDrop, HoveringElement, DropTo = GeneralUILibrary:CheckDragElementDropped(LocalPlayer.PlayerGui, IconDrag, Slot, true)
                     if not CanDrop and HoveringElement then
-                        if not string.find(HoveringElement.Parent.Name, "Relic_") then return end
-                        local OtherSlotNum = tonumber(string.sub(HoveringElement.Parent.Name, 7, 7))
-                        local Result_A, Result_B = RelicsService:RequestSwapRelics(SlotNum, OtherSlotNum)
+                        if not string.find(HoveringElement.Parent.Name, "Item_") then return end
+                        local OtherSlotNum = tonumber(string.sub(HoveringElement.Parent.Name, 6, 6))
+                        local Result_A, Result_B = ItemsService:RequestSwapItems(SlotNum, OtherSlotNum)
                         print("Swap Results :", Result_A, Result_B)
                         
                         elseif CanDrop and DropTo then
-                            --ModStoneService:RequestDropStone(SlotNum, DropTo)
-                            RelicsService:RequestDropRelic(SlotNum, DropTo)    
+                            ItemsService:RequestDropItem(SlotNum, DropTo)    
                         end
                         
                     IconDrag.Position = Slot.Icon.Position
@@ -177,8 +176,8 @@ local function SetRelicsFrame()
 end
 
 local function SetGui()
-    SetModStonesFrame()
     SetRelicsFrame()
+    SetItemsFrame()
 end
 
 function PositionEffectBoxes(CancelDelay: boolean?)
@@ -296,12 +295,12 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Update the mod stone slots
-function GameplayUIController:UpdateModStoneSlots(List: {[number]: string})
-    local Mods = Gui:WaitForChild("ModStonesFrame")
+function GameplayUIController:UpdateRelicSlots(List: {[number]: string})
+    local Relics = Gui:WaitForChild("RelicsFrame")
 
     for Num, Name in ipairs(List) do
-        local Slot = Mods:FindFirstChild("Mod_" .. Num)
-        local Info = ModStonesInfo[Name]
+        local Slot = Relics:FindFirstChild("Relic_" .. Num)
+        local Info = RelicInfo[Name]
         if not Slot then continue end
 
         if Info then
@@ -314,18 +313,18 @@ function GameplayUIController:UpdateModStoneSlots(List: {[number]: string})
     end
 end
 
--- Update the relic slots
-function GameplayUIController:UpdateRelicSlots(List: {[number]: string})
-    local Relics = Gui:WaitForChild("RelicsFrame")
+-- Update the Item slots
+function GameplayUIController:UpdateItemSlots(List: {[number]: string})
+    local Items = Gui:WaitForChild("ItemsFrame")
 
     for Num, Name in ipairs(List) do
-        local Section = Relics.Top
+        local Section = Items.Top
         if Num > 3 then
-            Section = Relics.Bottom
+            Section = Items.Bottom
         end
 
-        local Slot = Section:FindFirstChild("Relic_" .. Num)
-        local Info = RelicsInfo[Name]
+        local Slot = Section:FindFirstChild("Item_" .. Num)
+        local Info = ItemInfo[Name]
         if not Slot then continue end
 
         if Info then
@@ -395,12 +394,12 @@ function GameplayUIController:Init()
 end
 
 function GameplayUIController:Deferred()
-    ModStoneService.ModStoneSlotsUpdated:Connect(function(Current: {[number]: string})
-        GameplayUIController:UpdateModStoneSlots(Current)
+    RelicService.RelicSlotsUpdated:Connect(function(Current: {[number]: string})
+        GameplayUIController:UpdateRelicSlots(Current)
     end)
 
-    RelicsService.RelicSlotsUpdated:Connect(function(Current: {[number]: string})
-        GameplayUIController:UpdateRelicSlots(Current)
+    ItemsService.ItemSlotsUpdated:Connect(function(Current: {[number]: string})
+        GameplayUIController:UpdateItemSlots(Current)
     end)
 end
 
