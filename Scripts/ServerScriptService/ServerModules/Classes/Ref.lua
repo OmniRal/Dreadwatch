@@ -1,18 +1,29 @@
 -- OmniRal
+--!nocheck
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Services
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Modules
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.LevelEnum)
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local SHOW_ROOM_INFO = false
 local SHOW_SLOT_CONNECTIONS = false
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local Room = {}
@@ -21,6 +32,8 @@ Room.__index = Room
 local Assets = ServerStorage.Assets
 local RNG = Random.new()
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local function CreateRoomUI(Room: CustomEnum.Room)
@@ -50,6 +63,8 @@ local function CreateSlotUI(RoomA: CustomEnum.Room, RoomB: CustomEnum.Room, Slot
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Public API
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function Room.new(NewRoom : CustomEnum.RoomConstructor, OpenSlotsNeeded: NumberRange?): CustomEnum.Room?
 	local BiomeFolder = Assets.LevelBiomes:FindFirstChild(NewRoom.Biome.Name)
@@ -65,9 +80,7 @@ function Room.new(NewRoom : CustomEnum.RoomConstructor, OpenSlotsNeeded: NumberR
 	self.RoomType = NewRoom.RoomType
 	self.Chunk = NewRoom.Chunk
 	
-	local ChosenModel = ChooseRoomModel(BiomeFolder, NewRoom.RoomType, NewRoom.UsedRoomModels, OpenSlotsNeeded)
-	
-	local NewBuild: Model = ChosenModel:Clone()
+	local NewBuild: Model = Instance.new("Model")
 	local BaseRoot = NewBuild.PrimaryPart
 	NewBuild:SetAttribute("OriginalName", NewBuild.Name)
 	NewBuild:SetAttribute("PlayerCount", 0)

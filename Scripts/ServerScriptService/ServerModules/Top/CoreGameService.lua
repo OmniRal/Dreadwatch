@@ -18,25 +18,25 @@ local Debris = game:GetService("Debris")
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local LevelService = require(ServerScriptService.Source.ServerModules.General.LevelService)
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
-local GlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.GlobalValues)
+local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 
+local SignalService = require(ServerScriptService.Source.ServerModules.General.SignalService)
 local CharacterService = require(ServerScriptService.Source.ServerModules.Player.CharacterService)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local TESTING_MISSION = false -- When false, players will spawn in the lobby area, otherwise it will run a mission
-local TEST_MISSION_ID = 0
-local PLAYERS_NEEDED_FOR_TEST = {"OmniRal"}
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local PlayerDied = SignalService.PlayerDied
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
@@ -45,11 +45,14 @@ local PLAYERS_NEEDED_FOR_TEST = {"OmniRal"}
 local PlaceSetupStarted = false
 local PlaceSetupComplete = false
 
+local PlayerOrder: {Player} = {}
 local PlayerValues: {
     [Player]: {
-        RespawnTime: number
+        RespawnTime: number,
+        LastDiedLocation: CFrame?,
     }
 } = {}
+local HandlingPlayerLeaving = false
 
 local Lobby = Workspace:WaitForChild("Lobby")
 local LobbySpawns: {CFrame} = {}
@@ -79,6 +82,8 @@ local function SetupRespawning(Player: Player, Character: any)
     -- CHeck for when the player dies in order to respawn them
     PValues.DeathConnection = Human.Died:Connect(function()
         task.spawn(function()
+            if ServerGlobalValues.InLevel and not ServerGlobalValues.AllowLevelRespawning then return end
+
             PValues.RespawnTime = Players.RespawnTime
 
             for x = Players.RespawnTime, 0, -1 do
@@ -91,13 +96,15 @@ local function SetupRespawning(Player: Player, Character: any)
             PValues.DeathConnection:Disconnect()
             PValues.DeathConnection = nil
         end)
+
+        PlayerDied:Fire(Player)
     end)
 end
 
 -- Checks to see to decide if the place will be a lobby or a level based on the first players join data
-local function CheckLoadLevel(Player: Player)
-    if PlaceSetupStarted or PlaceSetupComplete then return end
-    if not Player then return end
+local function CheckLoadLevel(Player: Player): (boolean, number?)
+    if PlaceSetupStarted or PlaceSetupComplete then return false end
+    if not Player then return false end
 
     PlaceSetupStarted = true
 
@@ -105,22 +112,24 @@ local function CheckLoadLevel(Player: Player)
     if not JoinData then
         -- No join data exists, assume its a lobby
         PlaceSetupComplete = true
-        return 
+        return true
+    end
+
+    if ServerGlobalValues.StartLevelInfo.TestingMode and not ServerGlobalValues.StartLevelInfo.TestWithoutPlayers then
+        PlaceSetupComplete = true
+        return true, ServerGlobalValues.StartLevelInfo.ID
     end
 
     print("Got join data from", Player, " :", JoinData)
 
     local TeleportData: CustomEnum.TeleportData = JoinData.TeleportData
-    if not TeleportData then return end
-    if not TeleportData.MissionID or not TeleportData.ExpectedPlayers then return end
+    if not TeleportData then return false end
+    if not TeleportData.MissionID or not TeleportData.ExpectedPlayers then return false end
     -- May need fail safe here if a players teleport data is corrupted; send them back to their lobby ideally
 
-    GlobalValues.InLevel = true
-    Workspace.Lobby:Destroy() -- Get rid of the entire lobby folder
-
     PlaceSetupComplete = true
-    
-    return
+
+    return true, TeleportData.MissionID
 end
 
 local function SetupLobby()
@@ -156,48 +165,54 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function CoreGameService:RequestSpawnLocation(Player: Player): CFrame?
+function CoreGameService:RequestSpawnLocation(Player: Player, BeingRevived: boolean?): CFrame?
     if not Player then return end
+    local PValues = PlayerValues[Player]
+    if not PValues then return end
 
-    if not GlobalValues.InLevel then
+    if not ServerGlobalValues.InLevel then
         -- If the place is a LOBBY, send a random lobby spawn
         return LobbySpawns[RNG:NextInteger(1, #LobbySpawns)]
         
     else
         -- If the place is a LEVEL, send an appropriate place to respawn in the level
-        -- Still needs to be completed
-        return CFrame.new(0, 0, 0)
+        local RespawnHere = CFrame.new(0, 0, 0)
+        local CurrentLevel = ServerGlobalValues.CurrentLevel
+        local OrderID = Player:GetAttribute("OrderID") :: number?
+
+        if CurrentLevel and CurrentLevel.AvailableSpawns and OrderID then
+            RespawnHere = CurrentLevel.AvailableSpawns[OrderID] -- Make sure the players who are respawning at the same time, never spawn ontop of each other
+        end
+
+        if BeingRevived then
+            RespawnHere = PValues.LastDiedLocation
+        end
+
+        return RespawnHere
     end
 end
 
-function CoreGameService:CheckRespawnRequest(Player: Player, Delay: number)
-    if not Player then return end
+-- Handle when the player requests to the server to respawn
+function CoreGameService:RequestSpawning(Player: Player, Delay: number): boolean
+    if not Player then return false end
 
     local PValues = PlayerValues[Player]
-    if not PValues then return end
+    if not PValues then return false end
 
-    local ContinueSpawning = true
-
-    if PValues.RespawnTime > 0 then
-        ContinueSpawning = false
-    end
+    if PValues.RespawnTime > 0 then return false end -- If there's time left in respawning, deny request
 
     if Player.Character then
         local Human = Player.Character:FindFirstChild("Humanoid")
-        if Human then
-            if Human.Health > 0 then
-                ContinueSpawning = false
-            end
+        if Human and Human.Health > 0 then
+           return false -- If the player is alive, deny request
         end
     end
 
-    if ContinueSpawning then
-        task.delay(Delay, function()
-            SpawnCharacter(Player)
-        end)
-    end
+    task.delay(Delay, function()
+        SpawnCharacter(Player)
+    end)
 
-    return ContinueSpawning
+    return true
 end
 
 function CoreGameService:Init()
@@ -208,13 +223,12 @@ function CoreGameService:Init()
     
     Remotes:CreateToClient("DropObject", {})
 
-    Remotes:CreateToServer("RequestSpawnCharacter", {}, "Returns", function(Player: Player, Delay: number)
-        return CoreGameService:CheckRespawnRequest(Player, Delay)
+    Remotes:CreateToServer("RequestSpawning", {}, "Returns", function(Player: Player, Delay: number)
+        return CoreGameService:RequestSpawning(Player, Delay)
     end)
 
     Remotes:CreateToServer("RequestResetCharacter", {}, "Unreliable", function(Player: Player)
-        if not Player then return end
-        if not Player.Character then return end
+        if not Player or not Player.Character then return end
         local Human = Player.Character:FindFirstChild("Humanoid")
         if not Human then return end
 
@@ -240,10 +254,20 @@ function CoreGameService:Deferred()
 end
 
 function CoreGameService.PlayerAdded(Player: Player)
-    CheckLoadLevel(Player)
+    local CreateNew, ID = CheckLoadLevel(Player)
+    if CreateNew then
+        ServerGlobalValues.InLevel = true
+        Workspace.Lobby:Destroy() -- Get rid of the entire lobby folder
+        LevelService.LoadLevel(ID)
+    end
+
+    table.insert(PlayerOrder, Player)
+    local OrderID = table.find(PlayerOrder, Player) -- Incase two players enter at the same time
+    Player:SetAttribute("OrderID", OrderID)
 
     PlayerValues[Player] = {
-        RespawnTime = 0
+        RespawnTime = 0,
+        LastDiedLocation = nil,
     }
     
     Player.CharacterAdded:Connect(function(Character: any)
@@ -264,8 +288,21 @@ function CoreGameService.PlayerAdded(Player: Player)
 end
 
 function CoreGameService.PlayerRemoving(Player: Player)
-    if not PlayerValues[Player] then return end
-    PlayerValues[Player] = nil
+    task.spawn(function()
+        while HandlingPlayerLeaving do task.wait() end -- Prevent player order from getting messed up when two players may leave at the same time
+        HandlingPlayerLeaving = true
+
+        local Index = table.find(PlayerOrder, Player)
+        if Index then
+            table.remove(PlayerOrder, Index)
+        end
+
+        if PlayerValues[Player] then
+            PlayerValues[Player] = nil
+        end
+
+        HandlingPlayerLeaving = false
+    end)
 end
 
 return CoreGameService

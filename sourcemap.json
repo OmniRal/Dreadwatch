@@ -312,6 +312,14 @@
 											"className": "ModuleScript",
 											"children": [
 												{
+													"name": "ItemEnum",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/ItemEnum.lua"
+													]
+												},
+												{
 													"name": "LevelEnum",
 													"className": "ModuleScript",
 													"children": [],
@@ -325,6 +333,14 @@
 													"children": [],
 													"filePaths": [
 														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/QuestEnum.lua"
+													]
+												},
+												{
+													"name": "RelicEnum",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/RelicEnum.lua"
 													]
 												},
 												{
@@ -342,26 +358,18 @@
 													"filePaths": [
 														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/WeaponEnum.lua"
 													]
-												},
-												{
-													"name": "ItemEnum",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/ItemEnum.lua"
-													]
-												},
-												{
-													"name": "RelicEnum",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/RelicEnum.lua"
-													]
 												}
 											],
 											"filePaths": [
 												"Scripts/ReplicatedStorage/SharedModules/Info/CustomEnum/CustomEnum.init.lua"
+											]
+										},
+										{
+											"name": "ItemInfo",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/SharedModules/Info/ItemInfo.lua"
 											]
 										},
 										{
@@ -373,11 +381,27 @@
 											]
 										},
 										{
+											"name": "ObjectInfo",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/SharedModules/Info/ObjectInfo.lua"
+											]
+										},
+										{
 											"name": "ProductInfo",
 											"className": "ModuleScript",
 											"children": [],
 											"filePaths": [
 												"Scripts/ReplicatedStorage/SharedModules/Info/ProductInfo.lua"
+											]
+										},
+										{
+											"name": "RelicInfo",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/SharedModules/Info/RelicInfo.lua"
 											]
 										},
 										{
@@ -394,30 +418,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ReplicatedStorage/SharedModules/Info/WeaponInfo.lua"
-											]
-										},
-										{
-											"name": "ObjectInfo",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/SharedModules/Info/ObjectInfo.lua"
-											]
-										},
-										{
-											"name": "ItemInfo",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/SharedModules/Info/ItemInfo.lua"
-											]
-										},
-										{
-											"name": "RelicInfo",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/SharedModules/Info/RelicInfo.lua"
 											]
 										}
 									],
@@ -469,16 +469,7 @@
 								{
 									"name": "Top",
 									"className": "Folder",
-									"children": [
-										{
-											"name": "GlobalValues",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/SharedModules/Top/GlobalValues.lua"
-											]
-										}
-									],
+									"children": [],
 									"filePaths": [
 										"Scripts/ReplicatedStorage/SharedModules/Top"
 									]
@@ -2263,427 +2254,10 @@
 											]
 										},
 										{
-											"name": "ModStonesFrame",
-											"className": "Frame",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "Mod_1",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "UIAspectRatioConstraint",
-															"className": "UIAspectRatioConstraint",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Button",
-															"className": "ImageButton",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Icon",
-															"className": "ImageLabel",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "UIListLayout",
-													"className": "UIListLayout",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "Mod_2",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "UIAspectRatioConstraint",
-															"className": "UIAspectRatioConstraint",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Button",
-															"className": "ImageButton",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Icon",
-															"className": "ImageLabel",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "Mod_3",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "UIAspectRatioConstraint",
-															"className": "UIAspectRatioConstraint",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Button",
-															"className": "ImageButton",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Icon",
-															"className": "ImageLabel",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												}
-											]
-										},
-										{
 											"name": "RelicsFrame",
 											"className": "Frame",
 											"filePaths": [],
 											"children": [
-												{
-													"name": "Top",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "UIListLayout",
-															"className": "UIListLayout",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Relic_3",
-															"className": "Frame",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "UIAspectRatioConstraint",
-																	"className": "UIAspectRatioConstraint",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Stroke",
-																	"className": "UIStroke",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Button",
-																	"className": "ImageButton",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Icon",
-																	"className": "ImageLabel",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														},
-														{
-															"name": "Relic_1",
-															"className": "Frame",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "UIAspectRatioConstraint",
-																	"className": "UIAspectRatioConstraint",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Stroke",
-																	"className": "UIStroke",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Button",
-																	"className": "ImageButton",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Icon",
-																	"className": "ImageLabel",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														},
-														{
-															"name": "Relic_2",
-															"className": "Frame",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "UIAspectRatioConstraint",
-																	"className": "UIAspectRatioConstraint",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Stroke",
-																	"className": "UIStroke",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Button",
-																	"className": "ImageButton",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Icon",
-																	"className": "ImageLabel",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														}
-													]
-												},
-												{
-													"name": "Bottom",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Relic_4",
-															"className": "Frame",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "UIAspectRatioConstraint",
-																	"className": "UIAspectRatioConstraint",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Stroke",
-																	"className": "UIStroke",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Button",
-																	"className": "ImageButton",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Icon",
-																	"className": "ImageLabel",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														},
-														{
-															"name": "Relic_5",
-															"className": "Frame",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "UIAspectRatioConstraint",
-																	"className": "UIAspectRatioConstraint",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Stroke",
-																	"className": "UIStroke",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Button",
-																	"className": "ImageButton",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Icon",
-																	"className": "ImageLabel",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														},
-														{
-															"name": "UIListLayout",
-															"className": "UIListLayout",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Relic_6",
-															"className": "Frame",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "UIAspectRatioConstraint",
-																	"className": "UIAspectRatioConstraint",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Stroke",
-																	"className": "UIStroke",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Button",
-																	"className": "ImageButton",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "Icon",
-																	"className": "ImageLabel",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														}
-													]
-												},
-												{
-													"name": "Relics_1",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "UIAspectRatioConstraint",
-															"className": "UIAspectRatioConstraint",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Button",
-															"className": "ImageButton",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Icon",
-															"className": "ImageLabel",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "UIListLayout",
-													"className": "UIListLayout",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "Relics_2",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "UIAspectRatioConstraint",
-															"className": "UIAspectRatioConstraint",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Button",
-															"className": "ImageButton",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Icon",
-															"className": "ImageLabel",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "Relics_3",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "UIAspectRatioConstraint",
-															"className": "UIAspectRatioConstraint",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Button",
-															"className": "ImageButton",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Icon",
-															"className": "ImageLabel",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
 												{
 													"name": "Relic_1",
 													"className": "Frame",
@@ -2714,6 +2288,12 @@
 															"children": []
 														}
 													]
+												},
+												{
+													"name": "UIListLayout",
+													"className": "UIListLayout",
+													"filePaths": [],
+													"children": []
 												},
 												{
 													"name": "Relic_2",
@@ -4584,14 +4164,6 @@
 									"className": "Folder",
 									"children": [
 										{
-											"name": "Grid",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Classes/Grid.lua"
-											]
-										},
-										{
 											"name": "NPC",
 											"className": "ModuleScript",
 											"children": [],
@@ -4625,19 +4197,11 @@
 											]
 										},
 										{
-											"name": "Room",
+											"name": "Ref",
 											"className": "ModuleScript",
 											"children": [],
 											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Classes/Room.lua"
-											]
-										},
-										{
-											"name": "Chunk",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Classes/Chunk.lua"
+												"Scripts/ServerScriptService/ServerModules/Classes/Ref.lua"
 											]
 										}
 									],
@@ -4663,6 +4227,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/General/CameraService.lua"
+											]
+										},
+										{
+											"name": "ItemService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/ItemService.lua"
 											]
 										},
 										{
@@ -4700,6 +4272,14 @@
 											]
 										},
 										{
+											"name": "ObjectService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/ObjectService.lua"
+											]
+										},
+										{
 											"name": "ProjectileService",
 											"className": "ModuleScript",
 											"children": [],
@@ -4721,6 +4301,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/General/RagdollService.lua"
+											]
+										},
+										{
+											"name": "RelicService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/RelicService.lua"
 											]
 										},
 										{
@@ -4748,27 +4336,11 @@
 											]
 										},
 										{
-											"name": "ObjectService",
+											"name": "SignalService",
 											"className": "ModuleScript",
 											"children": [],
 											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/General/ObjectService.lua"
-											]
-										},
-										{
-											"name": "ItemService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/General/ItemService.lua"
-											]
-										},
-										{
-											"name": "RelicService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/General/RelicService.lua"
+												"Scripts/ServerScriptService/ServerModules/General/SignalService.lua"
 											]
 										}
 									],
@@ -4791,6 +4363,31 @@
 									],
 									"filePaths": [
 										"Scripts/ServerScriptService/ServerModules/Info"
+									]
+								},
+								{
+									"name": "Items",
+									"className": "Folder",
+									"children": [
+										{
+											"name": "ChungusService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Items/ChungusService.lua"
+											]
+										},
+										{
+											"name": "DingusService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Items/DingusService.lua"
+											]
+										}
+									],
+									"filePaths": [
+										"Scripts/ServerScriptService/ServerModules/Items"
 									]
 								},
 								{
@@ -4880,6 +4477,14 @@
 											]
 										},
 										{
+											"name": "ServerGlobalValues",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Top/ServerGlobalValues.lua"
+											]
+										},
+										{
 											"name": "ShopService",
 											"className": "ModuleScript",
 											"children": [],
@@ -4931,31 +4536,6 @@
 									],
 									"filePaths": [
 										"Scripts/ServerScriptService/ServerModules/Weapons"
-									]
-								},
-								{
-									"name": "Items",
-									"className": "Folder",
-									"children": [
-										{
-											"name": "ChungusService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Items/ChungusService.lua"
-											]
-										},
-										{
-											"name": "DingusService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Items/DingusService.lua"
-											]
-										}
-									],
-									"filePaths": [
-										"Scripts/ServerScriptService/ServerModules/Items"
 									]
 								}
 							],
@@ -7476,6 +7056,250 @@
 							]
 						},
 						{
+							"name": "Other",
+							"className": "Folder",
+							"children": [
+								{
+									"name": "LevelConstruction",
+									"className": "Folder",
+									"children": [
+										{
+											"name": "ChunkDetails",
+											"className": "Folder",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "TitleCard",
+													"className": "StringValue",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										}
+									],
+									"filePaths": [
+										"Assets/Server/Other/LevelConstruction.rbxm"
+									]
+								},
+								{
+									"name": "WorldLevelUI",
+									"className": "Folder",
+									"children": [
+										{
+											"name": "ChunkGui",
+											"className": "BillboardGui",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "_1",
+													"className": "TextLabel",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Gradient",
+															"className": "UIGradient",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "UIListLayout",
+													"className": "UIListLayout",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										},
+										{
+											"name": "HubGui",
+											"className": "BillboardGui",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "_1",
+													"className": "TextLabel",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Gradient",
+															"className": "UIGradient",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "UIListLayout",
+													"className": "UIListLayout",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "OG",
+													"className": "TextLabel",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Gradient",
+															"className": "UIGradient",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "RoomGui",
+											"className": "BillboardGui",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "_1",
+													"className": "TextLabel",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Gradient",
+															"className": "UIGradient",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "UIListLayout",
+													"className": "UIListLayout",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "_2",
+													"className": "TextLabel",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Gradient",
+															"className": "UIGradient",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "SlotGui",
+											"className": "BillboardGui",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "_1",
+													"className": "TextLabel",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Gradient",
+															"className": "UIGradient",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "UIListLayout",
+													"className": "UIListLayout",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "_2",
+													"className": "TextLabel",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Gradient",
+															"className": "UIGradient",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "_3",
+													"className": "TextLabel",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Gradient",
+															"className": "UIGradient",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										}
+									],
+									"filePaths": [
+										"Assets/Server/Other/WorldLevelUI.rbxm"
+									]
+								}
+							],
+							"filePaths": [
+								"Assets/Server/Other"
+							]
+						},
+						{
 							"name": "RelicStuff",
 							"className": "Folder",
 							"children": [
@@ -8783,228 +8607,6 @@
 							"filePaths": [
 								"Assets/Server/WeaponStuff"
 							]
-						},
-						{
-							"name": "Other",
-							"className": "Folder",
-							"children": [
-								{
-									"name": "WorldLevelUI",
-									"className": "Folder",
-									"children": [
-										{
-											"name": "ChunkGui",
-											"className": "BillboardGui",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "_1",
-													"className": "TextLabel",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Gradient",
-															"className": "UIGradient",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "UIListLayout",
-													"className": "UIListLayout",
-													"filePaths": [],
-													"children": []
-												}
-											]
-										},
-										{
-											"name": "HubGui",
-											"className": "BillboardGui",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "_1",
-													"className": "TextLabel",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Gradient",
-															"className": "UIGradient",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "UIListLayout",
-													"className": "UIListLayout",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "OG",
-													"className": "TextLabel",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Gradient",
-															"className": "UIGradient",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												}
-											]
-										},
-										{
-											"name": "RoomGui",
-											"className": "BillboardGui",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "_1",
-													"className": "TextLabel",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Gradient",
-															"className": "UIGradient",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "UIListLayout",
-													"className": "UIListLayout",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "_2",
-													"className": "TextLabel",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Gradient",
-															"className": "UIGradient",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												}
-											]
-										},
-										{
-											"name": "SlotGui",
-											"className": "BillboardGui",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "_1",
-													"className": "TextLabel",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Gradient",
-															"className": "UIGradient",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "UIListLayout",
-													"className": "UIListLayout",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "_2",
-													"className": "TextLabel",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Gradient",
-															"className": "UIGradient",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "_3",
-													"className": "TextLabel",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Gradient",
-															"className": "UIGradient",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												}
-											]
-										}
-									],
-									"filePaths": [
-										"Assets/Server/Other/WorldLevelUI.rbxm"
-									]
-								}
-							],
-							"filePaths": [
-								"Assets/Server/Other"
-							]
 						}
 					],
 					"filePaths": [
@@ -9099,6 +8701,14 @@
 											]
 										},
 										{
+											"name": "ItemController",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/StarterPlayerScripts/General/ItemController.lua"
+											]
+										},
+										{
 											"name": "MainController",
 											"className": "ModuleScript",
 											"children": [],
@@ -9128,14 +8738,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/StarterPlayerScripts/General/WeaponController.lua"
-											]
-										},
-										{
-											"name": "ItemController",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/StarterPlayerScripts/General/ItemController.lua"
 											]
 										}
 									],

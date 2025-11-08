@@ -72,19 +72,23 @@ function Utility:ChangeModelTransparency(Model: Model, To: number, Ignore: {stri
     end
 end
 
-function Utility:CreateDot(Location: Vector3, Color: Color3?, Size: number?, Duration: number?)
+function Utility:CreateDot(CF: CFrame, Size: Vector3, Shape: Enum.PartType, Color: Color3?, Duration: number?, Parent: Instance?)
     local Dot = Instance.new("Part")
     Dot.Name = "Dot"
     Dot.Anchored = true
     Dot.CanCollide = false
     Dot.CanQuery = false
     Dot.CanTouch = false
-    Dot.CFrame = CFrame.new(Location)
+    Dot.CFrame = CF
     Dot.Material = Enum.Material.Neon
+    Dot.Size = Size or Vector3.new(2, 2, 2)
+    Dot.Shape = Shape
     Dot.Color = Color or Color3.fromRGB(230, 30, 40)
-    Dot.Size = Vector3.new(Size or 1, Size or 1, Size or 1)
-    Dot.Parent = Workspace
-    Debris:AddItem(Dot, Duration or 10)
+    Dot.Parent = Parent or Workspace
+
+    if Duration then
+        Debris:AddItem(Dot, Duration)
+    end
 
     return Dot
 end

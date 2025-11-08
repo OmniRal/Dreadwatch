@@ -15,61 +15,54 @@ export type Slot = {
 export type Hall = {
     SystemType: SystemType,
 
+    Build: Model,
     CFrame: CFrame,
     Size: Vector3,
-    Build: Model,
-    Occupied: {Vector2},
-
+    
     FloorParts: {BasePart}, -- The core floor pieces that the grid system will use to figure out what space it occupies
-
     Slots: {[number]: Slot},
-    OpenSlots: {number},
-    ClosedSlots: {number},
 
     Decor: {BasePart? | Model?},
+
+    Players: {Player?}, -- Track which players are in the hall
 }
 
 export type RoomType = "Normal" | "Trap" | "Miniboss" | "Boss" | "Shop" | "Lore"
 export type Room = {
     SystemType: SystemType,
     
-    Name: string,
+    ID: number,
     RoomType: RoomType,
     Values: {any}, -- Rooms don't need this, but handy if certain rooms have specific functionality; such as traps 
 
+    Build: Model,
     CFrame: CFrame,
     Size: Vector3,
-    Build: Model,
-    Occupied: {Vector2},
-
-    FloorParts: {BasePart},
-
-    Slots: {[number]: Slot},
-    OpenSlots: {number},
-    ClosedSlots: {number},
-
-    Players: {Player}, -- Each room will track which players are in it
     
+    FloorParts: {BasePart},
+    Slots: {[number]: Slot?},
+
     Spawners: {}, -- Still need to be defined, these will be the spawners, which manage their own NPCs
     NPCs: {}, -- Still need to be define, will mostly contain enemies, occasionaly friendly NPCs
-
-    Decor: {BasePart? | Model?},
-
+    
+    Decor: {BasePart | Model},
     Lighting: UniqueLighting?, -- Rooms don't _need_ to have custom lighting like biomes, but the option is there
+    
+    Players: {Player?}, -- Track which players are in the room
 }
 
 export type Chunk = {
     SystemType: SystemType,
+
+    ID: number,
     
-    Model: Model, -- Easy reference 
+    Build: Model, -- Easy reference 
     Rooms: {Room},
     Halls: {Hall},
+    Entrances: {BasePart},
+    Choices: {[BasePart]: number},
 
     Biome: string?,
-    
-    Amount_Rooms: NumberRange?, -- Amount of rooms that can be in this chunk
-    Amount_Choices: NumberRange?, -- Amount of choices that can be given
-    SpecificRooms: {string}?,
     
     TitleCard: string?, -- If there is a title card, this will show up in the players UI when they first enter the chunk. Ideal for biome transitions    
 }
@@ -107,9 +100,11 @@ export type Level = {
     Chunks: {Chunk},
     Rooms: {Room},
     Halls: {Hall},
-    Grid: Grid,
 
-    Model: Model
+    Build: Model,
+
+    CurrentChunk: Chunk?,
+    AvailableSpawns: {CFrame}?,
 }
 
 export type LevelDetails = {
@@ -163,7 +158,7 @@ export type UniqueLighting = {
 	SunRays: {
 		Intensity: number?,
 		Spread: number?,
-	},
+	}?,
 }
 
 return LevelEnum

@@ -1,34 +1,41 @@
 --OmniRal
---!nocheck
 
 local CharacterService = {}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Services
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local Workspace = game:GetService("Workspace")
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Modules
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
+local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
+local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
+local SignalService = require(ServerScriptService.Source.ServerModules.General.SignalService)
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
-
-local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
---local UnitValuesService = require(ServerScriptService.Source.ServerModules.Units.UnitValuesService)
---local WorldUIService = require(ReplicatedStorage.Source.SharedModules.UI.WorldUIService)
-
-
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local Sides = {-1, 1}
 local RNG = Random.new()
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
------------------
--- Private API --
------------------
+-- Private Functions
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function TestButtons()
     local function SetButton(Button: any)
@@ -43,9 +50,9 @@ function TestButtons()
             Button:SetAttribute("Debounce", true)
 
             if Button.Name == "DamageButton" then
-                CharacterService:ApplyDamage("Test Damage", Player, Button:GetAttribute("Amount"), Button:GetAttribute("DamageName"), Button:GetAttribute("Type"))
+                --CharacterService:ApplyDamage("Test Damage", Player, Button:GetAttribute("Amount"), Button:GetAttribute("DamageName"), Button:GetAttribute("Type"))
             else
-                CharacterService:ApplyHealthGain("Test Heal", Player, Button:GetAttribute("Amount"), "Jizz")
+                --CharacterService:ApplyHealthGain("Test Heal", Player, Button:GetAttribute("Amount"), "Jizz")
             end
 
             task.delay(2, function()
@@ -61,15 +68,12 @@ function TestButtons()
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-----------------
--- Public API --
-----------------
+-- Public API
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function CharacterService:SetupCharacter(Player: Player, SpawnHere: CFrame?)
     task.spawn(function()
-        while Player.Character == nil do 
-            task.wait() 
-        end
+        while Player.Character == nil do task.wait() end
 
         local Character = Player.Character
         if Character:GetAttribute("Loaded") then return end
@@ -84,9 +88,8 @@ function CharacterService:SetupCharacter(Player: Player, SpawnHere: CFrame?)
         end
 
         for _, Part in pairs(Character:GetDescendants()) do
-            if Part:IsA("BasePart") then
-                Part.CollisionGroup = "Players"
-            end
+            if not Part:IsA("BasePart") then continue end
+            Part.CollisionGroup = "Players"
         end
 
         --[[for _, Sound in pairs(Assets.Misc.CharacterSounds:GetChildren()) do
@@ -98,6 +101,7 @@ function CharacterService:SetupCharacter(Player: Player, SpawnHere: CFrame?)
     end)
 end
 
+-- Levacy function that may be useful later?
 function CharacterService:SpawnCharacter(Player: Player)
     --[[task.spawn(function()
         local PlayerData = DataService:GetProfileTable(Player)
@@ -177,7 +181,6 @@ function CharacterService:IncrementAttribute(Source: Player | Model | string, Re
     end
 
     if not ReceiverModel then return end
-    
 end
 
 function CharacterService:Init()
