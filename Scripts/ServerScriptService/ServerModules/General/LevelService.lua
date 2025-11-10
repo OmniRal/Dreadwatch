@@ -6,6 +6,7 @@ local LevelService = {}
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local InsertService = game:GetService("InsertService")
@@ -30,6 +31,10 @@ local KEEP_LEVEL_POS_SAME = true -- Do not move the level to PLAY_LEVEL_HERE if 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local MovingToNewChunk = false
+
+local TempRoom: Model = Workspace.TempRoom
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
@@ -107,6 +112,8 @@ local function NewChunkData(ID: number, Model: Model): LevelEnum.Chunk?
     local NewChunk: LevelEnum.Chunk = {
         SystemType = "Chunk",
         ID = ID,
+        Active = false,
+        Completed = true,
         Build = Model,
         Rooms = {},
         Halls = {},
@@ -131,6 +138,7 @@ local function FinishChunkSetup(Chunk: LevelEnum.Chunk)
             
             -- Add entrance
             if CorePart.Name == "Entrance" then
+                CorePart:SetAttribute("Room_ID", Room.ID)
                 table.insert(Chunk.Entrances, CorePart)
 
             -- Add choices
@@ -141,10 +149,93 @@ local function FinishChunkSetup(Chunk: LevelEnum.Chunk)
             end
         end
     end
+
+    -- Add choice connections
+    for Part, ConnectTo in Chunk.Choices do
+        if not Part or not ConnectTo then continue end
+
+        Part.CanTouch = true
+        Part.Transparency = 0.5
+        
+        -- NOTE: may have to make a better (than onTouch part) way to trigger moving to a new chunk
+        Part.Touched:Connect(function(Hit: BasePart)
+            if MovingToNewChunk then return end
+            if not Hit then return end
+            if not Hit.Parent then return end
+            if not Players:FindFirstChild(Hit.Parent.Name) then return end
+            
+            local NextChunk_ID = LevelService.FindChunkFromRoomID(ConnectTo)
+            if not NextChunk_ID then return end
+
+            LevelService.MigrateToThisChunk(NextChunk_ID, ConnectTo, Part:GetAttribute("Entrance_ID"))
+        end)
+    end
+end
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Public API
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+function LevelService.MigrateToThisChunk(ThisChunk_ID: number, ThisRoom_ID: number?, ThisEntrance_ID: number?)
+    if MovingToNewChunk then return end
+
+    MovingToNewChunk = true
+
+    -- Move players to the temp room
+    LevelService.MovePlayers("TempRoom") 
+
+    -- Load the new chunk
+    LevelService.LoadChunk(ThisChunk_ID) 
+
+    -- Set current available to spawns to that new chunk and specific room + entrance IDs (if provided)
+    LevelService.SetAvailableSpawns(ThisRoom_ID, ThisEntrance_ID) 
+
+    -- Move players to the new available spawns
+    LevelService.MovePlayers("CurrentAvailableSpawns")
+    
+    task.delay(1, function()
+        MovingToNewChunk = false
+    end)
+end
+
+-- @To - "TempRoom" = moves players to a floating room in the world; meant to be a temporary space to hold players while loading other stuff
+-- @To - "CurrentAvailableSpawns" = moves players to the current available spawns of a level
+function LevelService.MovePlayers(To: "TempRoom" | "CurrentAvailableSpawns")
+    local Level = ServerGlobalValues.CurrentLevel
+    if not Level then return end
+
+    for _, Player in Players:GetPlayers() do
+        if not Player then continue end
+        if not Player.Character then continue end
+        local Order_ID: number = Player:GetAttribute("Order_ID")
+        if not Order_ID then 
+            warn("Order ID missing for", Player)
+            continue
+        end
+
+        local SpawnHere = Level.AvailableSpawns[Order_ID]
+
+        if To == "TempRoom" then
+            -- Find the Spawn in the temp room with the same ID as the player
+            SpawnHere = TempRoom:FindFirstChild("Spawn_" .. Order_ID)
+            if not SpawnHere then
+                warn("Temp Spawn ID " .. Order_ID .. "is missing?")
+                continue
+            end
+
+            SpawnHere = SpawnHere.CFrame
+        end
+
+        if not SpawnHere then continue end
+
+        Player.Character:PivotTo(SpawnHere * CFrame.new(0, 3, 0))
+    end
 end
 
 -- Set all the safe spawns players can spawn into in a chunk
-local function SetAvailableSpawns()
+-- @ThisRoom_ID = if the available spawns in a chunk should only from a specific room
+-- @ThisEntrance_ID = if the available spawns in a chunk only be from a single specific entrance
+function LevelService.SetAvailableSpawns(ThisRoom_ID: number?, ThisEntrance_ID: number?)
     local Level = ServerGlobalValues.CurrentLevel
     if not Level then return end
     if not Level.CurrentChunk then return end
@@ -154,13 +245,14 @@ local function SetAvailableSpawns()
 
     for _, Entrance in Level.CurrentChunk.Entrances do
         if not Entrance then continue end
+        if ThisRoom_ID and Entrance:GetAttribute("Room_ID") ~= ThisRoom_ID then continue end
+        if ThisEntrance_ID and Entrance:GetAttribute("ID") ~= ThisEntrance_ID then continue end
         
         local CellSize, CellPadding = 4, 2
         local CellFinal = CellSize + CellPadding
 
         local Total = math.clamp(#ServerGlobalValues.StartLevelInfo.ExpectedPlayers, 1, 4) -- How many spawns to create (one for each player)
         local Base = Entrance.CFrame * CFrame.new(0, 0, -CellSize * 2)
-        
         
         Base *= CFrame.new( -((Total / 2) * CellFinal) + (CellFinal / 2), 0, 0)
 
@@ -173,15 +265,28 @@ local function SetAvailableSpawns()
     end
 end
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Public API
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Returns a chunk that has a specific room number
+function LevelService.FindChunkFromRoomID(ID: number): number?
+    local Level = ServerGlobalValues.CurrentLevel
+    if not Level then return end
 
-function LevelService.MovePlayers()
+    for _, Chunk in Level.Chunks do
+        if not Chunk then continue end
+        if not Chunk.Rooms then continue end
+        
+        for _, Room in Chunk.Rooms do
+            if not Room then continue end
+            if Room.ID ~= ID then continue end
+            return Chunk.ID
+        end    
+    end
 
+    return
 end
 
-function LevelService.LoadChunk(ID: number)
+-- Load a single chunk
+-- @HideAllChunks = If true, all chunks will be set to inactive and their builds parented to nil
+function LevelService.LoadChunk(ID: number, HideAllChunks: boolean?)
     local Level = ServerGlobalValues.CurrentLevel
     if not Level then return end
 
@@ -190,22 +295,27 @@ function LevelService.LoadChunk(ID: number)
     -- Find the chunk to load
     for _, Chunk in ipairs(Level.Chunks) do
         if not Chunk then continue end
+
+        if HideAllChunks then
+            Chunk.Active = false
+            Chunk.Build.Parent = nil
+        end
+
         if Chunk.ID ~= ID then continue end
         Next = Chunk
     end
 
     if Next then
+        Next.Active = true
         Next.Build.Parent = Level.Build
     end
     
     if Current and Next then
+        Current.Active = false
         Current.Build.Parent = nil
     end
     
     Level.CurrentChunk = Next
-
-    SetAvailableSpawns()
-    LevelService.MovePlayers()
 end
 
 function LevelService.LoadLevel(ID: number): boolean?
@@ -222,8 +332,9 @@ function LevelService.LoadLevel(ID: number): boolean?
 
     if not Success then return false end
 
-    local LevelModel = BaseModel:GetChildren()[1]
+    local LevelModel = BaseModel:GetChildren()[1] :: Model
     LevelModel.Name = "CurrentLevel"
+    LevelModel:PivotTo(PLAY_LEVEL_HERE)
     LevelModel.Parent = Workspace
     BaseModel:Destroy()
 
@@ -272,7 +383,8 @@ function LevelService.LoadLevel(ID: number): boolean?
         table.insert(NewLevel.Chunks, NewChunk)
     end
 
-    LevelService.LoadChunk(1)
+    LevelService.LoadChunk(1, true)
+    LevelService.SetAvailableSpawns()
 
     return true
 end

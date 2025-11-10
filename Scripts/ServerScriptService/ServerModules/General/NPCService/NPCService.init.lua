@@ -16,6 +16,8 @@ local Workspace = game:GetService("Workspace")
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
+
 local NPCInfo = require(ServerScriptService.Source.ServerModules.Info.NPCInfo)
 local NPC = require(ServerScriptService.Source.ServerModules.Classes.NPC)
 
@@ -220,7 +222,9 @@ function NPCService:Stop()
 end
 
 function NPCService:Init()
-    NPCService:AddMultipleSpawners(Workspace.RemoveOnPlay)
+    if not ServerGlobalValues.CleanupAssetDump then
+        NPCService:AddMultipleSpawners(Workspace.AssetDump)
+    end
 
     NPCInfo.NPCDied:Connect(function(NPCName: string)
         --print(NPCName .. " died!")

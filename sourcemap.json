@@ -4312,6 +4312,14 @@
 											]
 										},
 										{
+											"name": "SignalService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/SignalService.lua"
+											]
+										},
+										{
 											"name": "UnitManagerService",
 											"className": "ModuleScript",
 											"children": [],
@@ -4333,14 +4341,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/General/WeaponService.lua"
-											]
-										},
-										{
-											"name": "SignalService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/General/SignalService.lua"
 											]
 										}
 									],
@@ -4388,6 +4388,23 @@
 									],
 									"filePaths": [
 										"Scripts/ServerScriptService/ServerModules/Items"
+									]
+								},
+								{
+									"name": "LevelModules",
+									"className": "Folder",
+									"children": [
+										{
+											"name": "Level_1",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/LevelModules/Level_1.lua"
+											]
+										}
+									],
+									"filePaths": [
+										"Scripts/ServerScriptService/ServerModules/LevelModules"
 									]
 								},
 								{

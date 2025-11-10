@@ -23,6 +23,7 @@ local WeapnEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum
 
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
 local AbilityService = require(ServerScriptService.Source.ServerModules.General.AbilityService)
+local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
 
 local WeaponModules = {}
 
@@ -57,7 +58,8 @@ local Assets = ReplicatedStorage.Assets
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local function SetTestButtons()
-    for _, Button in Workspace.RemoveOnPlay.WeaponButtons:GetChildren() do
+    if ServerGlobalValues.CleanupAssetDump then return end
+    for _, Button in Workspace.AssetDump.WeaponButtons:GetChildren() do
         local Debounce, BaseColor = false, Button.BrickColor
 
         Button.Touched:Connect(function(Hit: any)

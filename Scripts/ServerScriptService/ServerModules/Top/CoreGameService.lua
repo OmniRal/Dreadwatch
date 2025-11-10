@@ -27,6 +27,7 @@ local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnu
 
 local SignalService = require(ServerScriptService.Source.ServerModules.General.SignalService)
 local CharacterService = require(ServerScriptService.Source.ServerModules.Player.CharacterService)
+local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -178,10 +179,10 @@ function CoreGameService:RequestSpawnLocation(Player: Player, BeingRevived: bool
         -- If the place is a LEVEL, send an appropriate place to respawn in the level
         local RespawnHere = CFrame.new(0, 0, 0)
         local CurrentLevel = ServerGlobalValues.CurrentLevel
-        local OrderID = Player:GetAttribute("OrderID") :: number?
+        local Order_ID = Player:GetAttribute("Order_ID") :: number?
 
-        if CurrentLevel and CurrentLevel.AvailableSpawns and OrderID then
-            RespawnHere = CurrentLevel.AvailableSpawns[OrderID] -- Make sure the players who are respawning at the same time, never spawn ontop of each other
+        if CurrentLevel and CurrentLevel.AvailableSpawns and Order_ID then
+            RespawnHere = CurrentLevel.AvailableSpawns[Order_ID] -- Make sure the players who are respawning at the same time, never spawn ontop of each other
         end
 
         if BeingRevived then
@@ -249,7 +250,12 @@ function CoreGameService:Deferred()
         return
     end
 
-    --New.Clean(Workspace, "RemoveOnPlay")
+    if ServerGlobalValues.CleanupAssetDump then
+        New.Clean(Workspace, "AssetDump")
+    end
+
+    Utility:ChangeModelTransparency(Workspace.TempRoom, 1)
+
     --RandomFunction()
 end
 
@@ -262,8 +268,8 @@ function CoreGameService.PlayerAdded(Player: Player)
     end
 
     table.insert(PlayerOrder, Player)
-    local OrderID = table.find(PlayerOrder, Player) -- Incase two players enter at the same time
-    Player:SetAttribute("OrderID", OrderID)
+    local Order_ID = table.find(PlayerOrder, Player) -- Incase two players enter at the same time
+    Player:SetAttribute("Order_ID", Order_ID)
 
     PlayerValues[Player] = {
         RespawnTime = 0,

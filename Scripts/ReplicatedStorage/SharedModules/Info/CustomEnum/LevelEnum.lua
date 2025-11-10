@@ -55,6 +55,9 @@ export type Chunk = {
     SystemType: SystemType,
 
     ID: number,
+
+    Active: boolean, -- If the chunk is the current one players are in
+    Completed: boolean, -- If the chunk has been completed, players are able to progress
     
     Build: Model, -- Easy reference 
     Rooms: {Room},
@@ -116,6 +119,29 @@ export type LevelDetails = {
     ModelID: number,
 
     RandomizedLayout: boolean? -- If true, it will generate a random amount of rooms
+}
+
+export type CompletionData = {
+    IsTrue: boolean,
+    Details: {any},
+    
+}
+
+export type LevelModule = {
+    [string]: { -- This can be any space (chunk or room)
+        SystemType: SystemType,
+        ID: number,
+        CompletionRequirements: {
+            DefeatEnemies: boolean?,
+            PuzzlesSolved: boolean?,
+        },
+        Methods: {
+            Init: () -> ()?, -- Only happens once when the CHUNK is first loaded
+			Enter: () -> ()?, -- Triggers anytime a player enters the space
+			Update: () -> ()?, -- Updates the space on every frame
+			Exit: () -> ()?, -- Triggers anytime a player leaves the space
+        }   
+    }
 }
 
 -- When a biome or room has custom lighting, it can use these parameters. From their, the system can adjust the lighting accordingly
