@@ -193,9 +193,8 @@ function LevelService.MigrateToThisChunk(ThisChunk_ID: number, ThisRoom_ID: numb
     -- Move players to the new available spawns
     LevelService.MovePlayers("CurrentAvailableSpawns")
     
-    task.delay(1, function()
-        MovingToNewChunk = false
-    end)
+    task.wait(1) -- For safety
+    MovingToNewChunk = false
 end
 
 -- @To - "TempRoom" = moves players to a floating room in the world; meant to be a temporary space to hold players while loading other stuff
@@ -365,7 +364,7 @@ function LevelService.LoadLevel(ID: number): boolean?
 
             -- Add rooms
             if string.find(Object.Name, "Room") then
-                local Room_ID = string.sub(Object.Name, 6, string.len(Object.Name))
+                local Room_ID = tonumber(string.sub(Object.Name, 6, string.len(Object.Name)))
                 local NewRoom = NewRoomData(Room_ID, Object)
                 table.insert(NewChunk.Rooms, NewRoom)
                 table.insert(NewLevel.Rooms, NewRoom)
