@@ -87,6 +87,7 @@ local function NewRoomData(ID: number, Model: Model): LevelEnum.Room?
         SystemType = "Room",
         ID = ID,
         RoomType = "Normal",
+        Completed = false,
         Values = {},
         Build = Model,
         CFrame = Model:GetPivot(),
@@ -113,7 +114,7 @@ local function NewChunkData(ID: number, Model: Model): LevelEnum.Chunk?
         SystemType = "Chunk",
         ID = ID,
         Active = false,
-        Completed = true,
+        Completed = false,
         Build = Model,
         Rooms = {},
         Halls = {},
@@ -143,8 +144,9 @@ local function FinishChunkSetup(Chunk: LevelEnum.Chunk)
 
             -- Add choices
             elseif CorePart.Name == "Choice" then
-                local ConnectTo = CorePart:GetAttribute("ConnectTo") :: number
+                local ConnectTo = tonumber(CorePart:GetAttribute("ConnectTo") :: string)
                 if not ConnectTo then continue end
+                CorePart.CanTouch = true
                 Chunk.Choices[CorePart] = ConnectTo
             end
         end
@@ -164,10 +166,10 @@ local function FinishChunkSetup(Chunk: LevelEnum.Chunk)
             if not Hit.Parent then return end
             if not Players:FindFirstChild(Hit.Parent.Name) then return end
             
-            local NextChunk_ID = LevelService.FindChunkFromRoomID(ConnectTo)
-            if not NextChunk_ID then return end
+            local NextChunk = LevelService.FindChunkFromRoomID(ConnectTo)
+            if not NextChunk then return end
 
-            LevelService.MigrateToThisChunk(NextChunk_ID, ConnectTo, Part:GetAttribute("Entrance_ID"))
+            LevelService.MigrateToThisChunk(NextChunk.ID, ConnectTo, Part:GetAttribute("Entrance_ID"))
         end)
     end
 end
@@ -176,8 +178,40 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+-- Sets a room to complete, then checks the associated chunk to see if ALL its rooms are complete
+function LevelService.CompleteRoom(ThisRoom: LevelEnum.Room)
+    local Level = ServerGlobalValues.CurrentLevel
+    if not Level then return end
+    if not Level.Module then return end
+    
+    -- Get the chunk the room is in
+    local ThisChunk = LevelService.FindChunkFromRoomID(ThisRoom.ID)
+    if not ThisChunk then return end
+
+    -- Make sure the chunk is a part of the module script for this level
+    local ModuleChunk = Level.Module["Chunk_" .. ThisChunk.ID]
+    if not ModuleChunk then return end
+
+    ThisRoom.Completed = true
+
+    -- Check if all the rooms of this chunk are complete
+    local AllComplete = true
+    for _, Room: LevelEnum.Room in ThisChunk.Rooms do
+        if not Room then continue end
+        if not table.find(ModuleChunk.CompletionRequirements.Rooms, Room.ID) then continue end
+        if Room.Completed then continue end
+
+        -- This room is NOT complete
+        AllComplete = false
+    end
+
+    ThisChunk.Completed = AllComplete
+end
+
 function LevelService.MigrateToThisChunk(ThisChunk_ID: number, ThisRoom_ID: number?, ThisEntrance_ID: number?)
-    if MovingToNewChunk then return end
+    local Level = ServerGlobalValues.CurrentLevel
+    if not Level or MovingToNewChunk then return end
+    if not Level.CurrentChunk.Completed then return end
 
     MovingToNewChunk = true
 
@@ -265,7 +299,7 @@ function LevelService.SetAvailableSpawns(ThisRoom_ID: number?, ThisEntrance_ID: 
 end
 
 -- Returns a chunk that has a specific room number
-function LevelService.FindChunkFromRoomID(ID: number): number?
+function LevelService.FindChunkFromRoomID(ID: number): LevelEnum.Chunk?
     local Level = ServerGlobalValues.CurrentLevel
     if not Level then return end
 
@@ -276,7 +310,7 @@ function LevelService.FindChunkFromRoomID(ID: number): number?
         for _, Room in Chunk.Rooms do
             if not Room then continue end
             if Room.ID ~= ID then continue end
-            return Chunk.ID
+            return Chunk
         end    
     end
 
@@ -288,6 +322,9 @@ end
 function LevelService.LoadChunk(ID: number, HideAllChunks: boolean?)
     local Level = ServerGlobalValues.CurrentLevel
     if not Level then return end
+
+    local Module_Next = Level.Module["Chunk_" .. ID]
+    assert(Module_Next, "Missing next module chunk!")
 
     local Current, Next = Level.CurrentChunk, nil
 
@@ -310,10 +347,32 @@ function LevelService.LoadChunk(ID: number, HideAllChunks: boolean?)
     end
     
     if Current and Next then
+        local Module_Current = Level.Module["Chunk" .. Level.CurrentChunk.ID]
+
         Current.Active = false
         Current.Build.Parent = nil
     end
-    
+
+    -- Run init method for the chunk, if it exists
+    if Module_Next.Methods.Init then
+        Module_Next.Methods.Init()
+    end
+
+    -- If the chunk has NO rooms that need to be completed, set its completion to true by default
+    if #Module_Next.CompletionRequirements.Rooms <= 0 then
+        Next.Completed = true
+    end
+
+    -- Run init methods for its rooms, if they exist
+    for _, Room in Next.Rooms do
+        if not Room then continue end
+        local Module_Room = Level.Module["Room_" .. Room.ID]
+        if not Module_Room then continue end
+        if not Module_Room.Methods.Init then continue end
+
+        Module_Room.Methods.Init(Room)
+    end
+
     Level.CurrentChunk = Next
 end
 
@@ -323,6 +382,9 @@ function LevelService.LoadLevel(ID: number): boolean?
     -- Get the details of the level
     local Details = LevelInfo["Level_" .. ID]
     if not Details then return false end
+
+    local Module = ServerScriptService.Source.ServerModules.LevelModules:FindFirstChild("Level_" .. ID)
+    if not Module then return false end
 
     -- Try to get the model of the level from Roblox
     local Success, BaseModel: Model = pcall(function()
@@ -341,6 +403,8 @@ function LevelService.LoadLevel(ID: number): boolean?
         LevelModel:PivotTo(PLAY_LEVEL_HERE)
     end
 
+
+
     local NewLevel: LevelEnum.Level = {
         Details = Details,
         Chunks = {},
@@ -349,6 +413,7 @@ function LevelService.LoadLevel(ID: number): boolean?
         Build = LevelModel,
         CurrentChunk = nil,
         AvailableSpawns = {},
+        Module = require(Module)
     }
     ServerGlobalValues.CurrentLevel = NewLevel
 

@@ -33,6 +33,7 @@ export type Room = {
     
     ID: number,
     RoomType: RoomType,
+    Completed: boolean,
     Values: {any}, -- Rooms don't need this, but handy if certain rooms have specific functionality; such as traps 
 
     Build: Model,
@@ -108,6 +109,8 @@ export type Level = {
 
     CurrentChunk: Chunk?,
     AvailableSpawns: {CFrame}?,
+
+    Module: LevelModule,
 }
 
 export type LevelDetails = {
@@ -117,8 +120,6 @@ export type LevelDetails = {
     Scale: LevelScale,
 
     ModelID: number,
-
-    RandomizedLayout: boolean? -- If true, it will generate a random amount of rooms
 }
 
 export type CompletionData = {
@@ -132,14 +133,17 @@ export type LevelModule = {
         SystemType: SystemType,
         ID: number,
         CompletionRequirements: {
-            DefeatEnemies: boolean?,
-            PuzzlesSolved: boolean?,
+            Rooms: {number}?, -- For chunks; put all the rooms that NEED to be completed in order for the chunk to be completed
+
+            DefeatEnemies: boolean?, -- For rooms
+            PuzzlesSolved: boolean?, -- For rooms
         },
+
         Methods: {
-            Init: () -> ()?, -- Only happens once when the CHUNK is first loaded
-			Enter: () -> ()?, -- Triggers anytime a player enters the space
-			Update: () -> ()?, -- Updates the space on every frame
-			Exit: () -> ()?, -- Triggers anytime a player leaves the space
+            Init: (Space: Chunk | Room) -> ()?, -- Only happens once when the space is first loaded
+			Enter: (Space: Chunk | Room) -> ()?, -- Triggers anytime a player enters the space
+			Update: (Space: Chunk | Room) -> ()?, -- Updates the space on every frame
+			Exit: (Space: Chunk | Room) -> ()?, -- Triggers anytime a player leaves the space
         }   
     }
 }
