@@ -13,7 +13,7 @@ Level_1["Chunk_1"] = {
     SystemType = "Chunk",
     ID = 1,
     CompletionRequirements = {
-        Rooms = {2}
+        Rooms = {3}
     },
 
     Methods = {},
@@ -49,7 +49,7 @@ Level_1["Chunk_4"] = {
     Methods = {},
 }
 
-Level_1["Room_2"] = {
+Level_1["Room_3"] = {
     SystemType = "Room",
     ID = 2,
     CompletionRequirements = {},

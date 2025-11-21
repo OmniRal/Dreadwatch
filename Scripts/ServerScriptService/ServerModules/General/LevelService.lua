@@ -10,6 +10,8 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local InsertService = game:GetService("InsertService")
+local RunService = game:GetService("RunService")
+local ServerStorage = game:GetService("ServerStorage")
 local Workspace = game:GetService("Workspace")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -25,16 +27,23 @@ local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local UPDATE_RATE = 0.1
+
 local PLAY_LEVEL_HERE = CFrame.new(1000, 1000, 1000) -- Where the level is placed and played
 local KEEP_LEVEL_POS_SAME = true -- Do not move the level to PLAY_LEVEL_HERE if true
+
+local SHOW_ROOM_DETAILS = true
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local RunHeartbeat: RBXScriptConnection? = nil
 local MovingToNewChunk = false
 
 local TempRoom: Model = Workspace.TempRoom
+
+local Assets = ServerStorage.Assets
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
@@ -150,6 +159,13 @@ local function FinishChunkSetup(Chunk: LevelEnum.Chunk)
                 Chunk.Choices[CorePart] = ConnectTo
             end
         end
+
+        if not SHOW_ROOM_DETAILS then continue end
+
+        local Gui = Assets.Other.WorldLevelUI.RoomGui:Clone()
+        Gui.Name = "Gui"
+        Gui._1.Text = Room.ID
+        Gui.Parent = Room.Build.PrimaryPart
     end
 
     -- Add choice connections
@@ -171,6 +187,47 @@ local function FinishChunkSetup(Chunk: LevelEnum.Chunk)
 
             LevelService.MigrateToThisChunk(NextChunk.ID, ConnectTo, Part:GetAttribute("Entrance_ID"))
         end)
+    end
+end
+
+-- Tracks which players are in which rooms
+local function TrackPlayersInRooms()
+    local Level = ServerGlobalValues.CurrentLevel
+    if not Level then return end
+    if not Level.CurrentChunk then return end
+
+    for _, Player in Players:GetPlayers() do
+        if not Player then continue end
+        if not Player.Character then continue end
+        local Root: BasePart = Player.Character:FindFirstChild("HumanoidRootPart")
+        if not Root then continue end
+
+        
+        for _, Room in Level.CurrentChunk.Rooms do
+            if not Room then continue end
+            if not Room.FloorParts then continue end
+            
+            -- Check if the player is within ANY of the floor segments of the room
+            local InRoom = false
+            for _, Floor in Room.FloorParts do
+                if not Floor then continue end
+                local RelativeCF = Floor.CFrame:PointToObjectSpace(Root.Position)
+                if math.abs(RelativeCF.X) > Floor.Size.X / 2 or math.abs(RelativeCF.Z) > Floor.Size.Z / 2 then continue end
+                InRoom = true
+                break
+            end
+
+            local PIndex = table.find(Room.Players, Player)
+            if InRoom and not PIndex then
+                table.insert(Room.Players, Player)
+            
+            elseif not InRoom and PIndex then
+                table.remove(Room.Players, PIndex)
+            end
+
+            if not SHOW_ROOM_DETAILS then continue end
+            Room.Build.PrimaryPart.Gui._2.Text = #Room.Players
+        end
     end
 end
 
@@ -403,8 +460,6 @@ function LevelService.LoadLevel(ID: number): boolean?
         LevelModel:PivotTo(PLAY_LEVEL_HERE)
     end
 
-
-
     local NewLevel: LevelEnum.Level = {
         Details = Details,
         Chunks = {},
@@ -449,8 +504,27 @@ function LevelService.LoadLevel(ID: number): boolean?
 
     LevelService.LoadChunk(1, true)
     LevelService.SetAvailableSpawns()
+    LevelService.Run()
 
     return true
+end
+
+function LevelService.Stop()
+    if not RunHeartbeat then return end
+    RunHeartbeat:Disconnect()
+    RunHeartbeat = nil
+end
+
+function LevelService.Run()
+    LevelService.Stop()
+
+    local NextUpdate = os.clock() + UPDATE_RATE
+    RunHeartbeat = RunService.Heartbeat:Connect(function(DeltaTime: number)
+        if os.clock() < NextUpdate then return end
+        NextUpdate = os.clock() + UPDATE_RATE
+
+        TrackPlayersInRooms()
+    end)
 end
 
 function LevelService:Init()
