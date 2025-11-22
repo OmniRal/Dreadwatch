@@ -53,6 +53,7 @@ Level_1["Room_3"] = {
     SystemType = "Room",
     ID = 2,
     CompletionRequirements = {},
+    RoomBlockedOutUntilComplete = true,
     Methods = {
         Init = function(Room)
             if not Room.Build then return end

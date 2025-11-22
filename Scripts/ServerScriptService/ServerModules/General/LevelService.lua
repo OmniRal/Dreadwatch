@@ -22,6 +22,7 @@ local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.
 local LevelEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.LevelEnum)
 local LevelInfo = require(ReplicatedStorage.Source.SharedModules.Info.LevelInfo)
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
+local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -72,6 +73,76 @@ local function GetFloorParts(Build: Model): {BasePart}?
     return List
 end
 
+-- Find the slots in rooms or halls, add them to table
+local function SetSlots(Space: LevelEnum.Room | LevelEnum.Hall)
+    if not Space then return end
+    if not Space.Build then return end
+    
+    for _, SlotPart in Space.Build:GetChildren() do
+        if not SlotPart then continue end
+        if SlotPart.Name ~= "Slot" then continue end
+
+        -- Keep the slot part and the slot wall in one model
+        local NewModel = New.Instance("Model", "Slot_" .. #Space.Slots + 1, Space.Build)
+
+        -- Add the wall for the slot (used for locking players in rooms when needed)
+        local NewWall = New.Instance("Part", "SlotWall", NewModel, {
+            Anchored = true, CanCollide = false, CanQuery = false, CanTouch = false, Size = Vector3.new(SlotPart.Size.X, 25, SlotPart.Size.Z), Transparency = 1,
+            CFrame = SlotPart.CFrame * CFrame.new(0, 12.5, 0)
+        })
+        
+        local NewSlot: LevelEnum.Slot = {
+            SystemType = "Slot",
+            Open = true,
+            Index = #Space.Slots + 1,
+            SlotPart = SlotPart,
+            WallPart = NewWall,
+            ConnectedTo = nil,
+        }
+
+        SlotPart.Transparency = 1
+        SlotPart.Parent = NewModel
+
+        table.insert(Space.Slots, NewSlot)
+    end
+end
+
+-- Looks through all the rooms and halls in a chunk and sees what each one connects to; updating their slot data
+local function CheckSlotConnections(ThisChunk: LevelEnum.Chunk)
+    if not ThisChunk then return end
+
+    local TempList: {LevelEnum.Room | LevelEnum.Hall} = {}
+
+    for _, ThisRoom in ThisChunk.Rooms do table.insert(TempList, ThisRoom) end
+    for _, ThisHall in ThisChunk.Halls do table.insert(TempList, ThisHall) end
+
+    for _, Space_A in TempList do
+        if not Space_A.Slots then continue end
+        for _, Slot_A: LevelEnum.Slot in Space_A.Slots do
+            if not Slot_A.SlotPart or not Slot_A.Open then continue end
+            
+            for _, Space_B in TempList do
+                if Space_B == Space_A then continue end
+                for _, Slot_B: LevelEnum.Slot in Space_B.Slots do
+                    if not Slot_B.SlotPart or not Slot_B.Open then continue end
+
+                    local RelativeCF = Slot_A.SlotPart.CFrame:PointToObjectSpace(Slot_B.SlotPart.Position)
+                    if math.abs(RelativeCF.X) > 0.1 or math.abs(RelativeCF.Y) > 0.1 or math.abs(RelativeCF.Z) > 4.5 then continue end
+
+                    Slot_A.ConnectedTo = Space_B
+                    Slot_A.Open = false
+                    Slot_B.ConnectedTo = Space_A
+                    Slot_B.Open = false
+
+                    warn(`{Space_A.Build.Name} slot {Slot_A.Index} connected to {Space_B.Build.Name} slot {Slot_B.Index}`)
+
+                    break
+                end
+            end
+        end
+    end
+end
+
 local function NewHallData(Model: Model): LevelEnum.Hall?
     if not Model then return end
 
@@ -85,6 +156,8 @@ local function NewHallData(Model: Model): LevelEnum.Hall?
         Decor = {},
         Players = {},
     }
+
+    SetSlots(NewHall)
 
     return NewHall
 end
@@ -110,6 +183,8 @@ local function NewRoomData(ID: number, Model: Model): LevelEnum.Room?
         Lighting = {},
         Players = {},
     }
+
+    SetSlots(NewRoom)
 
     return NewRoom
 end
@@ -498,6 +573,7 @@ function LevelService.LoadLevel(ID: number): boolean?
         end
 
         FinishChunkSetup(NewChunk)
+        CheckSlotConnections(NewChunk)
 
         table.insert(NewLevel.Chunks, NewChunk)
     end

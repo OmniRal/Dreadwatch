@@ -9,6 +9,7 @@ export type Slot = {
     Open: boolean, -- If the slot can allow a connection
     Index: number, -- Identification
     SlotPart: BasePart, -- This part is inside the room, represents where the slot is and which way it's facing.
+    WallPart: BasePart?, -- Invisible wall whose collisions can be toggled on/off
     ConnectedTo: Hall? | Room?,
 }
 
@@ -20,7 +21,7 @@ export type Hall = {
     Size: Vector3,
     
     FloorParts: {BasePart}, -- The core floor pieces that the grid system will use to figure out what space it occupies
-    Slots: {[number]: Slot},
+    Slots: {Slot},
 
     Decor: {BasePart? | Model?},
 
@@ -41,7 +42,7 @@ export type Room = {
     Size: Vector3,
     
     FloorParts: {BasePart},
-    Slots: {[number]: Slot?},
+    Slots: {Slot},
 
     Spawners: {}, -- Still need to be defined, these will be the spawners, which manage their own NPCs
     NPCs: {}, -- Still need to be define, will mostly contain enemies, occasionaly friendly NPCs
@@ -125,19 +126,22 @@ export type LevelDetails = {
 export type CompletionData = {
     IsTrue: boolean,
     Details: {any},
-    
 }
 
 export type LevelModule = {
     [string]: { -- This can be any space (chunk or room)
         SystemType: SystemType,
+
         ID: number,
+
         CompletionRequirements: {
             Rooms: {number}?, -- For chunks; put all the rooms that NEED to be completed in order for the chunk to be completed
 
             DefeatEnemies: boolean?, -- For rooms
             PuzzlesSolved: boolean?, -- For rooms
         },
+
+        RoomBlockedOutUntilComplete: boolean?,
 
         Methods: {
             Init: (Space: Chunk | Room) -> ()?, -- Only happens once when the space is first loaded
