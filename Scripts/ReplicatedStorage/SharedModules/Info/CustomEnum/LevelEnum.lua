@@ -109,6 +109,7 @@ export type Level = {
     Build: Model,
 
     CurrentChunk: Chunk?,
+    CurrentData: SpaceData?,
     AvailableSpawns: {CFrame}?,
 
     Module: LevelModule,
@@ -128,28 +129,31 @@ export type CompletionData = {
     Details: {any},
 }
 
+export type SpaceData = {
+    SystemType: SystemType,
+
+    ID: number,
+
+    CompletionRequirements: {
+        Rooms: {number}?, -- For chunks; put all the rooms that NEED to be completed in order for the chunk to be completed
+
+        DefeatEnemies: boolean?, -- For rooms
+        PuzzlesSolved: boolean?, -- For rooms
+    },
+
+    RoomBlockedOutUntilComplete: boolean?,
+
+    Methods: {
+        Init: (Space: Chunk | Room?) -> ()?, -- Only happens once when the space is first loaded
+		Enter: (Space: Chunk | Room) -> ()?, -- Triggers anytime a player enters the space
+        AllPlayersEnterOnce: (Room: Room) -> ()?, -- Triggers when all the players enter a room for the first time
+		Update: (Space: Chunk | Room) -> ()?, -- Updates the space on every frame
+		Exit: (Space: Chunk | Room) -> ()?, -- Triggers anytime a player leaves the space
+    }   
+}
+
 export type LevelModule = {
-    [string]: { -- This can be any space (chunk or room)
-        SystemType: SystemType,
-
-        ID: number,
-
-        CompletionRequirements: {
-            Rooms: {number}?, -- For chunks; put all the rooms that NEED to be completed in order for the chunk to be completed
-
-            DefeatEnemies: boolean?, -- For rooms
-            PuzzlesSolved: boolean?, -- For rooms
-        },
-
-        RoomBlockedOutUntilComplete: boolean?,
-
-        Methods: {
-            Init: (Space: Chunk | Room) -> ()?, -- Only happens once when the space is first loaded
-			Enter: (Space: Chunk | Room) -> ()?, -- Triggers anytime a player enters the space
-			Update: (Space: Chunk | Room) -> ()?, -- Updates the space on every frame
-			Exit: (Space: Chunk | Room) -> ()?, -- Triggers anytime a player leaves the space
-        }   
-    }
+    [string]: SpaceData -- This can be any space (chunk or room)
 }
 
 -- When a biome or room has custom lighting, it can use these parameters. From their, the system can adjust the lighting accordingly

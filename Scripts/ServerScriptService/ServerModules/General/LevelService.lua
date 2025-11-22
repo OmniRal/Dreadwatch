@@ -267,6 +267,7 @@ end
 
 -- Tracks which players are in which rooms
 local function TrackPlayersInRooms()
+    if MovingToNewChunk then return end
     local Level = ServerGlobalValues.CurrentLevel
     if not Level then return end
     if not Level.CurrentChunk then return end
@@ -276,7 +277,6 @@ local function TrackPlayersInRooms()
         if not Player.Character then continue end
         local Root: BasePart = Player.Character:FindFirstChild("HumanoidRootPart")
         if not Root then continue end
-
         
         for _, Room in Level.CurrentChunk.Rooms do
             if not Room then continue end
@@ -304,6 +304,15 @@ local function TrackPlayersInRooms()
             Room.Build.PrimaryPart.Gui._2.Text = #Room.Players
         end
     end
+end
+
+local function RunChunkMethods()
+    if MovingToNewChunk then return end
+    local Level = ServerGlobalValues.CurrentLevel
+    if not Level then return end
+    if not Level.CurrentChunk then return end
+
+
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -455,10 +464,10 @@ function LevelService.LoadChunk(ID: number, HideAllChunks: boolean?)
     local Level = ServerGlobalValues.CurrentLevel
     if not Level then return end
 
-    local Module_Next = Level.Module["Chunk_" .. ID]
-    assert(Module_Next, "Missing next module chunk!")
+    local NextData = Level.Module["Chunk_" .. ID]
+    assert(NextData, "Missing next module chunk!")
 
-    local Current, Next = Level.CurrentChunk, nil
+    local NextChunk = nil
 
     -- Find the chunk to load
     for _, Chunk in ipairs(Level.Chunks) do
@@ -470,33 +479,35 @@ function LevelService.LoadChunk(ID: number, HideAllChunks: boolean?)
         end
 
         if Chunk.ID ~= ID then continue end
-        Next = Chunk
+        NextChunk = Chunk
     end
 
-    if Next then
-        Next.Active = true
-        Next.Build.Parent = Level.Build
+    if NextChunk then
+        NextChunk.Active = true
+        NextChunk.Build.Parent = Level.Build
     end
     
-    if Current and Next then
-        local Module_Current = Level.Module["Chunk" .. Level.CurrentChunk.ID]
+    if Level.CurrentChunk and NextChunk then
+        if Level.CurrentData and Level.CurrentData.Methods.Exit then
+            Level.CurrentData.Methods.Exit(Level.CurrentChunk)
+        end
 
-        Current.Active = false
-        Current.Build.Parent = nil
+        Level.CurrentChunk.Active = false
+        Level.CurrentChunk.Build.Parent = nil
     end
 
     -- Run init method for the chunk, if it exists
-    if Module_Next.Methods.Init then
-        Module_Next.Methods.Init()
+    if NextData.Methods.Init then
+        NextData.Methods.Init(NextChunk)
     end
 
     -- If the chunk has NO rooms that need to be completed, set its completion to true by default
-    if #Module_Next.CompletionRequirements.Rooms <= 0 then
-        Next.Completed = true
+    if #NextData.CompletionRequirements.Rooms <= 0 then
+        NextChunk.Completed = true
     end
 
     -- Run init methods for its rooms, if they exist
-    for _, Room in Next.Rooms do
+    for _, Room in NextChunk.Rooms do
         if not Room then continue end
         local Module_Room = Level.Module["Room_" .. Room.ID]
         if not Module_Room then continue end
@@ -505,7 +516,8 @@ function LevelService.LoadChunk(ID: number, HideAllChunks: boolean?)
         Module_Room.Methods.Init(Room)
     end
 
-    Level.CurrentChunk = Next
+    Level.CurrentChunk = NextChunk
+    Level.CurrentData = NextData
 end
 
 function LevelService.LoadLevel(ID: number): boolean?
@@ -600,6 +612,7 @@ function LevelService.Run()
         NextUpdate = os.clock() + UPDATE_RATE
 
         TrackPlayersInRooms()
+
     end)
 end
 

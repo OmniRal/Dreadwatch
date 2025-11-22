@@ -16,7 +16,20 @@ Level_1["Chunk_1"] = {
         Rooms = {3}
     },
 
-    Methods = {},
+    Methods = {
+        Init = function(Chunk)
+            for _, ThisRoom: LevelEnum.Room in (Chunk :: LevelEnum.Chunk).Rooms do
+                if not ThisRoom.Build then continue end
+                for _, Floor in ThisRoom.FloorParts do
+                    Floor.Color = Color3.fromRGB(200, 50, 50)
+                end
+            end
+        end,
+
+        Update = function(Chunk)
+            
+        end
+    },
 }
 
 Level_1["Chunk_2"] = {
