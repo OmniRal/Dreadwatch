@@ -34,6 +34,7 @@ export type Room = {
     
     ID: number,
     RoomType: RoomType,
+    Started: boolean,
     Completed: boolean,
     Values: {any}, -- Rooms don't need this, but handy if certain rooms have specific functionality; such as traps 
 
@@ -146,7 +147,7 @@ export type SpaceData = {
     Methods: {
         Init: (Space: Chunk | Room?) -> ()?, -- Only happens once when the space is first loaded
 		Enter: (Space: Chunk | Room) -> ()?, -- Triggers anytime a player enters the space
-        AllPlayersEnterOnce: (Room: Room) -> ()?, -- Triggers when all the players enter a room for the first time
+        StartRoom: (Room: Room) -> ()?, -- Triggers when all the players enter a room for the first time
 		Update: (Space: Chunk | Room) -> ()?, -- Updates the space on every frame
 		Exit: (Space: Chunk | Room) -> ()?, -- Triggers anytime a player leaves the space
     }   

@@ -21,7 +21,7 @@ Level_1["Chunk_1"] = {
             for _, ThisRoom: LevelEnum.Room in (Chunk :: LevelEnum.Chunk).Rooms do
                 if not ThisRoom.Build then continue end
                 for _, Floor in ThisRoom.FloorParts do
-                    Floor.Color = Color3.fromRGB(200, 50, 50)
+                    Floor.Color = Color3.fromRGB(78, 101, 146)
                 end
             end
         end,
@@ -87,6 +87,12 @@ Level_1["Room_3"] = {
 
                 Button.Color = Color3.fromRGB(0, 0, 0)
             end)
+        end,
+
+        StartRoom = function(Room)
+            for _, Floor in Room.FloorParts do
+                Floor.Color = Color3.fromRGB(78, 146, 102)
+            end
         end
     }
 }

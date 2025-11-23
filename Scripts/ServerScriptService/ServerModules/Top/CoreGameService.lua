@@ -260,14 +260,16 @@ function CoreGameService:Deferred()
 end
 
 function CoreGameService.PlayerAdded(Player: Player)
+    table.insert(PlayerOrder, Player)
+
     local CreateNew, ID = CheckLoadLevel(Player)
     if CreateNew then
         ServerGlobalValues.InLevel = true
         Workspace.Lobby:Destroy() -- Get rid of the entire lobby folder
-        LevelService.LoadLevel(ID)
+        warn("PLAYER ORDER:", PlayerOrder)
+        LevelService.LoadLevel(PlayerOrder, ID)
     end
 
-    table.insert(PlayerOrder, Player)
     local Order_ID = table.find(PlayerOrder, Player) -- Incase two players enter at the same time
     Player:SetAttribute("Order_ID", Order_ID)
 

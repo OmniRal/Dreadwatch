@@ -35,9 +35,13 @@ local KEEP_LEVEL_POS_SAME = true -- Do not move the level to PLAY_LEVEL_HERE if 
 
 local SHOW_ROOM_DETAILS = true
 
+local SHOW_WALLS_WHEN_COLLIDE = true
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local MyPlayers: {Player} = {}
 
 local RunHeartbeat: RBXScriptConnection? = nil
 local MovingToNewChunk = false
@@ -54,8 +58,22 @@ local function CheckForceSpawnLevel()
     if not ServerGlobalValues.StartLevelInfo.TestingMode then return end
     if not ServerGlobalValues.StartLevelInfo.TestWithoutPlayers then return end
     task.delay(1, function()
-        LevelService.LoadLevel(ServerGlobalValues.StartLevelInfo.ID)
+        LevelService.LoadLevel({}, ServerGlobalValues.StartLevelInfo.ID)
     end)
+end
+
+-- Toggle the collisions for the slot walls of a room
+local function ToggleSlotWalls(ThisRoom: LevelEnum.Room, Set: boolean)
+    for _, Slot in ThisRoom.Slots do
+        if not Slot.WallPart then continue end
+        Slot.WallPart.CanCollide = Set
+
+        if SHOW_WALLS_WHEN_COLLIDE and Set then
+            Slot.WallPart.Transparency = 0.5
+        elseif SHOW_WALLS_WHEN_COLLIDE and not Set then
+            Slot.WallPart.Transparency = 1
+        end
+    end
 end
 
 -- Intended to get all parts named "Floor" inside Rooms and Halls
@@ -169,6 +187,7 @@ local function NewRoomData(ID: number, Model: Model): LevelEnum.Room?
         SystemType = "Room",
         ID = ID,
         RoomType = "Normal",
+        Started = false,
         Completed = false,
         Values = {},
         Build = Model,
@@ -310,9 +329,22 @@ local function RunChunkMethods()
     if MovingToNewChunk then return end
     local Level = ServerGlobalValues.CurrentLevel
     if not Level then return end
-    if not Level.CurrentChunk then return end
+    if not Level.CurrentChunk or not Level.Module then return end
 
+    for _, ThisRoom in Level.CurrentChunk.Rooms do
+        if not ThisRoom then continue end
+        local RoomData: LevelEnum.SpaceData = Level.Module["Room_" .. ThisRoom.ID]
+        if not RoomData or ThisRoom.Completed then continue end
+        
+        if RoomData.Methods.StartRoom and not ThisRoom.Started and #ThisRoom.Players == #MyPlayers then
+            ThisRoom.Started = true
+            RoomData.Methods.StartRoom(ThisRoom)
 
+            if RoomData.RoomBlockedOutUntilComplete then
+                ToggleSlotWalls(ThisRoom, true)
+            end
+        end
+    end
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -330,16 +362,20 @@ function LevelService.CompleteRoom(ThisRoom: LevelEnum.Room)
     if not ThisChunk then return end
 
     -- Make sure the chunk is a part of the module script for this level
-    local ModuleChunk = Level.Module["Chunk_" .. ThisChunk.ID]
-    if not ModuleChunk then return end
+    local ChunkData = Level.Module["Chunk_" .. ThisChunk.ID]
+    if not ChunkData then return end
 
     ThisRoom.Completed = true
+    local RoomData: LevelEnum.SpaceData = Level.Module["Room_" .. ThisRoom.ID]
+    if RoomData and RoomData.RoomBlockedOutUntilComplete then
+        ToggleSlotWalls(ThisRoom, false)
+    end
 
     -- Check if all the rooms of this chunk are complete
     local AllComplete = true
     for _, Room: LevelEnum.Room in ThisChunk.Rooms do
         if not Room then continue end
-        if not table.find(ModuleChunk.CompletionRequirements.Rooms, Room.ID) then continue end
+        if not table.find(ChunkData.CompletionRequirements.Rooms, Room.ID) then continue end
         if Room.Completed then continue end
 
         -- This room is NOT complete
@@ -509,19 +545,25 @@ function LevelService.LoadChunk(ID: number, HideAllChunks: boolean?)
     -- Run init methods for its rooms, if they exist
     for _, Room in NextChunk.Rooms do
         if not Room then continue end
-        local Module_Room = Level.Module["Room_" .. Room.ID]
-        if not Module_Room then continue end
-        if not Module_Room.Methods.Init then continue end
+        local RoomData = Level.Module["Room_" .. Room.ID]
+        if not RoomData then continue end
+        if not RoomData.Methods.Init then continue end
 
-        Module_Room.Methods.Init(Room)
+        RoomData.Methods.Init(Room)
     end
 
     Level.CurrentChunk = NextChunk
     Level.CurrentData = NextData
 end
 
-function LevelService.LoadLevel(ID: number): boolean?
-    if not ID then return false end
+function LevelService.LoadLevel(LoadingPlayers: {Player}, ID: number): boolean?
+    if not LoadingPlayers or not ID then return false end
+
+    for _, Player in ipairs(LoadingPlayers) do
+        table.insert(MyPlayers, Player)
+    end
+
+    warn("MY PLAYERS:", MyPlayers)
 
     -- Get the details of the level
     local Details = LevelInfo["Level_" .. ID]
@@ -612,7 +654,7 @@ function LevelService.Run()
         NextUpdate = os.clock() + UPDATE_RATE
 
         TrackPlayersInRooms()
-
+        RunChunkMethods()
     end)
 end
 
