@@ -55,7 +55,7 @@ export type Room = {
     NPCs: {}?, -- Still need to be define, will mostly contain enemies, occasionaly friendly NPCs
 
     WavesCleared: boolean?,
-    WaveCount: number?,
+    WaveNum: number?,
     Waves: {
         {WaveEnemyTracker}
     }?,
@@ -159,11 +159,12 @@ export type SpaceData = {
     UpdateWithoutPlayers: boolean?, -- For rooms
     EnemyWaves: {
         { -- Wave data can have multiple enemies in it
-            {SpawnerID: {number}, EnemyNames: string, Amount: number, UnitValues: {any}}
-            -- @SpawnerID = Which spawners the enemy can spawn from; leaving it empty will pick a random spawner 
+            {SpawnerIDs: {number}, EnemyName: string, Amount: number, UnitValues: {any}, Chance: number?}
+            -- @SpawnerIDs = Which spawners the enemy can spawn from; leaving it empty will pick a random spawner 
             -- @EnemyName = Which enemy to spawn
             -- @Amount = How many to create for this wave
             -- @UnitValues = Changes in the enemies stats such as health, evasion, attack speed, etc
+            -- @Chance = If exists, it will a dice to see if this enemy spawns in
         }
     }?, -- For rooms
 

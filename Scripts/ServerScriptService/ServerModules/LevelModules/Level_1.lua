@@ -110,7 +110,7 @@ Level_1["Room_3"] = {
     
     EnemyWaves = {
         {
-            {SpawnerID = {1, 2}, EnemyName = {"TestBot"}, Amount = 2, UnitValues = {}}
+            {SpawnerIDs = {1, 2}, EnemyName = "TestBot", Amount = 2, UnitValues = {}}
         }
     },
 

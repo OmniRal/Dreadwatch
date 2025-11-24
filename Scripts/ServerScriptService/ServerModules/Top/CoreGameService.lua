@@ -292,6 +292,7 @@ function CoreGameService.PlayerAdded(Player: Player)
     -- Defer this to make sure LoadCharacter doesn't run twice
     task.defer(function()
         CharacterService:SetupCharacter(Player, CoreGameService:RequestSpawnLocation(Player))
+        SetupRespawning(Player, Player.Character)
     end)
 end
 

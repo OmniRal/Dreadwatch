@@ -53,6 +53,7 @@ local MovingToNewChunk = false
 local TempRoom: Model = Workspace.TempRoom
 
 local Assets = ServerStorage.Assets
+local RNG = Random.new()
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
@@ -160,7 +161,7 @@ local function CheckSlotConnections(ThisChunk: LevelEnum.Chunk)
                     Slot_B.ConnectedTo = Space_A
                     Slot_B.Open = false
 
-                    warn(`{Space_A.Build.Name} slot {Slot_A.Index} connected to {Space_B.Build.Name} slot {Slot_B.Index}`)
+                    --warn(`{Space_A.Build.Name} slot {Slot_A.Index} connected to {Space_B.Build.Name} slot {Slot_B.Index}`)
 
                     break
                 end
@@ -215,12 +216,11 @@ local function CreateNewRoom(ID: number, Model: Model, RoomData: LevelEnum.Space
 
     SetSlots(NewRoom)
 
-    NewRoom.Spawners = NPCService:AddMultipleSpawners(Model) or nil
+    NewRoom.Spawners = NPCService:AddMultipleSpawners(Model, true) or nil
 
-    if not RoomData then return end
-    if RoomData.CompletionRequirements.ClearEnemyWaves and RoomData.EnemyWaves then
+    if RoomData and RoomData.CompletionRequirements.ClearEnemyWaves and RoomData.EnemyWaves then
         NewRoom.WavesCleared = false
-        NewRoom.WaveCount = 0
+        NewRoom.WaveNum = 1
         NewRoom.Waves = {}
 
         for _, WaveData in ipairs(RoomData.EnemyWaves) do
@@ -271,7 +271,7 @@ local function FinishChunkSetup(Chunk: LevelEnum.Chunk)
     for _, Room in Chunk.Rooms do
         if not Room then continue end
         if not Room.Build then continue end
-    
+
         -- Find the entrance and choice (parts) inside the rooms
         for _, CorePart: BasePart in Room.Build:GetChildren() do
             if not CorePart then continue end
@@ -377,8 +377,45 @@ local function RunRoom(ThisRoom: LevelEnum.Room, RoomData: LevelEnum.SpaceData)
 
     if not ThisRoom.Started then return end
 
-    if ThisRoom.Waves and RoomData.CompletionRequirements.ClearEnemyWaves and RoomData.EnemyWaves and not ThisRoom.WavesCleared then
-        return
+    -- Handle enemy wave spawning
+    if ThisRoom.Waves and not ThisRoom.WavesCleared and ThisRoom.WaveNum and ThisRoom.Spawners and RoomData.CompletionRequirements.ClearEnemyWaves and RoomData.EnemyWaves then
+        local Wave = ThisRoom.Waves[ThisRoom.WaveNum]
+        local WaveData = RoomData.EnemyWaves[ThisRoom.WaveNum]
+        local SpawnersToUse: {number} = {}
+        local SpawnNextIDs: {number} = {}
+
+        for n, Tracker in ipairs(Wave) do
+            local TrackerData = WaveData[n]
+            if not TrackerData then continue end
+            if Tracker.Killed >= TrackerData.Amount then continue end
+            if TrackerData.Chance and RNG:NextInteger(1, 100) > TrackerData.Chance then continue end
+
+            -- Make sure two enemies are not being spawned at the same spawner
+            local AvailableSpawners = table.clone(TrackerData.SpawnerIDs)
+            for x = #AvailableSpawners, 1, -1 do
+                if not table.find(SpawnersToUse, AvailableSpawners[x]) then continue end
+                table.remove(AvailableSpawners, x)
+            end
+
+            if #AvailableSpawners <= 0 then continue end
+
+            -- Add to the list to be spawned next
+            local RandSpawner = AvailableSpawners[RNG:NextInteger(1, #AvailableSpawners)]
+            table.insert(SpawnersToUse, RandSpawner)
+            table.insert(SpawnNextIDs, n)
+        end
+
+        if #SpawnersToUse > 0 then
+            for n = 1, #SpawnNextIDs do
+                local Tracker = Wave[n]
+                local TrackerData = WaveData[n]
+                local Spawner = ThisRoom.Spawners[SpawnersToUse[n]]
+                if not Tracker or not TrackerData or not Spawner then continue end
+
+                Tracker.Spawned += 1
+                NPCService:Spawn(Spawner, TrackerData.EnemyName)
+            end
+        end
     end
 
     -- Check to update
@@ -667,9 +704,9 @@ function LevelService.LoadLevel(LoadingPlayers: {Player}, ID: number): boolean?
     for x = 1, #LevelModel:GetChildren() do
         local ChunkModel = LevelModel:FindFirstChild("Chunk_" .. x)
         if not ChunkModel then continue end
-
+        
         local NewChunk = CreateNewChunk(x, ChunkModel)
-
+        
         for _, Object: Model in ChunkModel:GetChildren() do
             if not Object then continue end
 
