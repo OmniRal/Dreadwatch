@@ -20,7 +20,7 @@ export type Hall = {
     CFrame: CFrame,
     Size: Vector3,
     
-    FloorParts: {BasePart}, -- The core floor pieces that the grid system will use to figure out what space it occupies
+    FloorParts: {BasePart}, -- Creates the boundary of the room; helps detect which players are in the room
     Slots: {Slot},
 
     Decor: {BasePart? | Model?},
@@ -29,6 +29,12 @@ export type Hall = {
 }
 
 export type RoomType = "Normal" | "Trap" | "Miniboss" | "Boss" | "Shop" | "Lore"
+export type WaveEnemyTracker = {
+    Enemies: {}, -- @Enemies = Contains all the current enemies
+    Spawned: number, -- @Spawned = How many enemies have been created for this wave
+    Killed: number, -- @Killed = How many killed in this wave
+}  
+
 export type Room = {
     SystemType: SystemType,
     
@@ -45,8 +51,14 @@ export type Room = {
     FloorParts: {BasePart},
     Slots: {Slot},
 
-    Spawners: {}, -- Still need to be defined, these will be the spawners, which manage their own NPCs
-    NPCs: {}, -- Still need to be define, will mostly contain enemies, occasionaly friendly NPCs
+    Spawners: {[number]: Model}?, -- Still need to be defined, these will be the spawners, which manage their own NPCs
+    NPCs: {}?, -- Still need to be define, will mostly contain enemies, occasionaly friendly NPCs
+
+    WavesCleared: boolean?,
+    WaveCount: number?,
+    Waves: {
+        {WaveEnemyTracker}
+    }?,
     
     Decor: {BasePart | Model},
     Lighting: UniqueLighting?, -- Rooms don't _need_ to have custom lighting like biomes, but the option is there
@@ -138,18 +150,30 @@ export type SpaceData = {
     CompletionRequirements: {
         Rooms: {number}?, -- For chunks; put all the rooms that NEED to be completed in order for the chunk to be completed
 
-        DefeatEnemies: boolean?, -- For rooms
+        ClearEnemyWaves: boolean?, -- For rooms
         PuzzlesSolved: boolean?, -- For rooms
     },
 
-    RoomBlockedOutUntilComplete: boolean?,
+    AllPlayersRequiredToStart: boolean?, -- For rooms
+    RoomBlockedOutUntilComplete: boolean?, -- For rooms
+    UpdateWithoutPlayers: boolean?, -- For rooms
+    EnemyWaves: {
+        { -- Wave data can have multiple enemies in it
+            {SpawnerID: {number}, EnemyNames: string, Amount: number, UnitValues: {any}}
+            -- @SpawnerID = Which spawners the enemy can spawn from; leaving it empty will pick a random spawner 
+            -- @EnemyName = Which enemy to spawn
+            -- @Amount = How many to create for this wave
+            -- @UnitValues = Changes in the enemies stats such as health, evasion, attack speed, etc
+        }
+    }?, -- For rooms
 
     Methods: {
         Init: (Space: Chunk | Room?) -> ()?, -- Only happens once when the space is first loaded
 		Enter: (Space: Chunk | Room) -> ()?, -- Triggers anytime a player enters the space
-        StartRoom: (Room: Room) -> ()?, -- Triggers when all the players enter a room for the first time
 		Update: (Space: Chunk | Room) -> ()?, -- Updates the space on every frame
 		Exit: (Space: Chunk | Room) -> ()?, -- Triggers anytime a player leaves the space
+
+        StartRoom: (Room: Room) -> ()?, -- Triggers when all the players (if AllPlayersRequiredToStart = true) enter a room for the first time
     }   
 }
 

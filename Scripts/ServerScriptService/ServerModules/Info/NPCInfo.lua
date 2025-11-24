@@ -14,7 +14,7 @@ local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnu
 
 export type NPCPatrolStyle = "Stationary" | "Loop" | "BackNForth" | "RandomPoints" | "FreeRoam"
         -- Stationary = Don't move, ideal for NPCs
-        -- Free = Move randomly around the areas the NPC has spawned
+        -- FreeRoom = Move randomly around the areas the NPC has spawned
         -- Loop = Move through all the points in an endless loop
         -- BackNForth = Move through all the points in a loop, but once reached the last point, start walking back. Restart the cycle once reaching the first point again
         -- RandomPoints = Move between the points randomly

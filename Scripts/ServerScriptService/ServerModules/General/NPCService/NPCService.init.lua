@@ -164,16 +164,29 @@ function NPCService:AddSingleSpawner(SpawnerModel: Model)
     }
 
     if not SpawnerModel:GetAttribute("AutoSpawn") then return end
-    --NPCService:Spawn(SpawnerModel)
+    NPCService:Spawn(SpawnerModel)
 end
 
-function NPCService:AddMultipleSpawners(Check: Workspace | Model | Folder)
-    if not Check then return end
-    for _, SpawnerModel: Model in Check:GetChildren() do
+-- Finds all the NPCSpawners in a location
+-- @SearchHere = Where to look for the spawners
+-- @Return = If true, it will return an array of the spawners
+function NPCService:AddMultipleSpawners(SearchHere: Workspace | Model | Folder, Return: boolean?): {[number]: Model}?
+    if not SearchHere then return end
+
+    local List: {[number]: Model} = {}
+
+    for _, SpawnerModel: Model in SearchHere:GetChildren() do
         if not SpawnerModel then continue end
         if SpawnerModel.Name ~= "NPCSpawner" then continue end
+
         NPCService:AddSingleSpawner(SpawnerModel)
+
+        if not Return then continue end
+        List[SpawnerModel:GetAttribute("ID")] = SpawnerModel
     end
+
+    if not Return then return end
+    return List
 end
 
 function NPCService:Spawn(SpawnerModel: Model, NPCName: string?, ForceSpawn: boolean?)

@@ -18,11 +18,15 @@ local Workspace = game:GetService("Workspace")
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local New = require(ReplicatedStorage.Source.Pronghorn.New)
+
 local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
 local LevelEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.LevelEnum)
 local LevelInfo = require(ReplicatedStorage.Source.SharedModules.Info.LevelInfo)
+
+local NPCService = require(ServerScriptService.Source.ServerModules.General.NPCService)
+
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
-local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -131,8 +135,12 @@ local function CheckSlotConnections(ThisChunk: LevelEnum.Chunk)
 
     local TempList: {LevelEnum.Room | LevelEnum.Hall} = {}
 
-    for _, ThisRoom in ThisChunk.Rooms do table.insert(TempList, ThisRoom) end
-    for _, ThisHall in ThisChunk.Halls do table.insert(TempList, ThisHall) end
+    for _, ThisRoom in ThisChunk.Rooms do 
+        table.insert(TempList, ThisRoom) 
+    end
+    for _, ThisHall in ThisChunk.Halls do 
+        table.insert(TempList, ThisHall) 
+    end
 
     for _, Space_A in TempList do
         if not Space_A.Slots then continue end
@@ -161,7 +169,7 @@ local function CheckSlotConnections(ThisChunk: LevelEnum.Chunk)
     end
 end
 
-local function NewHallData(Model: Model): LevelEnum.Hall?
+local function CreateNewHall(Model: Model): LevelEnum.Hall?
     if not Model then return end
 
     local NewHall: LevelEnum.Hall = {
@@ -180,7 +188,7 @@ local function NewHallData(Model: Model): LevelEnum.Hall?
     return NewHall
 end
 
-local function NewRoomData(ID: number, Model: Model): LevelEnum.Room?
+local function CreateNewRoom(ID: number, Model: Model, RoomData: LevelEnum.SpaceData): LevelEnum.Room?
     if not Model then return end
 
     local NewRoom: LevelEnum.Room = {
@@ -190,14 +198,16 @@ local function NewRoomData(ID: number, Model: Model): LevelEnum.Room?
         Started = false,
         Completed = false,
         Values = {},
+        
         Build = Model,
         CFrame = Model:GetPivot(),
         Size = Model:GetExtentsSize(),
         FloorParts = GetFloorParts(Model) or {},
-        Occupied = {},
+
         Slots = {},
-        Spawners = {},
+        
         NPCs = {},
+
         Decor = {},
         Lighting = {},
         Players = {},
@@ -205,10 +215,36 @@ local function NewRoomData(ID: number, Model: Model): LevelEnum.Room?
 
     SetSlots(NewRoom)
 
+    NewRoom.Spawners = NPCService:AddMultipleSpawners(Model) or nil
+
+    if not RoomData then return end
+    if RoomData.CompletionRequirements.ClearEnemyWaves and RoomData.EnemyWaves then
+        NewRoom.WavesCleared = false
+        NewRoom.WaveCount = 0
+        NewRoom.Waves = {}
+
+        for _, WaveData in ipairs(RoomData.EnemyWaves) do
+            local NewWaveTracker: {LevelEnum.WaveEnemyTracker} = {}
+
+            for _, EnemyWaveData in ipairs(WaveData) do
+                if not EnemyWaveData then continue end
+                local NewWaveEnemyTracker: LevelEnum.WaveEnemyTracker = {
+                    Enemies = {},
+                    Spawned = 0,
+                    Killed = 0,
+                }
+
+                table.insert(NewWaveTracker, NewWaveEnemyTracker)
+            end
+
+            table.insert((NewRoom.Waves :: any), NewWaveTracker)
+        end
+    end
+
     return NewRoom
 end
 
-local function NewChunkData(ID: number, Model: Model): LevelEnum.Chunk?
+local function CreateNewChunk(ID: number, Model: Model): LevelEnum.Chunk?
     if not Model then return end
     local Details = Model:FindFirstChild("ChunkDetails")
     if not Details then return end
@@ -325,25 +361,51 @@ local function TrackPlayersInRooms()
     end
 end
 
-local function RunChunkMethods()
+local function RunRoom(ThisRoom: LevelEnum.Room, RoomData: LevelEnum.SpaceData)
+        -- Run the StartRoom function if it exists
+    if RoomData.Methods.StartRoom and not ThisRoom.Started then
+        if RoomData.AllPlayersRequiredToStart and #ThisRoom.Players < #MyPlayers then return end
+
+        ThisRoom.Started = true
+        RoomData.Methods.StartRoom(ThisRoom)
+
+        -- Block players inside the room (if set to TRUE)
+        if RoomData.RoomBlockedOutUntilComplete then
+            ToggleSlotWalls(ThisRoom, true)
+        end
+    end
+
+    if not ThisRoom.Started then return end
+
+    if ThisRoom.Waves and RoomData.CompletionRequirements.ClearEnemyWaves and RoomData.EnemyWaves and not ThisRoom.WavesCleared then
+        return
+    end
+
+    -- Check to update
+    if not RoomData.Methods.Update then return end
+    if RoomData.UpdateWithoutPlayers and #ThisRoom.Players <= 0 then return end
+
+    RoomData.Methods.Update(ThisRoom)
+end
+
+-- Run methods for the current chunk and its rooms
+local function RunChunk()
     if MovingToNewChunk then return end
     local Level = ServerGlobalValues.CurrentLevel
     if not Level then return end
     if not Level.CurrentChunk or not Level.Module then return end
+
+    -- Run the chunks update method if it exists
+    if Level.CurrentData and Level.CurrentData.Methods.Update then
+        Level.CurrentData.Methods.Update(Level.CurrentChunk)
+    end
 
     for _, ThisRoom in Level.CurrentChunk.Rooms do
         if not ThisRoom then continue end
         local RoomData: LevelEnum.SpaceData = Level.Module["Room_" .. ThisRoom.ID]
         if not RoomData or ThisRoom.Completed then continue end
         
-        if RoomData.Methods.StartRoom and not ThisRoom.Started and #ThisRoom.Players == #MyPlayers then
-            ThisRoom.Started = true
-            RoomData.Methods.StartRoom(ThisRoom)
-
-            if RoomData.RoomBlockedOutUntilComplete then
-                ToggleSlotWalls(ThisRoom, true)
-            end
-        end
+        RunRoom(ThisRoom, RoomData)
     end
 end
 
@@ -606,7 +668,7 @@ function LevelService.LoadLevel(LoadingPlayers: {Player}, ID: number): boolean?
         local ChunkModel = LevelModel:FindFirstChild("Chunk_" .. x)
         if not ChunkModel then continue end
 
-        local NewChunk = NewChunkData(x, ChunkModel)
+        local NewChunk = CreateNewChunk(x, ChunkModel)
 
         for _, Object: Model in ChunkModel:GetChildren() do
             if not Object then continue end
@@ -614,13 +676,15 @@ function LevelService.LoadLevel(LoadingPlayers: {Player}, ID: number): boolean?
             -- Add rooms
             if string.find(Object.Name, "Room") then
                 local Room_ID = tonumber(string.sub(Object.Name, 6, string.len(Object.Name)))
-                local NewRoom = NewRoomData(Room_ID, Object)
+                local RoomData = NewLevel.Module["Room_" .. Room_ID]
+
+                local NewRoom = CreateNewRoom(Room_ID, Object, RoomData)
                 table.insert(NewChunk.Rooms, NewRoom)
                 table.insert(NewLevel.Rooms, NewRoom)
 
             -- Add halls
             elseif string.find(Object.Name, "Hall") then 
-                local NewHall = NewHallData(Object)
+                local NewHall = CreateNewHall(Object)
                 table.insert(NewChunk.Halls, NewHall)
                 table.insert(NewLevel.Halls, NewHall)
             end
@@ -649,12 +713,12 @@ function LevelService.Run()
     LevelService.Stop()
 
     local NextUpdate = os.clock() + UPDATE_RATE
-    RunHeartbeat = RunService.Heartbeat:Connect(function(DeltaTime: number)
+    RunHeartbeat = RunService.Heartbeat:Connect(function()
         if os.clock() < NextUpdate then return end
         NextUpdate = os.clock() + UPDATE_RATE
 
         TrackPlayersInRooms()
-        RunChunkMethods()
+        RunChunk()
     end)
 end
 

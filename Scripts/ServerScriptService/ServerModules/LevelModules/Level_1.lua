@@ -62,11 +62,14 @@ Level_1["Chunk_4"] = {
     Methods = {},
 }
 
-Level_1["Room_3"] = {
+Level_1["Room_2"] = {
     SystemType = "Room",
     ID = 2,
     CompletionRequirements = {},
+
+    AllPlayersRequiredToStart = true,
     RoomBlockedOutUntilComplete = true,
+
     Methods = {
         Init = function(Room)
             if not Room.Build then return end
@@ -89,6 +92,29 @@ Level_1["Room_3"] = {
             end)
         end,
 
+        StartRoom = function(Room)
+            for _, Floor in Room.FloorParts do
+                Floor.Color = Color3.fromRGB(116, 33, 76)
+            end
+        end
+    }
+}
+
+Level_1["Room_3"] = {
+    SystemType = "Room",
+    ID = 3,
+    CompletionRequirements = {ClearEnemyWaves = true},
+    
+    AllPlayersRequiredToStart = true,
+    RoomBlockedOutUntilComplete = true,
+    
+    EnemyWaves = {
+        {
+            {SpawnerID = {1, 2}, EnemyName = {"TestBot"}, Amount = 2, UnitValues = {}}
+        }
+    },
+
+    Methods = {
         StartRoom = function(Room)
             for _, Floor in Room.FloorParts do
                 Floor.Color = Color3.fromRGB(78, 146, 102)
