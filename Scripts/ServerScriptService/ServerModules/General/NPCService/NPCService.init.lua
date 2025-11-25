@@ -21,11 +21,14 @@ local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.
 local NPCInfo = require(ServerScriptService.Source.ServerModules.Info.NPCInfo)
 local NPC = require(ServerScriptService.Source.ServerModules.Classes.NPC)
 
+local SignalService = require(ServerScriptService.Source.ServerModules.General.SignalService)
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local SPAWNER_COOLDOWN = 0.5
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
@@ -57,6 +60,8 @@ local Spawners: {
         NPCs: {NPC.NPC},
 
         OverrideChaseRange: number?, -- How far the NPC can chase a player from their original spawn position before stopping (This will override the chase range the NPC has by default)
+
+        LastSpawned: number,
     }
 } = {}
 
@@ -70,6 +75,10 @@ local function UpdateSpawnersAndNPCs()
     for Model, Spawner in Spawners do
         if not Spawner then continue end
         if not Spawner.Active then continue end
+
+        if os.clock() > Spawner.LastSpawned + SPAWNER_COOLDOWN and Model:GetAttribute("OnCooldown") then
+            Model:SetAttribute("OnCooldown", false)
+        end
             
         if #Spawner.NPCs < Spawner.MaxNPCs then
             if Spawner.AutoSpawn then
@@ -161,6 +170,8 @@ function NPCService:AddSingleSpawner(SpawnerModel: Model)
         NPCs = {},
 
         OverrideChaseRange = SpawnerModel:GetAttribute("ChaseRange"),
+
+        LastSpawned = os.clock(),
     }
 
     if not SpawnerModel:GetAttribute("AutoSpawn") then return end
@@ -189,10 +200,12 @@ function NPCService:AddMultipleSpawners(SearchHere: Workspace | Model | Folder, 
     return List
 end
 
-function NPCService:Spawn(SpawnerModel: Model, NPCName: string?, ForceSpawn: boolean?)
+function NPCService:Spawn(SpawnerModel: Model, NPCName: string?, ForceSpawn: boolean?, WaveInfo: {RoomID: number, WaveNum: number, WaveID: number})
     if not SpawnerModel then return end
     local Spawner = Spawners[SpawnerModel]
     if not Spawner then return end
+    if os.clock() < Spawner.LastSpawned + SPAWNER_COOLDOWN or SpawnerModel:GetAttribute("OnCooldown") then return end
+
     if (#Spawner.NPCs >= Spawner.MaxNPCs) and (not ForceSpawn) then return end
 
     NPCName = NPCName or Utility:RollPick(Spawner.AvailableNPCs)
@@ -211,10 +224,14 @@ function NPCService:Spawn(SpawnerModel: Model, NPCName: string?, ForceSpawn: boo
         IdleTime = Spawner.IdleTIme,
         CleanDelay = Spawner.CleanDelay,
         OverrideChaseRange = Spawner.OverrideChaseRange,
+        WaveInfo = WaveInfo,
     }
 
     local NewNPC = NPC.new(Constructor)
     if not NewNPC then return end
+
+    Spawner.LastSpawned = os.clock()
+    SpawnerModel:SetAttribute("OnCooldown", true)
 
     table.insert(Spawner.NPCs, NewNPC)
 end
@@ -238,10 +255,6 @@ function NPCService:Init()
     if not ServerGlobalValues.CleanupAssetDump then
         NPCService:AddMultipleSpawners(Workspace.AssetDump)
     end
-
-    NPCInfo.NPCDied:Connect(function(NPCName: string)
-        --print(NPCName .. " died!")
-    end)
 end
 
 function NPCService:Deferred()

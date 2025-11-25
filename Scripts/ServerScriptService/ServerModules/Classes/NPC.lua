@@ -13,6 +13,8 @@ local Debris = game:GetService("Debris")
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local NPCInfo = require(ServerScriptService.Source.ServerModules.Info.NPCInfo)
+
+local SignalService = require(ServerScriptService.Source.ServerModules.General.SignalService)
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -38,6 +40,8 @@ export type NPCConstructor = {
     CleanDelay: NumberRange, -- How long to wait before the NPC is destroyed fully. Only once this NPC is gone, can it respawn (if respawning is enabled),
 
     OverrideChaseRange: NumberRange?,
+
+    WaveInfo: {RoomID: number, WaveNum: number, WaveID: number},
 }
 
 export type NPCStates = "None" | "Spawning" | "Dying" | "Fixing" | "Idling" | "Patrolling" | "Chasing" | "Attacking" | "Searching" | "Stuck" | string
@@ -139,6 +143,8 @@ export type NPC = {
         Time: number,
         LastPosition: Vector3,
     }?,
+
+    WaveInfo: {RoomID: number, WaveNum: number, WaveID: number}
 }
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -344,6 +350,8 @@ function NPC.new(NewNPC: NPCConstructor): NPC?
         }
     end
 
+    self.WaveInfo = NewNPC.WaveInfo
+
     ---------------------------------------------------
 
     self:Spawn()
@@ -443,7 +451,8 @@ function NPC:Died()
     self.State = "Dying"
     self.Death.Time = os.clock()
 
-    NPCInfo.NPCDied:Fire(self.Name)
+    SignalService.NPCDied:Fire(self.Name, self.WaveInfo)
+    --NPCInfo.NPCDied:Fire(self.Name)
 end
 
 function NPC:Clean()

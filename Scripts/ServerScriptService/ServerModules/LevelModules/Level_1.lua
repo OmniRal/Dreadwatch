@@ -65,7 +65,7 @@ Level_1["Chunk_4"] = {
 Level_1["Room_2"] = {
     SystemType = "Room",
     ID = 2,
-    CompletionRequirements = {},
+    CompletionRequirements = {SolvePuzzles = true},
 
     AllPlayersRequiredToStart = true,
     RoomBlockedOutUntilComplete = true,
@@ -86,7 +86,7 @@ Level_1["Room_2"] = {
                 if not Players:FindFirstChild(Hit.Parent.Name) then return end
                 Debounce = true
 
-                LevelService.CompleteRoom(Room)
+                Room.PuzzlesSolved = true
 
                 Button.Color = Color3.fromRGB(0, 0, 0)
             end)
@@ -103,12 +103,12 @@ Level_1["Room_2"] = {
 Level_1["Room_3"] = {
     SystemType = "Room",
     ID = 3,
-    CompletionRequirements = {ClearEnemyWaves = true},
+    CompletionRequirements = {ClearWaves = true},
     
     AllPlayersRequiredToStart = true,
     RoomBlockedOutUntilComplete = true,
     
-    EnemyWaves = {
+    Waves = {
         {
             {SpawnerIDs = {1, 2}, EnemyName = "TestBot", Amount = 2, UnitValues = {}}
         }

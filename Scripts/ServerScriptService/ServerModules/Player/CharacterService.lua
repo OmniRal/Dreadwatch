@@ -21,6 +21,7 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
 local SignalService = require(ServerScriptService.Source.ServerModules.General.SignalService)
+local WeaponService = require(ServerScriptService.Source.ServerModules.General.WeaponService)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -91,6 +92,8 @@ function CharacterService:SetupCharacter(Player: Player, SpawnHere: CFrame?)
             if not Part:IsA("BasePart") then continue end
             Part.CollisionGroup = "Players"
         end
+
+        WeaponService:EquipWeapon(Player, "BasicSword", "Default", true)
 
         --[[for _, Sound in pairs(Assets.Misc.CharacterSounds:GetChildren()) do
             print(Sound.Name, " added to ", Player.Name)

@@ -19,5 +19,6 @@ local Signal = require(ReplicatedStorage.Packages.Signal)
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 SignalService.PlayerDied = Signal.new()
+SignalService.NPCDied = Signal.new()
 
 return SignalService

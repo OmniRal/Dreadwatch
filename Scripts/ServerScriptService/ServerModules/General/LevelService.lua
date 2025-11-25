@@ -24,6 +24,7 @@ local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.
 local LevelEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.LevelEnum)
 local LevelInfo = require(ReplicatedStorage.Source.SharedModules.Info.LevelInfo)
 
+local SignalService = require(ServerScriptService.Source.ServerModules.General.SignalService)
 local NPCService = require(ServerScriptService.Source.ServerModules.General.NPCService)
 
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
@@ -218,12 +219,12 @@ local function CreateNewRoom(ID: number, Model: Model, RoomData: LevelEnum.Space
 
     NewRoom.Spawners = NPCService:AddMultipleSpawners(Model, true) or nil
 
-    if RoomData and RoomData.CompletionRequirements.ClearEnemyWaves and RoomData.EnemyWaves then
+    if RoomData and RoomData.CompletionRequirements.ClearWaves and RoomData.Waves then
         NewRoom.WavesCleared = false
         NewRoom.WaveNum = 1
         NewRoom.Waves = {}
 
-        for _, WaveData in ipairs(RoomData.EnemyWaves) do
+        for _, WaveData in ipairs(RoomData.Waves) do
             local NewWaveTracker: {LevelEnum.WaveEnemyTracker} = {}
 
             for _, EnemyWaveData in ipairs(WaveData) do
@@ -378,43 +379,81 @@ local function RunRoom(ThisRoom: LevelEnum.Room, RoomData: LevelEnum.SpaceData)
     if not ThisRoom.Started then return end
 
     -- Handle enemy wave spawning
-    if ThisRoom.Waves and not ThisRoom.WavesCleared and ThisRoom.WaveNum and ThisRoom.Spawners and RoomData.CompletionRequirements.ClearEnemyWaves and RoomData.EnemyWaves then
+    if ThisRoom.Waves and not ThisRoom.WavesCleared and ThisRoom.WaveNum and ThisRoom.Spawners and RoomData.CompletionRequirements.ClearWaves and RoomData.Waves then
         local Wave = ThisRoom.Waves[ThisRoom.WaveNum]
-        local WaveData = RoomData.EnemyWaves[ThisRoom.WaveNum]
+        local WaveData = RoomData.Waves[ThisRoom.WaveNum]
         local SpawnersToUse: {number} = {}
         local SpawnNextIDs: {number} = {}
+        local Completed = 0
 
         for n, Tracker in ipairs(Wave) do
             local TrackerData = WaveData[n]
             if not TrackerData then continue end
-            if Tracker.Killed >= TrackerData.Amount then continue end
+            if Tracker.Killed >= TrackerData.Amount then
+                -- All the enemies in this set from the wave are slain
+                Completed += 1
+                continue 
+            end
             if TrackerData.Chance and RNG:NextInteger(1, 100) > TrackerData.Chance then continue end
 
             -- Make sure two enemies are not being spawned at the same spawner
             local AvailableSpawners = table.clone(TrackerData.SpawnerIDs)
             for x = #AvailableSpawners, 1, -1 do
                 if not table.find(SpawnersToUse, AvailableSpawners[x]) then continue end
+                if not ThisRoom.Spawners[x]:GetAttribute("OnCooldown") then continue end
                 table.remove(AvailableSpawners, x)
             end
 
+            
             if #AvailableSpawners <= 0 then continue end
+            warn("A : ", AvailableSpawners)
 
             -- Add to the list to be spawned next
             local RandSpawner = AvailableSpawners[RNG:NextInteger(1, #AvailableSpawners)]
             table.insert(SpawnersToUse, RandSpawner)
-            table.insert(SpawnNextIDs, n)
+            table.insert(SpawnNextIDs, RandSpawner)
         end
 
+        -- Handle the actual spawning of the enemies
         if #SpawnersToUse > 0 then
+            warn(1)
             for n = 1, #SpawnNextIDs do
                 local Tracker = Wave[n]
                 local TrackerData = WaveData[n]
                 local Spawner = ThisRoom.Spawners[SpawnersToUse[n]]
+                warn(2)
                 if not Tracker or not TrackerData or not Spawner then continue end
 
+                warn(3)
+                if Tracker.Spawned >= TrackerData.Amount then continue end
+
+                warn(4, " - ID : ", SpawnNextIDs[n])
                 Tracker.Spawned += 1
-                NPCService:Spawn(Spawner, TrackerData.EnemyName)
+                NPCService:Spawn(Spawner, TrackerData.EnemyName, nil, {RoomID = ThisRoom.ID, WaveNum = ThisRoom.WaveNum, WaveID = n})
             end
+        end
+
+        -- If all the enemy sets have been slain, increment to the next wave and check if ALL waves are cleared
+        if Completed >= #ThisRoom.Waves[ThisRoom.WaveNum] then
+            ThisRoom.WaveNum += 1
+            if ThisRoom.WaveNum >= #RoomData.Waves then
+                ThisRoom.WavesCleared = true
+            end
+        end
+    end
+
+    -- Check to complete the room
+    if not ThisRoom.Completed then
+        local IsComplete = true
+        if RoomData.CompletionRequirements.ClearWaves and not ThisRoom.WavesCleared then
+            IsComplete = false
+        end
+        if RoomData.CompletionRequirements.SolvePuzzles and not ThisRoom.PuzzlesSolved then
+            IsComplete = false
+        end
+
+        if IsComplete then
+            LevelService.CompleteRoom(ThisRoom)
         end
     end
 
@@ -765,6 +804,17 @@ end
 
 function LevelService:Deferred()
     CheckForceSpawnLevel()
+
+    SignalService.NPCDied:Connect(function(EnemyName: string?, WaveInfo: {RoomID: number, WaveNum: number, WaveID: number}?)
+        if not EnemyName or not WaveInfo then return end
+        local Level = ServerGlobalValues.CurrentLevel
+        if not Level then return end
+
+        local Room = Level.Rooms[WaveInfo.RoomID]
+        if not Room then return end
+
+        Room.Waves[Room.WaveNum][WaveInfo.WaveID].Killed += 1
+    end)
 
     print("LevelService deferred...")
 end

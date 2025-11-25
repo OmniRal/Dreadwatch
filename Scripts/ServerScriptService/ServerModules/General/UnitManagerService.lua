@@ -124,7 +124,6 @@ end
 -- @DamageType = which kind of damage type it is, based on UnitEnum.DamageTyoes; if enabled in GlobalValues.
 -- @CritPossible = if it should calculate potentially applying a crit.
 function UnitManagerService:ApplyDamage(Source: Player | Model | string, Victim: Player | Model, DamageAmount: number, DamageName: string, DamageType: string?, CritPossible: boolean?)
-    warn(Source, Victim)
     if not Source or not Victim then return end
 
     local VictimModel = Victim

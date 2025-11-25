@@ -59,6 +59,8 @@ export type Room = {
     Waves: {
         {WaveEnemyTracker}
     }?,
+
+    PuzzlesSolved: boolean?,
     
     Decor: {BasePart | Model},
     Lighting: UniqueLighting?, -- Rooms don't _need_ to have custom lighting like biomes, but the option is there
@@ -150,14 +152,14 @@ export type SpaceData = {
     CompletionRequirements: {
         Rooms: {number}?, -- For chunks; put all the rooms that NEED to be completed in order for the chunk to be completed
 
-        ClearEnemyWaves: boolean?, -- For rooms
-        PuzzlesSolved: boolean?, -- For rooms
+        ClearWaves: boolean?, -- For rooms
+        SolvePuzzles: boolean?, -- For rooms
     },
 
     AllPlayersRequiredToStart: boolean?, -- For rooms
     RoomBlockedOutUntilComplete: boolean?, -- For rooms
     UpdateWithoutPlayers: boolean?, -- For rooms
-    EnemyWaves: {
+    Waves: {
         { -- Wave data can have multiple enemies in it
             {SpawnerIDs: {number}, EnemyName: string, Amount: number, UnitValues: {any}, Chance: number?}
             -- @SpawnerIDs = Which spawners the enemy can spawn from; leaving it empty will pick a random spawner 
