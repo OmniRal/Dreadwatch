@@ -22,6 +22,7 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
 local AbilityService = require(ServerScriptService.Source.ServerModules.General.AbilityService)
 local UnitValuesService = require(ServerScriptService.Source.ServerModules.General.UnitValuesService)
+local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
@@ -139,7 +140,9 @@ function ItemService:EquipItem(Player: Player, SlotNum: number, ItemName: string
     -- Anything past 3 is the backpack; inactive Items
     if SlotNum > 3 then return end
 
-    ApplyItemEffect(Player, SlotNum, ItemName)
+    if ServerGlobalValues.InLevel then
+        ApplyItemEffect(Player, SlotNum, ItemName)
+    end
 
     if not Info.Ability then return end
     
