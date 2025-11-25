@@ -405,7 +405,6 @@ local function RunRoom(ThisRoom: LevelEnum.Room, RoomData: LevelEnum.SpaceData)
             end
 
             if #AvailableSpawners <= 0 then continue end
-            warn("A : ", AvailableSpawners)
 
             -- Add to the list to be spawned next
             local RandSpawner = AvailableSpawners[RNG:NextInteger(1, #AvailableSpawners)]
@@ -415,18 +414,14 @@ local function RunRoom(ThisRoom: LevelEnum.Room, RoomData: LevelEnum.SpaceData)
 
         -- Handle the actual spawning of the enemies
         if #SpawnersToUse > 0 then
-            warn(1)
             for n = 1, #SpawnNextIDs do
                 local Tracker = Wave[n]
                 local TrackerData = WaveData[n]
                 local Spawner = ThisRoom.Spawners[SpawnersToUse[n]]
-                warn(2)
                 if not Tracker or not TrackerData or not Spawner then continue end
 
-                warn(3)
                 if Tracker.Spawned >= TrackerData.Amount then continue end
 
-                warn(4, " - ID : ", SpawnNextIDs[n])
                 local Success = NPCService:Spawn(Spawner, TrackerData.EnemyName, nil, {RoomID = ThisRoom.ID, WaveNum = ThisRoom.WaveNum, WaveID = n})
                 if not Success then continue end
                 Tracker.Spawned += 1
