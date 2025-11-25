@@ -404,7 +404,6 @@ local function RunRoom(ThisRoom: LevelEnum.Room, RoomData: LevelEnum.SpaceData)
                 table.remove(AvailableSpawners, x)
             end
 
-            
             if #AvailableSpawners <= 0 then continue end
             warn("A : ", AvailableSpawners)
 
@@ -428,8 +427,9 @@ local function RunRoom(ThisRoom: LevelEnum.Room, RoomData: LevelEnum.SpaceData)
                 if Tracker.Spawned >= TrackerData.Amount then continue end
 
                 warn(4, " - ID : ", SpawnNextIDs[n])
+                local Success = NPCService:Spawn(Spawner, TrackerData.EnemyName, nil, {RoomID = ThisRoom.ID, WaveNum = ThisRoom.WaveNum, WaveID = n})
+                if not Success then continue end
                 Tracker.Spawned += 1
-                NPCService:Spawn(Spawner, TrackerData.EnemyName, nil, {RoomID = ThisRoom.ID, WaveNum = ThisRoom.WaveNum, WaveID = n})
             end
         end
 

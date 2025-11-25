@@ -200,19 +200,19 @@ function NPCService:AddMultipleSpawners(SearchHere: Workspace | Model | Folder, 
     return List
 end
 
-function NPCService:Spawn(SpawnerModel: Model, NPCName: string?, ForceSpawn: boolean?, WaveInfo: {RoomID: number, WaveNum: number, WaveID: number})
-    if not SpawnerModel then return end
+function NPCService:Spawn(SpawnerModel: Model, NPCName: string?, ForceSpawn: boolean?, WaveInfo: {RoomID: number, WaveNum: number, WaveID: number}): boolean
+    if not SpawnerModel then return false end
     local Spawner = Spawners[SpawnerModel]
-    if not Spawner then return end
-    if os.clock() < Spawner.LastSpawned + SPAWNER_COOLDOWN or SpawnerModel:GetAttribute("OnCooldown") then return end
+    if not Spawner then return false end
+    if os.clock() < Spawner.LastSpawned + SPAWNER_COOLDOWN or SpawnerModel:GetAttribute("OnCooldown") then return false end
 
-    if (#Spawner.NPCs >= Spawner.MaxNPCs) and (not ForceSpawn) then return end
+    if (#Spawner.NPCs >= Spawner.MaxNPCs) and (not ForceSpawn) then return false end
 
     NPCName = NPCName or Utility:RollPick(Spawner.AvailableNPCs)
-    if not NPCName then return end
+    if not NPCName then return false end
 
     local Module = script.AllNPCs:FindFirstChild(NPCName)
-    if not Module then return end
+    if not Module then return false end
     
     local Constructor: NPC.NPCConstructor = {
         Name = NPCName,
@@ -228,12 +228,14 @@ function NPCService:Spawn(SpawnerModel: Model, NPCName: string?, ForceSpawn: boo
     }
 
     local NewNPC = NPC.new(Constructor)
-    if not NewNPC then return end
+    if not NewNPC then return false end
 
     Spawner.LastSpawned = os.clock()
     SpawnerModel:SetAttribute("OnCooldown", true)
 
     table.insert(Spawner.NPCs, NewNPC)
+
+    return true
 end
 
 function NPCService:Run()
