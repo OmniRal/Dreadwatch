@@ -81,7 +81,7 @@
 
 		"Players": {
 			"$properties": {
-				"CharacterAutoLoads": true,
+				"CharacterAutoLoads": false,
 				"UseStrafingAnimations": true
 			}
 		}

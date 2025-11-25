@@ -69,29 +69,10 @@ local function CreateNewItemModel(Item: string, Position: Vector3): boolean?
     return true
 end
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Public API
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
--- Equip a Item, add its stat changes, and ability connection
--- @SlotNum : Which slot to add the Item
-function ItemService:EquipItem(Player: Player, SlotNum: number, ItemName: string)
+-- Add stat changes from item
+local function ApplyItemEffect(Player: Player, SlotNum: number, ItemName: string)
     local P_Items, Info = PlayerItems[Player], ItemInfo[ItemName]
     if not P_Items or not Info then return end
-
-    Remotes.ItemService.Equipped:Fire(Player, ItemName)
-
-        -- Unequip the old Item if it exists
-    if P_Items[SlotNum].Name ~= "None" then
-        ItemService:UnequipItem(Player, SlotNum, P_Items[SlotNum].Name)
-    end
-    
-    P_Items[SlotNum].Last = P_Items[SlotNum].Name
-    P_Items[SlotNum].Name = ItemName
-    DataService:SetItem(Player, SlotNum, ItemName)
-
-    -- Anything past 3 is the backpack; inactive Items
-    if SlotNum > 3 then return end
 
     -- Add Items stat changes
     local EffectDetails: UnitEnum.EffectDetails = {
@@ -106,6 +87,59 @@ function ItemService:EquipItem(Player: Player, SlotNum: number, ItemName: string
     }
     local ItemEffect = UnitValuesService:AddEffect(Player, EffectDetails, Info.Attributes, {})
     P_Items[SlotNum].Effect = ItemEffect
+end
+
+-- Clean up the stat changes from item
+local function CleanupItemEffect(Player: Player, SlotNum: number, ItemName: string)
+    local P_Items, Info = PlayerItems[Player], ItemInfo[ItemName]
+    if not P_Items or not Info then return end
+
+    UnitValuesService:CleanThisEffect(Player, P_Items[SlotNum].Effect)
+    P_Items[SlotNum].Effect = nil
+end
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Public API
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Apply or clean up all the effects of the players (first 3) items
+function ItemService.ToggleAllItemEffects(Player: Player, Apply: boolean)
+    local P_Items = PlayerItems[Player]
+    if not P_Items then return end
+
+    for x = 1, 3 do
+        local Slot = P_Items[x]
+        if not Slot then continue end
+
+        if Apply then
+            ApplyItemEffect(Player, x, P_Items[x].Name)
+        else
+            CleanupItemEffect(Player, x, P_Items[x].Name)
+        end
+    end
+end
+
+-- Equip a Item, add its stat changes, and ability connection
+-- @SlotNum : Which slot to add the Item
+function ItemService:EquipItem(Player: Player, SlotNum: number, ItemName: string)
+    local P_Items, Info = PlayerItems[Player], ItemInfo[ItemName]
+    if not P_Items or not Info then return end
+
+    Remotes.ItemService.Equipped:Fire(Player, ItemName)
+
+    -- Unequip the old Item if it exists
+    if P_Items[SlotNum].Name ~= "None" then
+        ItemService:UnequipItem(Player, SlotNum, P_Items[SlotNum].Name)
+    end
+    
+    P_Items[SlotNum].Last = P_Items[SlotNum].Name
+    P_Items[SlotNum].Name = ItemName
+    DataService:SetItem(Player, SlotNum, ItemName)
+
+    -- Anything past 3 is the backpack; inactive Items
+    if SlotNum > 3 then return end
+
+    ApplyItemEffect(Player, SlotNum, ItemName)
 
     if not Info.Ability then return end
     
@@ -140,9 +174,7 @@ function ItemService:UnequipItem(Player: Player, SlotNum: number, ItemName: stri
         print("Unequipping")
     end
 
-    -- Clean up the stat changes 
-    UnitValuesService:CleanThisEffect(Player, P_Items[SlotNum].Effect)
-    P_Items[SlotNum].Effect = nil
+    CleanupItemEffect(Player, SlotNum, ItemName)
 
     -- Disconnect passive ability if exists
     local Connection = PlayerItems[Player][SlotNum].Connection

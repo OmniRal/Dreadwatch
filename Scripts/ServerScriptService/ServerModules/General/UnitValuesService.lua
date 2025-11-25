@@ -293,6 +293,8 @@ function UnitValuesService:AddEffect(Unit: Player | Model, EffectDetails: UnitEn
     --print(Unit.Name, " Updated States: ", UnitValues)
     UnitValuesService:RecalculateAttributes(Unit, BaseAttributes)
 
+    warn("Done applying ", Unit, NewEffect)
+
     return NewEffect
 end
 

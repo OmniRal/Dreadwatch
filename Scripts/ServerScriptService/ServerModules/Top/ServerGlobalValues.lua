@@ -6,25 +6,35 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local LevelEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.LevelEnum)
 
-ServerGlobalValues["InLevel"] = false
+ServerGlobalValues["AdminList"] = {
+    {Name = "OmniRal", ID = 267421},
+    {Name = "Blotnik", ID = 266280},
+    {Name = "bennult", ID = 424583710},
+}
+
+ServerGlobalValues["PlayerTestList"] = {
+    {Name = "Player1", ID = -1},
+    {Name = "Player2", ID = -2},
+}
+
+ServerGlobalValues["CleanupAssetDump"] = true
 
 ServerGlobalValues["DefaultHistoryEntryCleanTime"] = 30
 ServerGlobalValues["RootWalkSpeed"] = 0.01
-
 ServerGlobalValues["SimpleDamage"] = true -- If enabled, there will not be multiple damage types.
-
-ServerGlobalValues["AllowLevelRespawning"] = true -- If true, players can automatically respawn without needing to be revived (Only when in a level, not the lobby
 
 ServerGlobalValues["StartLevelInfo"] = {
     ID = 1,
-    ExpectedPlayers = {"OmniRal"},
+    ExpectedPlayers = {ServerGlobalValues.PlayerTestList[1], ServerGlobalValues.PlayerTestList[2]},
     
     TestingMode = true, -- Test a level in studip; does not load lobby. ID should be set to the desired level
     TestWithoutPlayers = false, -- Test in studio without players; pressing RUN instead of PLAY SOLO,
 }
-
+ServerGlobalValues["InLevel"] = false
+ServerGlobalValues["LevelPlayers"] = {} :: {}
+ServerGlobalValues["PartyLeader"] = nil :: Player?
 ServerGlobalValues["CurrentLevel"] = nil :: LevelEnum.Level?
+ServerGlobalValues["AllowLevelRespawning"] = true -- If true, players can automatically respawn without needing to be revived (Only when in a level, not the lobby
 
-ServerGlobalValues["CleanupAssetDump"] = true
 
 return ServerGlobalValues

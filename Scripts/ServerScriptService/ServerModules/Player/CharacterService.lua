@@ -21,7 +21,9 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
 local SignalService = require(ServerScriptService.Source.ServerModules.General.SignalService)
+local UnitManagerService = require(ServerScriptService.Source.ServerModules.General.UnitManagerService)
 local WeaponService = require(ServerScriptService.Source.ServerModules.General.WeaponService)
+local ItemService = require(ServerScriptService.Source.ServerModules.General.ItemService)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -93,7 +95,11 @@ function CharacterService:SetupCharacter(Player: Player, SpawnHere: CFrame?)
             Part.CollisionGroup = "Players"
         end
 
-        WeaponService:EquipWeapon(Player, "BasicSword", "Default", true)
+        task.delay(0.25, function()
+            UnitManagerService:AddUnit(Player)
+            ItemService.ToggleAllItemEffects(Player, true)
+            WeaponService:EquipWeapon(Player, "BasicSword", "Default", true)
+        end)
 
         --[[for _, Sound in pairs(Assets.Misc.CharacterSounds:GetChildren()) do
             print(Sound.Name, " added to ", Player.Name)

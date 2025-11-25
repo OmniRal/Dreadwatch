@@ -33,9 +33,9 @@ CustomEnum.TextDisplayType = {
     Crit = "Crit",
 }
 
-export type TeleportData = {
+export type TeleportInfo = {
     MissionID: number,
-    ExpectedPlayers: {Player}
+    ExpectedPlayers: {{Name: string, ID: number}}
 }
 
 export type Product = {
