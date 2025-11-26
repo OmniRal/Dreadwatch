@@ -25,6 +25,7 @@ local LevelEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum
 local LevelInfo = require(ReplicatedStorage.Source.SharedModules.Info.LevelInfo)
 
 local SignalService = require(ServerScriptService.Source.ServerModules.General.SignalService)
+local RewardService = require(ServerScriptService.Source.ServerModules.General.RewardService)
 local NPCService = require(ServerScriptService.Source.ServerModules.General.NPCService)
 
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
@@ -207,8 +208,6 @@ local function CreateNewRoom(ID: number, Model: Model, RoomData: LevelEnum.Space
         FloorParts = GetFloorParts(Model) or {},
 
         Slots = {},
-        
-        NPCs = {},
 
         Decor = {},
         Lighting = {},
@@ -217,8 +216,10 @@ local function CreateNewRoom(ID: number, Model: Model, RoomData: LevelEnum.Space
 
     SetSlots(NewRoom)
 
+    -- Find all the npc / enemy spawners inside the room
     NewRoom.Spawners = NPCService:AddMultipleSpawners(Model, true) or nil
 
+    -- Set up the wave data
     if RoomData and RoomData.CompletionRequirements.ClearWaves and RoomData.Waves then
         NewRoom.WavesCleared = false
         NewRoom.WaveNum = 1
@@ -240,6 +241,11 @@ local function CreateNewRoom(ID: number, Model: Model, RoomData: LevelEnum.Space
 
             table.insert((NewRoom.Waves :: any), NewWaveTracker)
         end
+    end
+
+    local RewardBlock = NewRoom.Build:FindFirstChild("RewardBlock") :: BasePart
+    if RewardBlock then
+        NewRoom.RewardSlots = RewardService.GetRewardSlots(RewardBlock)
     end
 
     return NewRoom

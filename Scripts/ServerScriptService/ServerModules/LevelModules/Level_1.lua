@@ -70,6 +70,12 @@ Level_1["Room_2"] = {
     AllPlayersRequiredToStart = true,
     RoomBlockedOutUntilComplete = true,
 
+    Rewards = {
+        {Choice = "Relics", Chance = 25},
+        {Choice = "Items", Chance = 25},
+        {Choice = "None", Chance = 50}
+    },
+
     Methods = {
         Init = function(Room)
             if not Room.Build then return end
@@ -112,6 +118,10 @@ Level_1["Room_3"] = {
         {
             {SpawnerIDs = {1, 2}, EnemyName = "TestBot", Amount = 2, UnitValues = {}}
         }
+    },
+
+    Rewards = {
+        {Choice = "Items", Chance = 100},
     },
 
     Methods = {

@@ -132,11 +132,9 @@ local function CheckHaveAllPlayers(Info: CustomEnum.TeleportInfo): boolean
         end
     end
 
-    warn(Info)
-    warn("Expected:", Info.ExpectedPlayers)
-    warn("Got:", GotPlayers)
-
     if #GotPlayers < #Info.ExpectedPlayers then return false end
+
+    ServerGlobalValues.LevelPlayers = GotPlayers
 
     return true
 end

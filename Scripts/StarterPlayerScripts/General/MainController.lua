@@ -126,7 +126,7 @@ local function CheckPickupItems()
 
     elseif Target.Parent:HasTag("Item") then
         PickupDebounce = true
-        ItemService:RequestPickupRelic(Target.Parent)
+        ItemService:RequestPickupItem(Target.Parent)
     end 
 
     if not PickupDebounce then return end

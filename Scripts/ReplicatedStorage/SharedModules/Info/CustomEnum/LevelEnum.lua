@@ -61,6 +61,8 @@ export type Room = {
     }?,
 
     PuzzlesSolved: boolean?,
+
+    RewardSlots: {}?,
     
     Decor: {BasePart | Model},
     Lighting: UniqueLighting?, -- Rooms don't _need_ to have custom lighting like biomes, but the option is there
@@ -144,6 +146,8 @@ export type CompletionData = {
     Details: {any},
 }
 
+export type RewardType = "None" | "Relics" | "Items" -- "Coins"
+
 export type SpaceData = {
     SystemType: SystemType,
 
@@ -168,6 +172,10 @@ export type SpaceData = {
             -- @UnitValues = Changes in the enemies stats such as health, evasion, attack speed, etc
             -- @Chance = If exists, it will a dice to see if this enemy spawns in
         }
+    }?, -- For rooms
+
+    Rewards: {
+        {Choice: RewardType, Chance: number}
     }?, -- For rooms
 
     Methods: {

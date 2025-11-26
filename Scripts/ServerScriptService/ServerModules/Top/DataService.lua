@@ -54,22 +54,24 @@ local ProfileTemplate = {
     CurrentWeaponAbility = "Innate",
 
     CurrentRelics = {
-        [1] = "Echo",
-        [2] = "Blast",
+        [1] = "None",
+        [2] = "None",
         [3] = "None",
     },
 
     CurrentItems = {
-        [1] = "Chungus",
-        [2] = "Dingus",
+        [1] = "None",
+        [2] = "None",
         [3] = "None",
         [4] = "None",
         [5] = "None",
         [6] = "None",
     },
+
+    MaxRevives = 0,
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_29', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_33', ProfileTemplate)
 
 local Profiles = {}
 

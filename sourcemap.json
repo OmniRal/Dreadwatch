@@ -4342,6 +4342,14 @@
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/General/WeaponService.lua"
 											]
+										},
+										{
+											"name": "RewardService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/RewardService.lua"
+											]
 										}
 									],
 									"filePaths": [
