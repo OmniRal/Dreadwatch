@@ -2168,6 +2168,41 @@
 									"filePaths": [
 										"Assets/Replicated/Player/UISounds.rbxm"
 									]
+								},
+								{
+									"name": "Reward",
+									"className": "Model",
+									"children": [
+										{
+											"name": "Part",
+											"className": "Part",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Prompt",
+													"className": "ProximityPrompt",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										},
+										{
+											"name": "Base",
+											"className": "Part",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Prompt",
+													"className": "ProximityPrompt",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/Player/Reward.rbxm"
+									]
 								}
 							],
 							"filePaths": [
@@ -4312,6 +4347,14 @@
 											]
 										},
 										{
+											"name": "RewardService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/RewardService.lua"
+											]
+										},
+										{
 											"name": "SignalService",
 											"className": "ModuleScript",
 											"children": [],
@@ -4341,14 +4384,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/General/WeaponService.lua"
-											]
-										},
-										{
-											"name": "RewardService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/General/RewardService.lua"
 											]
 										}
 									],
@@ -8763,6 +8798,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/StarterPlayerScripts/General/WeaponController.lua"
+											]
+										},
+										{
+											"name": "RewardController",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/StarterPlayerScripts/General/RewardController.lua"
 											]
 										}
 									],

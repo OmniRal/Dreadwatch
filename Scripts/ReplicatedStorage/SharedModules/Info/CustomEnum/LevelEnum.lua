@@ -62,7 +62,7 @@ export type Room = {
 
     PuzzlesSolved: boolean?,
 
-    RewardSlots: {}?,
+    RewardSlots: {CFrame}?,
     
     Decor: {BasePart | Model},
     Lighting: UniqueLighting?, -- Rooms don't _need_ to have custom lighting like biomes, but the option is there
@@ -146,7 +146,7 @@ export type CompletionData = {
     Details: {any},
 }
 
-export type RewardType = "None" | "Relics" | "Items" -- "Coins"
+export type RewardType = "None" | "Relic" | "Item" -- "Coins"
 
 export type SpaceData = {
     SystemType: SystemType,

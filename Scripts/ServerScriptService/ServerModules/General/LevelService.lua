@@ -243,7 +243,7 @@ local function CreateNewRoom(ID: number, Model: Model, RoomData: LevelEnum.Space
         end
     end
 
-    local RewardBlock = NewRoom.Build:FindFirstChild("RewardBlock") :: BasePart
+    local RewardBlock = NewRoom.Build:FindFirstChild("Reward") :: BasePart
     if RewardBlock then
         NewRoom.RewardSlots = RewardService.GetRewardSlots(RewardBlock)
     end
@@ -454,7 +454,7 @@ local function RunRoom(ThisRoom: LevelEnum.Room, RoomData: LevelEnum.SpaceData)
         end
 
         if IsComplete then
-            LevelService.CompleteRoom(ThisRoom)
+            LevelService.CompleteRoom(ThisRoom, RoomData)
         end
     end
 
@@ -491,7 +491,7 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Sets a room to complete, then checks the associated chunk to see if ALL its rooms are complete
-function LevelService.CompleteRoom(ThisRoom: LevelEnum.Room)
+function LevelService.CompleteRoom(ThisRoom: LevelEnum.Room, RoomData: LevelEnum.SpaceData)
     local Level = ServerGlobalValues.CurrentLevel
     if not Level then return end
     if not Level.Module then return end
@@ -505,9 +505,16 @@ function LevelService.CompleteRoom(ThisRoom: LevelEnum.Room)
     if not ChunkData then return end
 
     ThisRoom.Completed = true
-    local RoomData: LevelEnum.SpaceData = Level.Module["Room_" .. ThisRoom.ID]
-    if RoomData and RoomData.RoomBlockedOutUntilComplete then
-        ToggleSlotWalls(ThisRoom, false)
+
+    if RoomData then
+        -- Spawn rewards if available
+        if RoomData.Rewards and ThisRoom.RewardSlots then
+            RewardService.SpawnRewardsForAll(RoomData.Rewards, ThisRoom.RewardSlots)
+        end
+
+        if RoomData.RoomBlockedOutUntilComplete then
+            ToggleSlotWalls(ThisRoom, false)
+        end
     end
 
     -- Check if all the rooms of this chunk are complete
@@ -532,7 +539,9 @@ function LevelService.MigrateToThisChunk(ThisChunk_ID: number, ThisRoom_ID: numb
     MovingToNewChunk = true
 
     -- Move players to the temp room
-    LevelService.MovePlayers("TempRoom") 
+    LevelService.MovePlayers("TempRoom")
+    
+    RewardService.CleanupRewardsForAll()
 
     -- Load the new chunk
     LevelService.LoadChunk(ThisChunk_ID) 

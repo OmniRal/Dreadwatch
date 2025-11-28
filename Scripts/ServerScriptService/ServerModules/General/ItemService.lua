@@ -266,17 +266,19 @@ end
 
 -- Player attempts to pick up / equip a Item that is on the ground
 -- @Item : The model of the Item in the 3D world
-function ItemService:RequestPickupItem(Player: Player, Item: Model)
-    if not Player or not Item then return end
-    local Info = ItemInfo[Item.Name]
-    if not Info then return end
+function ItemService.RequestPickupItem(Player: Player, ItemName: string, ItemModel: Model?): boolean
+    if not Player or not ItemName then return false end
+    local Info = ItemInfo[ItemName]
+    if not Info then return false end
 
     local Full, OpenSlot = DataService:AreItemSlotsFull(Player)
-    if Full or not OpenSlot then return end
+    if Full or not OpenSlot then return false end
 
     ItemService:EquipItem(Player, OpenSlot, Info.Name)
 
-    Item:Destroy()
+    if ItemModel then
+        ItemModel:Destroy()
+    end
 
     return true
 end

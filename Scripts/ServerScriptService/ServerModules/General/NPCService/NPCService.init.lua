@@ -208,7 +208,7 @@ function NPCService:Spawn(SpawnerModel: Model, NPCName: string?, ForceSpawn: boo
 
     if (#Spawner.NPCs >= Spawner.MaxNPCs) and (not ForceSpawn) then return false end
 
-    NPCName = NPCName or Utility:RollPick(Spawner.AvailableNPCs)
+    NPCName = NPCName or Utility.RollPick(Spawner.AvailableNPCs)
     if not NPCName then return false end
 
     local Module = script.AllNPCs:FindFirstChild(NPCName)

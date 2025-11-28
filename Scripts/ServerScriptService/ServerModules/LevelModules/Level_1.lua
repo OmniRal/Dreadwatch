@@ -71,9 +71,8 @@ Level_1["Room_2"] = {
     RoomBlockedOutUntilComplete = true,
 
     Rewards = {
-        {Choice = "Relics", Chance = 25},
-        {Choice = "Items", Chance = 25},
-        {Choice = "None", Chance = 50}
+        {Choice = "Relic", Chance = 50},
+        {Choice = "Item", Chance = 50},
     },
 
     Methods = {
@@ -121,7 +120,7 @@ Level_1["Room_3"] = {
     },
 
     Rewards = {
-        {Choice = "Items", Chance = 100},
+        {Choice = "Item", Chance = 100},
     },
 
     Methods = {

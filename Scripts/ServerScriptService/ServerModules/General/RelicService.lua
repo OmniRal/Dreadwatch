@@ -114,17 +114,19 @@ end
 
 -- Player attempts to pick up / equip a mod Relic that is on the ground
 -- @Relic : The model of the Relic in the 3D world
-function RelicService:RequestPickupRelic(Player: Player, Relic: Model): boolean?
-    if not Player or not Relic then return end
-    local Info = RelicInfo[Relic.Name]
+function RelicService.RequestPickupRelic(Player: Player, RelicName: string, RelicModel: Model?): boolean?
+    if not Player or not RelicName then return end
+    local Info = RelicInfo[RelicName]
     if not Info then return end
 
     local Full, OpenSlot = DataService:ArePlayerRelicsFull(Player)
     if Full or not OpenSlot then return end
 
-    DataService:SetPlayerRelic(Player, OpenSlot, Relic.Name)
+    DataService:SetPlayerRelic(Player, OpenSlot, RelicName)
 
-    Relic:Destroy()
+    if RelicModel then
+        RelicModel:Destroy()
+    end
 
     return true
 end

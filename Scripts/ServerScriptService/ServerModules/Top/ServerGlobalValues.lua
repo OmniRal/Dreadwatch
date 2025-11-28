@@ -36,7 +36,7 @@ ServerGlobalValues["SimpleDamage"] = true -- If enabled, there will not be multi
 
 ServerGlobalValues["StartLevelInfo"] = {
     ID = 1,
-    ExpectedPlayers = List_2,
+    ExpectedPlayers = List_1,
     
     TestingMode = true, -- Test a level in studip; does not load lobby. ID should be set to the desired level
     TestWithoutPlayers = false, -- Test in studio without players; pressing RUN instead of PLAY SOLO,

@@ -69,9 +69,11 @@ local ProfileTemplate = {
     },
 
     MaxRevives = 0,
+
+    MaxRewards = 2,
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_33', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_Hunters_Alpha_36', ProfileTemplate)
 
 local Profiles = {}
 
@@ -271,6 +273,13 @@ function DataService:AreItemSlotsFull(Player: Player): (boolean, number?)
     end
 
     return true
+end
+
+-- Reward options are how many rewards a player can get per room completion
+function DataService.GetMaxRewards(Player: Player): number
+    DataService:WaitForPlayerDataLoaded(Player)
+
+    return Profiles[Player].Data.MaxRewards
 end
 
 function DataService:IncrementIndex(Player, Index, Increment)

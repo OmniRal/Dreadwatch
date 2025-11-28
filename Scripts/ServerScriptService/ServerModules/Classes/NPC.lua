@@ -245,7 +245,7 @@ function NPC.new(NewNPC: NPCConstructor): NPC?
     if not Info then return end
 
     -- Picks an NPC model from the available selection from a specific NPC's info table
-    local NPCModel = Utility:RollPick(Info.Models)
+    local NPCModel = Utility.RollPick(Info.Models)
     if not NPCModel then return end
     
     local self: NPC = setmetatable({}, NPC)
@@ -918,7 +918,7 @@ function NPC:CheckTarget()
                     print("Attacks available : " .. #AvailableAttacks)
 
                     if not self.Module.CheckToAttack then
-                        local ChosenAttack = Utility:RollPick(AvailableAttacks)
+                        local ChosenAttack = Utility.RollPick(AvailableAttacks)
                         if not ChosenAttack then return end
 
                         print("Attack chosen : " .. ChosenAttack)

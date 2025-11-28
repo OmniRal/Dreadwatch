@@ -228,7 +228,7 @@ function Utility:CheckForItems(List: {}, From: CFrame, Range: number)
     return List
 end
 
-function Utility:RollPick(Options: {{Choice: any, Chance: number}}): any?
+function Utility.RollPick(Options: {{Choice: any, Chance: number}}): any?
     if #Options <= 0 then return end
     if #Options == 1 then
         return Options[1].Choice
