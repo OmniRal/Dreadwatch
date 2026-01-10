@@ -10,7 +10,6 @@ local Players = game:GetService("Players")
 local StarterPlayer = game:GetService("StarterPlayer")
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
@@ -19,7 +18,6 @@ local Workspace = game:GetService("Workspace")
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
-local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 
 local VisualService = Remotes.VisualService
 
@@ -27,7 +25,6 @@ local WorldUIService = require(ReplicatedStorage.Source.SharedModules.UI.WorldUI
 
 local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
 local GameplayUIController = require(StarterPlayer.StarterPlayerScripts.Source.UIModules.GameplayUIController)
-local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -40,8 +37,6 @@ local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.Gener
 MainUIController.Menu = "None"
 
 local LocalPlayer = Players.LocalPlayer
-local Camera = Workspace.CurrentCamera
-local Mouse = LocalPlayer:GetMouse()
 
 local Gui
 
@@ -55,8 +50,6 @@ local DraggingUI: {Base: GuiObject?, Element: GuiObject?, Dragging: boolean, Dra
 
 local Events = ReplicatedStorage.Events
 local Assets = ReplicatedStorage.Assets
-
-local RNG = Random.new()
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
@@ -85,8 +78,6 @@ end
 function MainUIController:SetCharacter()
     print("Main UI - Setting character started.")
     if LocalPlayer.Character then
-        local Human = LocalPlayer.Character:FindFirstChild("Humanoid")
-
         GameplayUIController:SetCharacter(LocalPlayer.Character)
 
         print("Main UI - Setting character complete.")
@@ -139,7 +130,7 @@ function MainUIController:Deferred()
         WorldUIService:SpawnTextDisplay(From, Affects, DisplayType, Position, OtherDetails)
     end)
 
-    Events.UI.StartDraggingUI.Event:Connect(function(Start: Vector2, Base: GuiObject, Element: GuiObject?, StartDrag: (GuiObject, GuiObject) -> ()?)
+    Events.UI.StartDraggingUI.Event:Connect(function(Start: Vector3, Base: GuiObject, Element: GuiObject?, StartDrag: (GuiObject, GuiObject) -> ()?)
         if not Base then return end
 
         local Position = if Element then Element.Position else Base.Position

@@ -38,7 +38,7 @@ ServerGlobalValues["StartLevelInfo"] = {
     ID = 1,
     ExpectedPlayers = List_1,
     
-    TestingMode = true, -- Test a level in studip; does not load lobby. ID should be set to the desired level
+    TestingMode = false, -- Test a level in studip; does not load lobby. ID should be set to the desired level
     TestWithoutPlayers = false, -- Test in studio without players; pressing RUN instead of PLAY SOLO,
 }
 ServerGlobalValues["InLevel"] = false

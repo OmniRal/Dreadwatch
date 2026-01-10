@@ -680,6 +680,17 @@ function GeneralUILibrary:CenterNumAndIcon(Base: Frame, Amount: TextLabel, Icon:
 	end)
 end
 
+function GeneralUILibrary.CleanupOldGui(Player: Player, OriginalUI: ScreenGui, UIName: string)
+	if not Player or not OriginalUI or not UIName then return end
+    for _, UI: ScreenGui in Player.PlayerGui:GetChildren() do
+        if not UI then continue end
+        if UI ~= OriginalUI and UI.Name == UIName then
+            UI:Destroy()
+            return
+        end
+    end
+end
+
 --[[function GeneralUILibrary:GetTextSize(From: TextLabel | TextButton): Vector2?
 	if not From then return end
 

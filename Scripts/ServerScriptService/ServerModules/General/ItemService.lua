@@ -301,8 +301,8 @@ function ItemService:Init()
         return ItemService:RequestDropItem(Player, SlotNum, DropTo)
     end)
 
-    Remotes:CreateToServer("RequestPickupItem", {"Model"}, "Returns", function(Player: Player, Item: Model)
-        return ItemService:RequestPickupItem(Player, Item)
+    Remotes:CreateToServer("RequestPickupItem", {"Model"}, "Returns", function(Player: Player, ItemName: string, Item: Model)
+        return ItemService.RequestPickupItem(Player, ItemName, Item)
     end)
 
     for _, Module in ServerScriptService.Source.ServerModules.Items:GetChildren() do

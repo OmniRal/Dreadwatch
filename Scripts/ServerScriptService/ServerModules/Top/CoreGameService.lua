@@ -27,6 +27,7 @@ local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnu
 local LevelEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.LevelEnum)
 
 local SignalService = require(ServerScriptService.Source.ServerModules.General.SignalService)
+local LobbyService = require(ServerScriptService.Source.ServerModules.General.LobbyService)
 local CharacterService = require(ServerScriptService.Source.ServerModules.Player.CharacterService)
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 
@@ -338,6 +339,8 @@ function CoreGameService.PlayerAdded(Player: Player)
     end)
 
     if ServerGlobalValues.InLevel then return end
+
+    LobbyService.Load()
 
     if not Players.CharacterAutoLoads then
         SpawnCharacter(Player)

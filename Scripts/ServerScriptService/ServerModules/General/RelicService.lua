@@ -71,7 +71,7 @@ end
 -- Player attempts to drop a mod Relic out near them
 -- @SlotNum : The mod slot in their data they wish to drop
 -- @DropTo : Where to drop it
-function RelicService:RequestDropRelic(Player: Player, SlotNum: number, DropTo: Vector3?): boolean?
+function RelicService.RequestDropRelic(Player: Player, SlotNum: number, DropTo: Vector3?): boolean?
     if not Player or not SlotNum then return end
     local Alive, _, Root = Utility:CheckPlayerAlive(Player)
     if not Alive or not Root then return end
@@ -165,11 +165,11 @@ function RelicService:Init()
     Remotes:CreateToClient("RelicSlotsUpdated", {"table"}, "Reliable")
 
     Remotes:CreateToServer("RequestDropRelic", {"number", "Vector3?"}, "Returns", function(Player: Player, SlotNum: number, DropTo: Vector3?)
-        return RelicService:RequestDropRelic(Player, SlotNum, DropTo)
+        return RelicService.RequestDropRelic(Player, SlotNum, DropTo)
     end)
 
-    Remotes:CreateToServer("RequestPickupRelic", {"Model"}, "Returns", function(Player: Player, Relic: Model)
-        return RelicService:RequestPickupRelic(Player, Relic)
+    Remotes:CreateToServer("RequestPickupRelic", {"Model"}, "Returns", function(Player: Player, RelicName: string, Relic: Model)
+        return RelicService.RequestPickupRelic(Player, RelicName, Relic)
     end)
 
 	print("RelicService initialized...")

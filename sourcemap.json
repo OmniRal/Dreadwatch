@@ -1775,6 +1775,28 @@
 									]
 								},
 								{
+									"name": "Reward",
+									"className": "Model",
+									"children": [
+										{
+											"name": "Base",
+											"className": "Part",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Prompt",
+													"className": "ProximityPrompt",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/Player/Reward.rbxm"
+									]
+								},
+								{
 									"name": "UISounds",
 									"className": "Folder",
 									"children": [
@@ -2167,41 +2189,6 @@
 									],
 									"filePaths": [
 										"Assets/Replicated/Player/UISounds.rbxm"
-									]
-								},
-								{
-									"name": "Reward",
-									"className": "Model",
-									"children": [
-										{
-											"name": "Part",
-											"className": "Part",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "Prompt",
-													"className": "ProximityPrompt",
-													"filePaths": [],
-													"children": []
-												}
-											]
-										},
-										{
-											"name": "Base",
-											"className": "Part",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "Prompt",
-													"className": "ProximityPrompt",
-													"filePaths": [],
-													"children": []
-												}
-											]
-										}
-									],
-									"filePaths": [
-										"Assets/Replicated/Player/Reward.rbxm"
 									]
 								}
 							],
@@ -2624,6 +2611,254 @@
 									"children": [],
 									"filePaths": [
 										"Assets/Replicated/UIs/MainGui.rbxm"
+									]
+								},
+								{
+									"name": "RoomPadUI",
+									"className": "ScreenGui",
+									"children": [
+										{
+											"name": "Frame",
+											"className": "Frame",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "OwnerView",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "PrepView",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "Type",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "Button",
+																			"className": "TextButton",
+																			"filePaths": [],
+																			"children": []
+																		},
+																		{
+																			"name": "Info",
+																			"className": "TextLabel",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
+																},
+																{
+																	"name": "Password",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "TextBox",
+																			"className": "TextBox",
+																			"filePaths": [],
+																			"children": []
+																		},
+																		{
+																			"name": "Info",
+																			"className": "TextLabel",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
+																},
+																{
+																	"name": "CurrentPlayers",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "Info",
+																			"className": "TextLabel",
+																			"filePaths": [],
+																			"children": []
+																		},
+																		{
+																			"name": "List",
+																			"className": "Frame",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "UIListLayout",
+																					"className": "UIListLayout",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "Player",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Icon",
+																							"className": "ImageLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Owner",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Username",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						}
+																					]
+																				}
+																			]
+																		}
+																	]
+																},
+																{
+																	"name": "Confirm",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "Button",
+																			"className": "TextButton",
+																			"filePaths": [],
+																			"children": []
+																		},
+																		{
+																			"name": "Info",
+																			"className": "TextLabel",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
+																},
+																{
+																	"name": "Cancel",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "Button",
+																			"className": "TextButton",
+																			"filePaths": [],
+																			"children": []
+																		},
+																		{
+																			"name": "Info",
+																			"className": "TextLabel",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
+																}
+															]
+														}
+													]
+												},
+												{
+													"name": "AttemptEnterView",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Password",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "TextBox",
+																	"className": "TextBox",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Info",
+																	"className": "TextLabel",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														}
+													]
+												},
+												{
+													"name": "PlayerView",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "PrepView",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "CurrentPlayers",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "List",
+																			"className": "Frame",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "UIListLayout",
+																					"className": "UIListLayout",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "Player",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Icon",
+																							"className": "ImageLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Owner",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Username",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						}
+																					]
+																				}
+																			]
+																		},
+																		{
+																			"name": "Info",
+																			"className": "TextLabel",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/UIs/RoomPadUI.rbxm"
 									]
 								}
 							],
@@ -4281,6 +4516,14 @@
 											]
 										},
 										{
+											"name": "LobbyService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/LobbyService.lua"
+											]
+										},
+										{
 											"name": "NPCService",
 											"className": "ModuleScript",
 											"children": [
@@ -4384,6 +4627,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/General/WeaponService.lua"
+											]
+										},
+										{
+											"name": "RoomPadService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/RoomPadService.lua"
 											]
 										}
 									],
@@ -8793,19 +9044,19 @@
 											]
 										},
 										{
-											"name": "WeaponController",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/StarterPlayerScripts/General/WeaponController.lua"
-											]
-										},
-										{
 											"name": "RewardController",
 											"className": "ModuleScript",
 											"children": [],
 											"filePaths": [
 												"Scripts/StarterPlayerScripts/General/RewardController.lua"
+											]
+										},
+										{
+											"name": "WeaponController",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/StarterPlayerScripts/General/WeaponController.lua"
 											]
 										}
 									],
@@ -8848,6 +9099,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/StarterPlayerScripts/UIModules/GameplayUIController.lua"
+											]
+										},
+										{
+											"name": "RoomPadUIController",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/StarterPlayerScripts/UIModules/RoomPadUIController.lua"
 											]
 										}
 									],
