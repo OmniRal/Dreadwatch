@@ -386,6 +386,7 @@ end
 
 function GameplayUIController:Init()
     local NewGui = Assets.UIs.GameplayGui:Clone()
+    NewGui:SetAttribute("Keep", true)
     NewGui.Parent = LocalPlayer.PlayerGui
 
     Gui = NewGui

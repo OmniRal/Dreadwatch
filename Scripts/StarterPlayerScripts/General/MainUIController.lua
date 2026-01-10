@@ -17,14 +17,16 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
-local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
-
 local VisualService = Remotes.VisualService
+
+local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 
 local WorldUIService = require(ReplicatedStorage.Source.SharedModules.UI.WorldUIService)
 
 local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
 local GameplayUIController = require(StarterPlayer.StarterPlayerScripts.Source.UIModules.GameplayUIController)
+
+--local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants

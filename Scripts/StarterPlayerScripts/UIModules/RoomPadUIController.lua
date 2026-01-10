@@ -40,6 +40,10 @@ local SharedAssets = ReplicatedStorage.Assets
 
 local function SetGui()
     if not Gui then return end
+
+    task.delay(1, function() 
+        GeneralUILibrary.CleanSpecificOldGui(LocalPlayer, Gui, "RoomPadUI") 
+    end)
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
