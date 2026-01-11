@@ -12,6 +12,7 @@ PlayerInfo.Human = nil :: Humanoid?
 PlayerInfo.Root = nil :: BasePart?
 PlayerInfo.Dead = false
 PlayerInfo.UnitAttributes = nil
+PlayerInfo.UnitValues = nil
 PlayerInfo.IsRunning = false
 
 PlayerInfo.MoveVector = Vector3.new(0, 0, 0)

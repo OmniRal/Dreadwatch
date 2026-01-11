@@ -63,6 +63,7 @@ local RNG = Random.new()
 -- Private API --
 -----------------
 
+-- Check if the player is touching the ground
 local function CheckGrounded()
     if PlayerInfo.Dead or not PlayerInfo.Root then 
         if PlayerInfo.Grounded.State then
@@ -85,7 +86,7 @@ local function CheckGrounded()
             PlayerInfo.Grounded.Position = RayDown.Position
             PlayerInfo.Grounded.Normal = RayDown.Normal
 
-            SurfaceType = RayDown.Instance:GetAttribute("SurfaceType")
+            SurfaceType = RayDown.Instance:GetAttribute("SurfaceType") -- Get the kind of ground the player is standing on
 
         else
             PlayerInfo.Grounded.State = false
@@ -97,6 +98,27 @@ local function CheckGrounded()
     if LocalPlayer.Character then
         LocalPlayer.Character:SetAttribute("CurrentSurface", SurfaceType)
     end
+end
+
+local function UpdateWalkSpeed()
+    if not LocalPlayer.Character or PlayerInfo.Dead then return end
+    if not PlayerInfo.Human or not PlayerInfo.Root or not PlayerInfo.UnitValues then return end
+
+    local TotalWalkSpeed = PlayerInfo.UnitValues.Base:GetAttribute("WalkSpeed")
+
+    if ControlModule then
+         PlayerInfo.MoveVector = ControlModule:GetMoveVector()
+    end
+
+    if PlayerInfo.UnitValues.States:GetAttribute("Rooted") then
+        TotalWalkSpeed = CustomEnum.RootWalkSpeed
+    end
+
+    if PlayerInfo.UnitValues.States:GetAttribute("Stunned") then
+        TotalWalkSpeed = 0
+    end
+
+    PlayerInfo.Human.WalkSpeed = TotalWalkSpeed
 end
 
 local function CheckPickupItems()
@@ -126,29 +148,6 @@ end
 ----------------
 -- Public API --
 ----------------
-
-function MainController:UpdateChar()
-    CheckGrounded()
-
-    if not LocalPlayer.Character or PlayerInfo.Dead then return end
-    if not PlayerInfo.Human or not PlayerInfo.Root or not PlayerInfo.UnitValues then return end
-
-    local TotalWalkSpeed = PlayerInfo.UnitValues.Base:GetAttribute("WalkSpeed")
-
-    if ControlModule then
-         PlayerInfo.MoveVector = ControlModule:GetMoveVector()
-    end
-
-    if PlayerInfo.UnitValues.States:GetAttribute("Rooted") then
-        TotalWalkSpeed = CustomEnum.RootWalkSpeed
-    end
-
-    if PlayerInfo.UnitValues.States:GetAttribute("Stunned") then
-        TotalWalkSpeed = 0
-    end
-
-    PlayerInfo.Human.WalkSpeed = TotalWalkSpeed
-end
 
 function MainController:SetCharacter()
     print("Main - Setting character started.")
@@ -221,8 +220,12 @@ function MainController:SetCharacter()
     print("Main - Setting character complete.")
 end
 
-function MainController:RunControls(DeltaTime: number)
+--[[function MainController:RunControls(DeltaTime: number)
+end]]
 
+function MainController:RunHeartbeat()
+    CheckGrounded()
+    UpdateWalkSpeed()
 end
 
 function MainController:Init()
@@ -248,8 +251,7 @@ function MainController:Init()
     end)
 
     RunService.Heartbeat:Connect(function(DeltaTime: number)
-        MainController:UpdateChar()
-        MainUIController:RunHeartbeat(DeltaTime)
+        MainController:RunHeartbeat()
         WeaponController:RunHeartbeat(DeltaTime)
     end)
 end

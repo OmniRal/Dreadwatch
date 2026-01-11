@@ -12,6 +12,8 @@ export type AttackType = "Melee" | "Ranged"
 export type DamageType = "Physical" | "Magical" | "Pure"
 export type AbilityType = "Active" | "Passive"
 
+CustomEnum.RootWalkSpeed = 16
+
 CustomEnum.ReturnCodes = {
     ["ComplexError"] = -9,
     ["Dead"] = -8,

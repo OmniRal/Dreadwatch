@@ -10,6 +10,7 @@ local Players = game:GetService("Players")
 local StarterPlayer = game:GetService("StarterPlayer")
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
@@ -155,6 +156,10 @@ function MainUIController:Deferred()
 
         if not StopDrag then return end
         StopDrag(Base, Element or Base)
+    end)
+
+    RunService.Heartbeat:Connect(function(DeltaTime: number)
+        MainUIController:RunHeartbeat(DeltaTime)
     end)
 end
 
