@@ -113,7 +113,7 @@ function BasicSwordService:Use(Player: Player, SwingNum: number, HitList: {Model
 end
 
 function BasicSwordService:UseInnate(Player: Player): number
-    local Alive, _, Root, WeaponModel = Utility:CheckPlayerAlive(Player, {"Weapon"})
+    local Alive, _, Root, WeaponModel = Utility.CheckPlayerAlive(Player, {"Weapon"})
     if not Alive or not WeaponModel then return -9 end -- Dead
     if AbilityService:OnCooldown(Player, "BasicSword", "Innate") then return -8 end -- On cooldown
 

@@ -14,6 +14,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
+
+local RoomPadService = Remotes.RoomPadService
+
 local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -30,7 +34,7 @@ local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.Gener
 
 local LocalPlayer = Players.LocalPlayer
 
-local Gui: ScreenGui? = nil
+local Gui: any? = nil
 
 local SharedAssets = ReplicatedStorage.Assets
 
@@ -46,6 +50,32 @@ local function SetGui()
     end)
 end
 
+local function ResetViews()
+    if not Gui then return end
+
+    Gui.Frame.OwnerView.Visible = false
+    Gui.Frame.JoinerView.Visible = false
+    Gui.Frame.PasswordView.Visible = false
+end
+
+local function ShowUI(SetTo: number)
+    if not Gui then return end
+
+    ResetViews()
+
+    if SetTo == 1 then
+        Gui.Frame.OwnerView.Visible = true
+    
+    elseif SetTo == 2 then
+        Gui.Frame.JoinerView.Visible = true
+
+    else
+        Gui.Frame.PasswordView.Visible = true
+    end
+
+    Gui.Frame.Visible = true
+end
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -56,7 +86,7 @@ function RoomPadUIController:Init()
     end
 
     local NewGui = SharedAssets.UIs.RoomPadUI:Clone()
-    NewGui.Enabled = false
+    NewGui.Enabled = true
     NewGui.Frame.Visible = false
     NewGui:SetAttribute("Keep", true)
     NewGui.Parent = LocalPlayer.PlayerGui
@@ -67,7 +97,9 @@ function RoomPadUIController:Init()
 end
 
 function RoomPadUIController:Deferred()
-    
+    RoomPadService.ShowUI:Connect(function(SetTo: number)
+        ShowUI(SetTo)
+    end)
 end
 
 return RoomPadUIController

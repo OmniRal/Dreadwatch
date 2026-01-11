@@ -73,7 +73,7 @@ end
 -- @DropTo : Where to drop it
 function RelicService.RequestDropRelic(Player: Player, SlotNum: number, DropTo: Vector3?): boolean?
     if not Player or not SlotNum then return end
-    local Alive, _, Root = Utility:CheckPlayerAlive(Player)
+    local Alive, _, Root = Utility.CheckPlayerAlive(Player)
     if not Alive or not Root then return end
 
     local Mods = DataService:GetPlayerRelics(Player)

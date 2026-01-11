@@ -42,7 +42,7 @@ local UnitEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.
 function ChungusService:UsePassive(Player: Player, Entry: UnitEnum.HistoryEntry): number?
     if not Player or not Entry then return end
     if Entry.Type ~= "DamageDealt" then return end
-    local Alive, _, Root = Utility:CheckPlayerAlive(Player)
+    local Alive, _, Root = Utility.CheckPlayerAlive(Player)
     if not Alive or not Root then return end
 
     if AbilityService:OnCooldown(Player, "Chungus", "Passive") then return CustomEnum.ReturnCodes.OnCooldown end

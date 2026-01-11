@@ -97,7 +97,7 @@ function Utility:GetAnimationSpeedFromAttackSpeed(AttackSpeed: number)
     return AttackSpeed / 100
 end
 
-function Utility:CheckPlayerAlive(Player: Player, GetParts: {string}?): (boolean?, Humanoid?, BasePart?, {}?)
+function Utility.CheckPlayerAlive(Player: Player, GetParts: {string}?): (boolean?, Humanoid?, BasePart?, {}?)
     if not Player then return end
     if not Player.Character then return end
     local Human, Root = Player.Character:FindFirstChild("Humanoid"), Player.Character:FindFirstChild("HumanoidRootPart")

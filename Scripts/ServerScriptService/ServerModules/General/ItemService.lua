@@ -226,7 +226,7 @@ end
 -- @DropTo : Where to drop it
 function ItemService:RequestDropItem(Player: Player, SlotNum: number, DropTo: Vector3?)
     if not Player or not SlotNum then return end
-    local Alive, _, Root = Utility:CheckPlayerAlive(Player)
+    local Alive, _, Root = Utility.CheckPlayerAlive(Player)
     if not Alive or not Root then return end
 
     local Items = DataService:GetPlayerItems(Player)
