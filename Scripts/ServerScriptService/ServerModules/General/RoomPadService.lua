@@ -21,6 +21,8 @@ local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local UPDATE_PADS_RATE = 0.5
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -37,6 +39,8 @@ local AllPads: {
         RoomType: "Public" | "Private" | "Friends", 
     }
 } = {}
+
+local RunPadsThread: thread? = nil
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
@@ -71,15 +75,16 @@ local function SetPad(Pad: Model)
 
         if not Info.Owner then
             Info.Owner = ThisPlayer
+            Pad:SetAttribute("Owner", ThisPlayer.Name)
             Remotes.RoomPadService.ShowUI:Fire(ThisPlayer, 1) -- Owner screen
-        else
+        --[[else
             if Info.Owner == ThisPlayer then return end
-            
+
             if Info.Password == "None" then
                 Remotes.RoomPadService.ShowUI:Fire(ThisPlayer, 2) -- Joiner screen
             else
                 Remotes.RoomPadService.ShowUI:Fire(ThisPlayer, 3) -- Enter password screen
-            end
+            end]]
         end
     end)
 end
@@ -93,6 +98,37 @@ function RoomPadService.GetAllPads()
         if not Pad then continue end
         SetPad(Pad)
     end
+end
+
+function RoomPadService.Stop()
+    if not RunPadsThread then return end
+    task.cancel(RunPadsThread)
+    RunPadsThread = nil
+end
+
+function RoomPadService.Run()
+   RoomPadService.Stop()
+   
+   RunPadsThread = task.spawn(function()
+       while true do
+          task.wait(UPDATE_PADS_RATE)
+
+          for Pad, Info in AllPads do
+             if not Pad or not Info then continue end
+             local Platform = Pad:FindFirstChild("Platform") :: BasePart
+             if Info.Owner or not Platform then continue end
+             local Alive, _, Root = Utility.CheckPlayerAlive(Info.Owner)
+             if not Alive or not Root then continue end
+
+             local RelativeCF = Platform.CFrame:PointToObjectSpace(Root.Position)
+             if math.abs(RelativeCF.X) > Platform.Size.X / 2 or Root.Position.Y > Platform.Position.Y + 15 or math.abs(RelativeCF.Z) > Platform.Size.Z / 2 then
+                Info.Owner = nil
+                Pad:SetAttribute("Owner", "None")
+             end
+          end
+
+       end
+   end)
 end
 
 function RoomPadService:Init()

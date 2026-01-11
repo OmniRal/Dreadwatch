@@ -1,5 +1,4 @@
 -- OmniRal
---!nocheck
 
 local MainController = {}
 
@@ -8,36 +7,23 @@ local UserGameSettings = UserSettings().GameSettings
 local Players = game:GetService("Players")
 local StarterPlayer = game:GetService("StarterPlayer")
 local UserInputService = game:GetService("UserInputService")
-local ContextActionService = game:GetService("ContextActionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local CollectionService = game:GetService("CollectionService")
-local TweenService = game:GetService("TweenService")
-local Lighting = game:GetService("Lighting")
 local Workspace = game:GetService("Workspace")
-local Debris = game:GetService("Debris")
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
-local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local DataService = Remotes.DataService
-local CoreGameService = Remotes.CoreGameService
 local RelicService = Remotes.RelicService
 local ItemService = Remotes.ItemService
 local RagdollService = Remotes.RagdollService
 
-local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
 local CameraController = require(StarterPlayer.StarterPlayerScripts.Source.General.CameraController)
 local MainUIController = require(StarterPlayer.StarterPlayerScripts.Source.General.MainUIController)
-local AnimationController = require(StarterPlayer.StarterPlayerScripts.Source.General.AnimationController)
-local PlatformingController = require(StarterPlayer.StarterPlayerScripts.Source.General.PlatformingController)
 local WeaponController = require(StarterPlayer.StarterPlayerScripts.Source.General.WeaponController)
 local ItemController = require(StarterPlayer.StarterPlayerScripts.Source.General.ItemController)
-
-local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
-local SoundControlService = require(ReplicatedStorage.Source.SharedModules.Other.SoundControlService)
 
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
@@ -142,6 +128,8 @@ end
 ----------------
 
 function MainController:UpdateChar()
+    CheckGrounded()
+
     if not LocalPlayer.Character or PlayerInfo.Dead then return end
     if not PlayerInfo.Human or not PlayerInfo.Root or not PlayerInfo.UnitValues then return end
 
@@ -160,7 +148,6 @@ function MainController:UpdateChar()
     end
 
     PlayerInfo.Human.WalkSpeed = TotalWalkSpeed
-    --PlayerInfo.Human.JumpHeight = 0
 end
 
 function MainController:SetCharacter()
@@ -261,7 +248,6 @@ function MainController:Init()
     end)
 
     RunService.Heartbeat:Connect(function(DeltaTime: number)
-        CheckGrounded()
         MainController:UpdateChar()
         MainUIController:RunHeartbeat(DeltaTime)
         WeaponController:RunHeartbeat(DeltaTime)
@@ -271,7 +257,7 @@ end
 function MainController:Deferred()
     print("Main Controller Deferred...")
 
-    local GotControlModule = LocalPlayer:FindFirstChild("PlayerScripts"):FindFirstChild("PlayerModule"):FindFirstChild("ControlModule")
+    local GotControlModule = LocalPlayer:FindFirstChild("PlayerScripts"):FindFirstChild("PlayerModule"):FindFirstChild("ControlModule") :: ModuleScript
     if GotControlModule then
         ControlModule = require(GotControlModule)
     end
