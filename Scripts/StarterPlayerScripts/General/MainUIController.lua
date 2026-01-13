@@ -25,6 +25,7 @@ local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnu
 local WorldUIService = require(ReplicatedStorage.Source.SharedModules.UI.WorldUIService)
 
 local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
+local RoomPadUIController = require(StarterPlayer.StarterPlayerScripts.Source.UIModules.RoomPadUIController)
 local GameplayUIController = require(StarterPlayer.StarterPlayerScripts.Source.UIModules.GameplayUIController)
 
 --local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
@@ -78,17 +79,18 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function MainUIController:SetCharacter()
+function MainUIController.SetCharacter()
     print("Main UI - Setting character started.")
     if LocalPlayer.Character then
-        GameplayUIController:SetCharacter(LocalPlayer.Character)
+        GameplayUIController.SetCharacter(LocalPlayer.Character)
 
         print("Main UI - Setting character complete.")
     end
 end
 
-function MainUIController:RunHeartbeat(DeltaTime: number)
-    GameplayUIController:RunHeartbeat(DeltaTime)
+function MainUIController.RunHeartbeat(DeltaTime: number)
+    RoomPadUIController.RunHeartbeat(DeltaTime)
+    GameplayUIController.RunHeartbeat(DeltaTime)
 end
 
 function MainUIController:Init()
@@ -159,7 +161,7 @@ function MainUIController:Deferred()
     end)
 
     RunService.Heartbeat:Connect(function(DeltaTime: number)
-        MainUIController:RunHeartbeat(DeltaTime)
+        MainUIController.RunHeartbeat(DeltaTime)
     end)
 end
 

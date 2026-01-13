@@ -295,7 +295,7 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Update the mod stone slots
-function GameplayUIController:UpdateRelicSlots(List: {[number]: string})
+function GameplayUIController.UpdateRelicSlots(List: {[number]: string})
     local Relics = Gui:WaitForChild("RelicsFrame")
 
     for Num, Name in ipairs(List) do
@@ -314,7 +314,7 @@ function GameplayUIController:UpdateRelicSlots(List: {[number]: string})
 end
 
 -- Update the Item slots
-function GameplayUIController:UpdateItemSlots(List: {[number]: string})
+function GameplayUIController.UpdateItemSlots(List: {[number]: string})
     local Items = Gui:WaitForChild("ItemsFrame")
 
     for Num, Name in ipairs(List) do
@@ -337,7 +337,7 @@ function GameplayUIController:UpdateItemSlots(List: {[number]: string})
     end
 end
 
-function GameplayUIController:SetCharacter(Character: any)
+function GameplayUIController.SetCharacter(Character: any)
     while not Gui do
         task.wait(0.25)
     end
@@ -380,7 +380,7 @@ function GameplayUIController:SetCharacter(Character: any)
     UpdateBars()
 end
 
-function GameplayUIController:RunHeartbeat(DeltaTime: number)
+function GameplayUIController.RunHeartbeat(DeltaTime: number)
     UpdateBars()
 end
 
@@ -396,11 +396,11 @@ end
 
 function GameplayUIController:Deferred()
     RelicService.RelicSlotsUpdated:Connect(function(Current: {[number]: string})
-        GameplayUIController:UpdateRelicSlots(Current)
+        GameplayUIController.UpdateRelicSlots(Current)
     end)
 
     ItemsService.ItemSlotsUpdated:Connect(function(Current: {[number]: string})
-        GameplayUIController:UpdateItemSlots(Current)
+        GameplayUIController.UpdateItemSlots(Current)
     end)
 end
 
