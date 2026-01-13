@@ -50,13 +50,10 @@ local RunPadsThread: thread? = nil
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local function RemovePlayerFromLst(Pad: Model, ThisPlayer: Player)
-    warn(1)
     if not Pad or not ThisPlayer then return end
-    warn(2)
     local PlayerList = Pad:FindFirstChild("PlayerList") :: Folder
     if not PlayerList then return end
 
-    warn("CLEAN")
     New.CleanAll(PlayerList, ThisPlayer.Name)
 end
 
