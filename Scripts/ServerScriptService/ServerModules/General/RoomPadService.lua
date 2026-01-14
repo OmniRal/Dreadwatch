@@ -17,6 +17,7 @@ local CollectionService = game:GetService("CollectionService")
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
+local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -116,6 +117,25 @@ local function SetPad(Pad: Model)
     end)
 end
 
+local function SetPassword(Player: Player, Pad: Model, NewPassword: string): (number, number?)
+    if not Player or not Pad then return CustomEnum.ReturnCodes.MissingData end
+        
+    local Info = AllPads[Pad]
+    if not Info then return CustomEnum.ReturnCodes.ComplexError, 1 end
+
+    if NewPassword == "None" then
+        return CustomEnum.ReturnCodes.ComplexError, 2 -- Cannot set the password as "None"
+    end
+
+    if NewPassword == "" then
+        Info.Password = "None"
+    else
+        Info.Password = NewPassword
+    end
+
+    return 1
+end
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -173,7 +193,7 @@ function RoomPadService:Init()
     Remotes:CreateToClient("ShowUI", {"number"})
     
     Remotes:CreateToServer("SetPassword", {"Model", "string"}, "Returns", function(Player: Player, Pad: Model, NewPassword: string)
-        if not Player or not Pad or not NewPassword then return end
+        return SetPassword(Player, Pad, NewPassword)
     end)
 end
 

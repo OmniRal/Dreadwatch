@@ -18,6 +18,7 @@ CustomEnum.ReturnCodes = {
     ["ComplexError"] = -9,
     ["Dead"] = -8,
     ["OnCooldown"] = -7,
+    ["MissingData"] = -6,
 }
 
 CustomEnum.RayType = {

@@ -170,15 +170,15 @@ end
 -- @DragDelay : How long the button needs to be held down before being dragging is allowed
 -- @StartDrag : What should happen at the start of dragging it
 -- @StopDrag : What should happen when the drag is released
-function GeneralUILibrary:AddBaseButtonInteractions(
+function GeneralUILibrary.AddBaseButtonInteractions(
 	ButtonFrame: GuiObject, 
 	Button: GuiObject, 
 	ToggleFromActivation: boolean?, 
 	DraggingElement: boolean?,
 	DragDelay: number?,
-	DragCondition: () -> (boolean),
-	StartDrag: (GuiObject, GuiObject?) -> ()?,
-	StopDrag: (GuiObject, GuiObject?) -> ()?
+	DragCondition: (() -> (boolean?))?,
+	StartDrag: ((GuiObject, GuiObject?) -> ())?,
+	StopDrag: ((GuiObject, GuiObject?) -> ())?
 )
 	if not ButtonFrame or not Button then return end
 
@@ -278,7 +278,7 @@ end
 function GeneralUILibrary:SetCloseButton(CloseButton: any, CloseAction: () -> ())
 	if not CloseButton then return end
 
-	GeneralUILibrary:AddBaseButtonInteractions(CloseButton, CloseButton.Button)
+	GeneralUILibrary.AddBaseButtonInteractions(CloseButton, CloseButton.Button)
 
 	CloseButton:GetAttributeChangedSignal("On"):Connect(function()
 		if PlayerInfo.UILock.Set ~= "None" then return end

@@ -27,7 +27,7 @@ local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.Gener
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local CHECK_RATE = 0.1 -- How often to check if the player is standing on a pad
+local CHECK_PAD_RATE = 0.1 -- How often to check if the player is standing on a pad
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -56,6 +56,27 @@ local SharedAssets = ReplicatedStorage.Assets
 
 local function SetGui()
     if not Gui then return end
+    if not Gui:FindFirstChild("Frame") then return end
+
+    local OwnerView, JoinerView, PasswordView = Gui.Frame:FindFirstChild("OwnerView"), Gui.Frame:FindFirstChild("JoinerView"), Gui.Frame:FindFirstChild("PasswordView")
+    if not OwnerView or not JoinerView or not PasswordView then return end
+
+    GeneralUILibrary.AddBaseButtonInteractions(OwnerView.PrepView.Password.Confirm, OwnerView.PrepView.Password.Confirm.Button)
+    OwnerView.PrepView.Password.Confirm.GetAttributeChangedSignal("On"):Connect(function()
+        if OwnerView.PrepView.Password.Confirm:GetAttribute("On") then return end
+
+        -- Change the password
+        RoomPadService:SetPassword(CurrentPad, OwnerView.PrepView.Password.TextBox.Text)
+    end)
+    
+    GeneralUILibrary.AddBaseButtonInteractions(OwnerView.PrepView.Password.Cancel, OwnerView.PrepView.Password.Cancel.Button)
+    OwnerView.PrepView.Password.Cancel.Button.MouseButton1Up:Connect(function()
+        if not OwnerView.PrepView.Password.Cancel:GetAttribute("On") then return end
+        
+        -- Set NO password
+        RoomPadService:SetPassword(CurrentPad, "")
+        OwnerView.PrepView.Password.Text.Text = ""
+    end)
 
     task.delay(1, function() 
         GeneralUILibrary.CleanSpecificOldGui(LocalPlayer, Gui, "RoomPadUI") 
@@ -77,6 +98,7 @@ local function GetPads()
     end
 end
 
+-- Check if the player is standing inside any room pad
 local function CheckInPad() : Model?
     if PlayerInfo.Dead or not PlayerInfo.Root then return end
 
@@ -94,6 +116,21 @@ local function CheckInPad() : Model?
     end
 
     return SetTo
+end
+
+local function UpdateUI()
+    if not Gui or not CurrentPad then return end
+    if not Gui:FindFirstChild("Frame") then return end
+
+    local OwnerView, JoinerView, PasswordView = Gui.Frame:FindFirstChild("OwnerView"), Gui.Frame:FindFirstChild("JoinerView"), Gui.Frame:FindFirstChild("PasswordView")
+    if not OwnerView or not JoinerView or not PasswordView then return end
+
+    if CurrentPad:GetAttribute("Owner") == LocalPlayer.Name then
+        -- Owner view
+        
+    else
+
+    end
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -128,13 +165,16 @@ end
 
 function RoomPadUIController.RunHeartbeat(DeltaTime: number)
     CheckTick += DeltaTime
-    if CheckTick < CHECK_RATE then return end
+    if CheckTick < CHECK_PAD_RATE then return end
 
     CheckTick = 0
 
     local SetTo = CheckInPad()
 
-    if SetTo == CurrentPad then return end -- No change
+    if SetTo == CurrentPad then 
+        UpdateUI()
+        return 
+    end
 
     CurrentPad = SetTo
 

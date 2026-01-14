@@ -78,7 +78,7 @@ local function SetRelicsFrame()
         IconDrag.Parent = Slot
 
         -- Connect interaction for each mod slot
-        GeneralUILibrary:AddBaseButtonInteractions(
+        GeneralUILibrary.AddBaseButtonInteractions(
             Slot, 
             Slot.Button, 
             false,
@@ -135,7 +135,7 @@ local function SetItemsFrame()
             Slot.Icon.Image = ""
 
             -- Connect interaction for each Item slot
-            GeneralUILibrary:AddBaseButtonInteractions(
+            GeneralUILibrary.AddBaseButtonInteractions(
                 Slot, 
                 Slot.Button, 
                 false,
