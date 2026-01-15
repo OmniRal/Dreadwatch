@@ -19,12 +19,13 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
+local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Other.ColorPalette)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local UPDATE_PADS_RATE = 0.5
+local UPDATE_PADS_RATE = 0.1
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -77,6 +78,7 @@ local function SetPad(Pad: Model)
         Password = "None",
         RoomType = "Private",
         LockOut = 0,
+        DivOffset = 0,
     }
     
     Pad:SetAttribute("Owner", "None")
@@ -84,6 +86,7 @@ local function SetPad(Pad: Model)
     New.Instance("Folder", "PlayerList", Pad) -- Store a list of the players as values; easy for client to see
 
     Platform.Transparency = 0.5
+    Platform.Color = ColorPalette.RoomPad_Available
 
     Platform.Touched:Connect(function(Hit: BasePart)
         if not Hit then return end
@@ -100,9 +103,12 @@ local function SetPad(Pad: Model)
         if Info.LockOut > 0 then return end
 
         if not Info.Owner then
+            Info.LockOut = 5
             Info.Owner = ThisPlayer
             AddPlayerTo(Pad, ThisPlayer)
             Pad:SetAttribute("Owner", ThisPlayer.Name)
+            Platform.Color = ColorPalette.RoomPad_BeingUsed
+            warn("New Owner:", ThisPlayer)
 
             Remotes.RoomPadService.ShowUI:Fire(ThisPlayer, 1) -- Owner screen
         --[[else
@@ -124,14 +130,19 @@ local function SetPassword(Player: Player, Pad: Model, NewPassword: string): (nu
     if not Info then return CustomEnum.ReturnCodes.ComplexError, 1 end
 
     if NewPassword == "None" then
+        print("Cannont set password as none!")
         return CustomEnum.ReturnCodes.ComplexError, 2 -- Cannot set the password as "None"
     end
 
     if NewPassword == "" then
+        print("Password removed!")
         Info.Password = "None"
     else
+        print("Password set to:", NewPassword)
         Info.Password = NewPassword
     end
+
+    warn(Info)
 
     return 1
 end
@@ -167,10 +178,13 @@ function RoomPadService.Run()
 
                 if Info.LockOut > 0 then
                     Info.LockOut -= 1
-                    if Info.LockOut <= 0 then
+                    if Info.LockOut <= 0 and not Info.Owner then
+                        Platform.Color = ColorPalette.RoomPad_Available
+
                         -- Maybe some animation here?
-                        continue
                     end
+
+                    continue
                 end
 
                 if not Info.Owner then continue end
@@ -179,7 +193,10 @@ function RoomPadService.Run()
 
                 local RelativeCF = Platform.CFrame:PointToObjectSpace(Root.Position)
                 if math.abs(RelativeCF.X) > Platform.Size.X / 2 or Root.Position.Y > Platform.Position.Y + 15 or math.abs(RelativeCF.Z) > Platform.Size.Z / 2 then
-                    Info.LockOut = 3
+                    Info.LockOut = 10
+                    Platform.Color = ColorPalette.RoomPad_Locked
+                    warn("Owner left!")
+                    
                     RemovePlayerFromLst(Pad, Info.Owner)
                     Pad:SetAttribute("Owner", "None")
                     Info.Owner = nil

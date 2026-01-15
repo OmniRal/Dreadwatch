@@ -48,4 +48,8 @@ ColorPalette.UIBlackStoneGrey = Color3.fromRGB(26, 32, 38)
 
 ColorPalette.UISteel = Color3.fromRGB(174, 190, 209)
 
+ColorPalette.RoomPad_Available = Color3.fromRGB(83, 219, 83)
+ColorPalette.RoomPad_BeingUsed = Color3.fromRGB(238, 206, 87)
+ColorPalette.RoomPad_Locked = Color3.fromRGB(91, 100, 107)
+
 return ColorPalette

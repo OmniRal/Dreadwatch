@@ -2667,6 +2667,32 @@
 																			"className": "TextLabel",
 																			"filePaths": [],
 																			"children": []
+																		},
+																		{
+																			"name": "Confirm",
+																			"className": "Frame",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Button",
+																					"className": "TextButton",
+																					"filePaths": [],
+																					"children": []
+																				}
+																			]
+																		},
+																		{
+																			"name": "Cancel",
+																			"className": "Frame",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Button",
+																					"className": "TextButton",
+																					"filePaths": [],
+																					"children": []
+																				}
+																			]
 																		}
 																	]
 																},
