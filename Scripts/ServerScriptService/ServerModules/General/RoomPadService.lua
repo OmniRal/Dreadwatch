@@ -41,7 +41,8 @@ local AllPads: {
         LevelID: number, 
         Password: string?,
         RoomType: "Public" | "Private" | "Friends",
-        LockOut: number,
+        Players: {Player?},
+        Locked: number,
     }
 } = {}
 
@@ -53,16 +54,27 @@ local RunPadsThread: thread? = nil
 
 local function RemovePlayerFromLst(Pad: Model, ThisPlayer: Player)
     if not Pad or not ThisPlayer then return end
+
+    local Info = AllPads[Pad]
     local PlayerList = Pad:FindFirstChild("PlayerList") :: Folder
-    if not PlayerList then return end
+    if not Info or not PlayerList then return end
+
+    local Index = table.find(Info.Players, ThisPlayer)
+    if Index then
+        table.remove(Info.Players, Index)
+    end
 
     New.CleanAll(PlayerList, ThisPlayer.Name)
 end
 
 local function AddPlayerTo(Pad: Model, ThisPlayer: Player)
     if not Pad or not ThisPlayer then return end
+
+    local Info = AllPads[Pad]
     local PlayerList = Pad:FindFirstChild("PlayerList") :: Folder
-    if not PlayerList then return end
+    if not Info or not PlayerList then return end
+
+    if table.find(Info.Players, ThisPlayer) or PlayerList:FindFirstChild(ThisPlayer.Name) then return end
 
     New.Instance("IntValue", ThisPlayer.Name, PlayerList, {Value = ThisPlayer.UserId})
 end
@@ -77,8 +89,8 @@ local function SetPad(Pad: Model)
         LevelID = 1,
         Password = "None",
         RoomType = "Private",
-        LockOut = 0,
-        DivOffset = 0,
+        Players = {},
+        Locked = 0,
     }
     
     Pad:SetAttribute("Owner", "None")
@@ -100,10 +112,10 @@ local function SetPad(Pad: Model)
 
         local Info = AllPads[Pad]
         if not Info then return end
-        if Info.LockOut > 0 then return end
+        if Info.Locked > 0 then return end
 
         if not Info.Owner then
-            Info.LockOut = 5
+            Info.Locked = 5
             Info.Owner = ThisPlayer
             AddPlayerTo(Pad, ThisPlayer)
             Pad:SetAttribute("Owner", ThisPlayer.Name)
@@ -123,6 +135,7 @@ local function SetPad(Pad: Model)
     end)
 end
 
+-- Set a new password for the room
 local function SetPassword(Player: Player, Pad: Model, NewPassword: string): (number, number?)
     if not Player or not Pad then return CustomEnum.ReturnCodes.MissingData end
         
@@ -143,6 +156,19 @@ local function SetPassword(Player: Player, Pad: Model, NewPassword: string): (nu
     end
 
     warn(Info)
+
+    return 1
+end
+
+local function AttemptJoin(Player: Player, Pad: Model, Password: string?): number?
+    if not Player or not Pad then return CustomEnum.ReturnCodes.MissingData end
+
+    local Info = AllPads[Pad]
+    if not Info then return CustomEnum.ReturnCodes.ComplexError, 1 end
+
+    if Info.Password and Password ~= Info.Password then return CustomEnum.ReturnCodes.ComplexError, 2 end -- Password incorrect
+
+    AddPlayerTo(Pad, Player)
 
     return 1
 end
@@ -176,9 +202,9 @@ function RoomPadService.Run()
                 local Platform = Pad:FindFirstChild("Platform") :: BasePart
                 if not Platform then continue end
 
-                if Info.LockOut > 0 then
-                    Info.LockOut -= 1
-                    if Info.LockOut <= 0 and not Info.Owner then
+                if Info.Locked > 0 then
+                    Info.Locked -= 1
+                    if Info.Locked <= 0 and not Info.Owner then
                         Platform.Color = ColorPalette.RoomPad_Available
 
                         -- Maybe some animation here?
@@ -193,7 +219,7 @@ function RoomPadService.Run()
 
                 local RelativeCF = Platform.CFrame:PointToObjectSpace(Root.Position)
                 if math.abs(RelativeCF.X) > Platform.Size.X / 2 or Root.Position.Y > Platform.Position.Y + 15 or math.abs(RelativeCF.Z) > Platform.Size.Z / 2 then
-                    Info.LockOut = 10
+                    Info.Locked = 10
                     Platform.Color = ColorPalette.RoomPad_Locked
                     warn("Owner left!")
                     
@@ -211,6 +237,10 @@ function RoomPadService:Init()
     
     Remotes:CreateToServer("SetPassword", {"Model", "string"}, "Returns", function(Player: Player, Pad: Model, NewPassword: string)
         return SetPassword(Player, Pad, NewPassword)
+    end)
+
+    Remotes:CreateToServer("AttemptJoin", {"Model", "string?"}, "Returns", function(Player: Player, Pad: Model, Password: string?)
+        
     end)
 end
 

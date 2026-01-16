@@ -47,7 +47,10 @@ local UI_Shown = false
 local CheckTick = 0
 
 local AllPads: {Model} = {}
-local CurrentPad: Model? = nil
+local CurrentPad: {
+    Model: Model?,
+    ListChangeListener: RBXScriptConnection?,
+} = {Model = nil, ListChangeListener = nil}
 
 local SharedAssets = ReplicatedStorage.Assets
 
@@ -83,7 +86,7 @@ local function SetGui()
 
         -- Change the password
         local NewPassword = OwnerView.PrepView.Password.TextBox.Text
-        local Result = RoomPadService:SetPassword(CurrentPad, NewPassword)
+        local Result = RoomPadService:SetPassword(CurrentPad.Model, NewPassword)
         if Result == 1 then
             OwnerView.PrepView.Password.TextBox.Text = ""
             OwnerView.PrepView.Password.TextBox.PlaceholderText = NewPassword
@@ -110,7 +113,7 @@ local function SetGui()
         if OwnerView.PrepView.Password.TextBox.PlaceholderText == PASSWORD_PLACEHOLDER then return end
         
         -- Set NO password
-        RoomPadService:SetPassword(CurrentPad, "")
+        RoomPadService:SetPassword(CurrentPad.Model, "")
         OwnerView.PrepView.Password.TextBox.Text = ""
         OwnerView.PrepView.Password.TextBox.PlaceholderText = PASSWORD_PLACEHOLDER
     end)
@@ -155,14 +158,84 @@ local function CheckInPad() : Model?
     return SetTo
 end
 
-local function UpdateUI()
-    if not Gui or not CurrentPad then return end
+-- Return which frame view is currently open
+local function GetCurrentView(): Frame?
+    if not Gui or not CurrentPad.Model then return end
     if not Gui:FindFirstChild("Frame") then return end
 
     local OwnerView, JoinerView, PasswordView = Gui.Frame:FindFirstChild("OwnerView"), Gui.Frame:FindFirstChild("JoinerView"), Gui.Frame:FindFirstChild("PasswordView")
     if not OwnerView or not JoinerView or not PasswordView then return end
 
-    if CurrentPad:GetAttribute("Owner") == LocalPlayer.Name then
+    local ThisView = nil
+
+    if OwnerView.Visible then
+        if OwnerView.PrepView.Visible then
+            ThisView = OwnerView.PrepView
+        end
+
+    elseif JoinerView.Visible then
+        if JoinerView.PrepView.Visible then
+            ThisView = JoinerView.PrepView
+        end
+    
+    else
+        ThisView = PasswordView
+    end
+
+    return ThisView
+end
+
+-- Updates player in the room UI with their headshots
+local function UpdatePlayerList(ListFrame: Frame?)
+    if not CurrentPad.Model then return end
+
+    if not ListFrame then
+        local ThisView = GetCurrentView()
+        if ThisView and ThisView:FindFirstChild("CurrentPlayers"):FindFirstChild("List") then
+            ListFrame = ThisView.CurrentPlayers.List
+        end
+    end
+
+    if not ListFrame then return end
+
+    local List = CurrentPad.Model:FindFirstChild("PlayerList") :: Folder
+    local OG_Player = ListFrame:FindFirstChild("OG_Player")
+    if not List or not OG_Player then return end
+
+    OG_Player.Visible = false
+
+    -- Clean up old ones
+    for _, PlayerFrame in ListFrame:GetChildren() do
+        if not PlayerFrame then continue end
+        if List:FindFirstChild(PlayerFrame.Name) then continue end
+        if PlayerFrame == OG_Player or PlayerFrame.Name == "UIListLayout" then continue end
+        PlayerFrame:Destroy()
+    end
+
+    -- Add new ones
+    for _, PlayerVal: IntValue in List:GetChildren() do
+        if not PlayerVal then continue end
+        if ListFrame:FindFirstChild(PlayerVal.Name) then continue end
+        
+        task.spawn(function()
+            local NewFrame = OG_Player:Clone()
+            NewFrame.Owner.Visible = if CurrentPad.Model:GetAttribute("Owner") == PlayerVal.Name then true else false
+            NewFrame.Username.Text = PlayerVal.Name
+            NewFrame.Icon.Image = Players:GetUserThumbnailAsync(PlayerVal.Value, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size352x352)
+            NewFrame.Visible = true
+            NewFrame.Parent = ListFrame
+        end)
+    end
+end
+
+local function UpdateUI()
+    if not Gui or not CurrentPad.Model then return end
+    if not Gui:FindFirstChild("Frame") then return end
+
+    local OwnerView, JoinerView, PasswordView = Gui.Frame:FindFirstChild("OwnerView"), Gui.Frame:FindFirstChild("JoinerView"), Gui.Frame:FindFirstChild("PasswordView")
+    if not OwnerView or not JoinerView or not PasswordView then return end
+
+    if CurrentPad.Model:GetAttribute("Owner") == LocalPlayer.Name then
         -- Owner view
         if OwnerView.PrepView.Password.TextBox.Text == "" or OwnerView.PrepView.Password.TextBox.Text == OwnerView.PrepView.Password.TextBox.PlaceholderText then
             OwnerView.PrepView.Password.Confirm:SetAttribute("Locked", true)
@@ -219,24 +292,34 @@ function RoomPadUIController.RunHeartbeat(DeltaTime: number)
 
     local SetTo = CheckInPad()
 
-    if SetTo == CurrentPad then 
+    if SetTo == CurrentPad.Model then 
         UpdateUI()
         return 
     end
 
-    CurrentPad = SetTo
+    CurrentPad.Model = SetTo
+    if CurrentPad.ListChangeListener then
+        CurrentPad.ListChangeListener:Disconnect()
+        CurrentPad.ListChangeListener = nil
+    end
 
-    if CurrentPad then
-        local PlayerList, Platform = CurrentPad:FindFirstChild("PlayerList"), CurrentPad:FindFirstChild("Platform")
+    if CurrentPad.Model then
+        local PlayerList, Platform = CurrentPad.Model:FindFirstChild("PlayerList"), CurrentPad.Model:FindFirstChild("Platform")
         if not PlayerList or not Platform then return end
+
+        CurrentPad.ListChangeListener = PlayerList.Changed:Connect(function() 
+            UpdatePlayerList()
+        end)
+
+        UpdatePlayerList()
         
-        if CurrentPad:GetAttribute("Owner") == LocalPlayer.Name then
+        if CurrentPad.Model:GetAttribute("Owner") == LocalPlayer.Name then
             RoomPadUIController.ShowUI(1)
         else
             if PlayerList:FindFirstChild(LocalPlayer.Name) then
                 RoomPadUIController.ShowUI(2)
             else
-                if not CurrentPad:GetAttribute("RequiresPassword") then return end
+                if not CurrentPad.Model:GetAttribute("RequiresPassword") then return end
                 RoomPadUIController.ShowUI(3)
             end
         end

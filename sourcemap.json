@@ -2742,6 +2742,31 @@
 																							"children": []
 																						}
 																					]
+																				},
+																				{
+																					"name": "OG_Player",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Icon",
+																							"className": "ImageLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Owner",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Username",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						}
+																					]
 																				}
 																			]
 																		}
@@ -2843,6 +2868,31 @@
 																				},
 																				{
 																					"name": "Player",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Icon",
+																							"className": "ImageLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Owner",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Username",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						}
+																					]
+																				},
+																				{
+																					"name": "OG_Player",
 																					"className": "Frame",
 																					"filePaths": [],
 																					"children": [
