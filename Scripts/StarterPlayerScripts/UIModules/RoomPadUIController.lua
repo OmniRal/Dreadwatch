@@ -22,6 +22,7 @@ local RoomPadService = Remotes.RoomPadService
 
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
+local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -65,8 +66,31 @@ local function SetGui()
     local OwnerView, JoinerView, PasswordView = Gui.Frame:FindFirstChild("OwnerView"), Gui.Frame:FindFirstChild("JoinerView"), Gui.Frame:FindFirstChild("PasswordView")
     if not OwnerView or not JoinerView or not PasswordView then return end
 
-    GeneralUILibrary.AddBaseButtonInteractions(OwnerView.PrepView.Password.Confirm, OwnerView.PrepView.Password.Confirm.Button)
+    -- Change room type button
+    GeneralUILibrary.AddBaseButtonInteractions(OwnerView.PrepView.Type, OwnerView.PrepView.Type.Button)
+    OwnerView.PrepView.Type:GetAttributeChangedSignal("Locked"):Connect(function()
+        local Locked = OwnerView.PrepView.Type:GetAttribute("Locked")
+        
+        OwnerView.PrepView.Type.Button.AutoButtonColor = not Locked
+        if Locked then
+            OwnerView.PrepView.Type.Button.BackgroundTransparency = 0.5
+            OwnerView.PrepView.Type.Button.TextTransparency = 0.5
+        else
+            OwnerView.PrepView.Type.Button.BackgroundTransparency = 0
+            OwnerView.PrepView.Type.Button.TextTransparency = 0
+        end
+    end)
+    OwnerView.PrepView.Type.Button.Activated:Connect(function() 
+        if OwnerView.PrepView.Type:GetAttribute("Locked") then return end
+        OwnerView.PrepView.Type:SetAttribute("Locked", true)
+        RoomPadService:ChangeType(CurrentPad.Model)
+        task.wait(0.5)
 
+        OwnerView.PrepView.Type:SetAttribute("Locked", false)
+    end)
+
+    -- Password confirm button
+    GeneralUILibrary.AddBaseButtonInteractions(OwnerView.PrepView.Password.Confirm, OwnerView.PrepView.Password.Confirm.Button)
     OwnerView.PrepView.Password.Confirm:GetAttributeChangedSignal("Locked"):Connect(function()
         local Locked = OwnerView.PrepView.Password.Confirm:GetAttribute("Locked")
         
@@ -79,7 +103,6 @@ local function SetGui()
             OwnerView.PrepView.Password.Confirm.Button.TextTransparency = 0
         end
     end)
-
     OwnerView.PrepView.Password.Confirm.Button.Activated:Connect(function()
         if OwnerView.PrepView.Password.Confirm:GetAttribute("Locked") then return end
         if OwnerView.PrepView.Password.TextBox.Text == "" or OwnerView.PrepView.Password.TextBox.Text == OwnerView.PrepView.Password.TextBox.PlaceholderText then return end
@@ -93,8 +116,8 @@ local function SetGui()
         end
     end)
     
+    -- Remove password button
     GeneralUILibrary.AddBaseButtonInteractions(OwnerView.PrepView.Password.Cancel, OwnerView.PrepView.Password.Cancel.Button)
-
     OwnerView.PrepView.Password.Cancel:GetAttributeChangedSignal("Locked"):Connect(function()
         local Locked = OwnerView.PrepView.Password.Cancel:GetAttribute("Locked")
         
@@ -107,7 +130,6 @@ local function SetGui()
             OwnerView.PrepView.Password.Cancel.Button.TextTransparency = 0
         end
     end)
-
     OwnerView.PrepView.Password.Cancel.Button.Activated:Connect(function()
         if OwnerView.PrepView.Password.Cancel:GetAttribute("Locked") then return end
         if OwnerView.PrepView.Password.TextBox.PlaceholderText == PASSWORD_PLACEHOLDER then return end
@@ -237,12 +259,18 @@ local function UpdateUI()
 
     if CurrentPad.Model:GetAttribute("Owner") == LocalPlayer.Name then
         -- Owner view
+
+        -- Change room type button
+        OwnerView.PrepView.Type.Button.Text = CurrentPad.Model:GetAttribute("RoomType")
+
+        -- Password confirm button
         if OwnerView.PrepView.Password.TextBox.Text == "" or OwnerView.PrepView.Password.TextBox.Text == OwnerView.PrepView.Password.TextBox.PlaceholderText then
             OwnerView.PrepView.Password.Confirm:SetAttribute("Locked", true)
         else
             OwnerView.PrepView.Password.Confirm:SetAttribute("Locked", false)
         end
 
+        -- Remove password button
         if OwnerView.PrepView.Password.TextBox.PlaceholderText == PASSWORD_PLACEHOLDER then
             OwnerView.PrepView.Password.Cancel:SetAttribute("Locked", true)
         else
@@ -316,6 +344,12 @@ function RoomPadUIController.RunHeartbeat(DeltaTime: number)
         if CurrentPad.Model:GetAttribute("Owner") == LocalPlayer.Name then
             RoomPadUIController.ShowUI(1)
         else
+            local UINum = 2 -- Joiner view
+
+            if not PlayerList:FindFirstChild(LocalPlayer.Name) then
+                return
+            end
+
             if PlayerList:FindFirstChild(LocalPlayer.Name) then
                 RoomPadUIController.ShowUI(2)
             else

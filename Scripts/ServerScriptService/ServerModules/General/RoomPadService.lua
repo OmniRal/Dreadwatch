@@ -39,8 +39,8 @@ local AllPads: {
     [Model]: {
         Owner: Player?, 
         LevelID: number, 
+        RoomType: CustomEnum.RoomPadType,
         Password: string?,
-        RoomType: "Public" | "Private" | "Friends",
         Players: {Player?},
         Locked: number,
     }
@@ -94,6 +94,7 @@ local function SetPad(Pad: Model)
     }
     
     Pad:SetAttribute("Owner", "None")
+    Pad:SetAttribute("RoomType", "Private")
     Pad:SetAttribute("RequiresPassword", false)
     New.Instance("Folder", "PlayerList", Pad) -- Store a list of the players as values; easy for client to see
 
@@ -133,6 +134,34 @@ local function SetPad(Pad: Model)
             end]]
         end
     end)
+end
+
+-- Change the type of room between public, private and friends
+local function ChangeType(Player: Player, Pad: Model, Type: CustomEnum.RoomPadType?)
+    if not Player or not Pad then return CustomEnum.ReturnCodes.MissingData end
+        
+    local Info = AllPads[Pad]
+    if not Info then return CustomEnum.ReturnCodes.ComplexError, 1 end
+
+    if Info.Owner ~= Player then return CustomEnum.ReturnCodes.ComplexError, 2 end -- Player is not the owner
+
+    -- Cycle through
+    if not Type then
+        if Info.RoomType == "Private" then
+            Type = "Friends"
+        elseif Info.RoomType == "Friends" then
+            Type = "Public"
+        else
+            Type = "Private"
+        end
+    end
+
+    if Type ~= "Public" and Type ~= "Private" and Type ~= "Friends" then return CustomEnum.ReturnCodes.ComplexError, 3 end -- Invalid room type
+
+    Info.RoomType = Type
+    Pad:SetAttribute("RoomType", Type)
+
+    return 1
 end
 
 -- Set a new password for the room
@@ -234,13 +263,17 @@ end
 
 function RoomPadService:Init()
     Remotes:CreateToClient("ShowUI", {"number"})
+
+    Remotes:CreateToServer("ChangeType", {"Model", "string?"}, "Returns", function(Player: Player, Pad: Model, Type: CustomEnum.RoomPadType?)
+        return ChangeType(Player, Pad, Type)
+    end)
     
     Remotes:CreateToServer("SetPassword", {"Model", "string"}, "Returns", function(Player: Player, Pad: Model, NewPassword: string)
         return SetPassword(Player, Pad, NewPassword)
     end)
 
     Remotes:CreateToServer("AttemptJoin", {"Model", "string?"}, "Returns", function(Player: Player, Pad: Model, Password: string?)
-        
+        return AttemptJoin(Player, Pad, Password)
     end)
 end
 

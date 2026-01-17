@@ -3,6 +3,7 @@
 
 local Utility = {}
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CollectionService = game:GetService("CollectionService")
 local Workspace = game:GetService("Workspace")
@@ -262,6 +263,21 @@ function Utility.RollPick(Options: {{Choice: any, Chance: number}}): any?
     local Picked = Options[AvailablePicks[RNG:NextInteger(1, #AvailablePicks)]].Choice
 
     return Picked
+end
+
+function Utility.CheckFriends(Player_A: Player, Player_B: Player): boolean
+    if not Player_A or not Player_B then return false end
+
+    local Success, Result = pcall(function()
+        return Player_A:IsFriendsWithAsync(Player_B.UserId)
+    end)
+
+    if not Success then
+        warn(Result)
+        return
+    end
+
+    return Result
 end
 
 return Utility

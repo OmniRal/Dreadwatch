@@ -12,6 +12,8 @@ export type AttackType = "Melee" | "Ranged"
 export type DamageType = "Physical" | "Magical" | "Pure"
 export type AbilityType = "Active" | "Passive"
 
+export type RoomPadType = "Public" | "Private" | "Friends"
+
 CustomEnum.RootWalkSpeed = 16
 
 CustomEnum.ReturnCodes = {
