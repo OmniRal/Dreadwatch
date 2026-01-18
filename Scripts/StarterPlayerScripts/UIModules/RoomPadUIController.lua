@@ -21,6 +21,7 @@ local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local RoomPadService = Remotes.RoomPadService
 
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
+local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
 local Utility = require(ReplicatedStorage.Source.SharedModules.Other.Utility)
 
@@ -59,13 +60,7 @@ local SharedAssets = ReplicatedStorage.Assets
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local function SetGui()
-    if not Gui then return end
-    if not Gui:FindFirstChild("Frame") then return end
-
-    local OwnerView, JoinerView, PasswordView = Gui.Frame:FindFirstChild("OwnerView"), Gui.Frame:FindFirstChild("JoinerView"), Gui.Frame:FindFirstChild("PasswordView")
-    if not OwnerView or not JoinerView or not PasswordView then return end
-
+local function SetOwnerView(OwnerView: any)
     -- Change room type button
     GeneralUILibrary.AddBaseButtonInteractions(OwnerView.PrepView.Type, OwnerView.PrepView.Type.Button)
     OwnerView.PrepView.Type:GetAttributeChangedSignal("Locked"):Connect(function()
@@ -139,6 +134,49 @@ local function SetGui()
         OwnerView.PrepView.Password.TextBox.Text = ""
         OwnerView.PrepView.Password.TextBox.PlaceholderText = PASSWORD_PLACEHOLDER
     end)
+end
+
+local function SetPasswordView(PasswordView)
+
+    -- Confirm password to try to join room button
+    GeneralUILibrary.AddBaseButtonInteractions(PasswordView.Password.Confirm, PasswordView.Password.Confirm.Button)
+    PasswordView.Password.Confirm:SetAttribute("Debounce", false)
+    PasswordView.Password.Confirm:GetAttributeChangedSignal("Locked"):Connect(function() 
+        local Locked = PasswordView.Password.Confirm:GetAttribute("Locked")
+
+        if Locked then
+            PasswordView.Password.Confirm.Button.BackgroundTransparency = 0.5
+            PasswordView.Password.Confirm.Button.TextTransparency = 0.5
+        else
+            PasswordView.Password.Confirm.Button.BackgroundTransparency = 0
+            PasswordView.Password.Confirm.Button.TextTransparency = 0
+        end
+    end)
+    PasswordView.Password.Confirm.Button.Activated:Connect(function()
+        if PasswordView.Password.Confirm:GetAttribute("Locked") or PasswordView.Password.Confirm:GetAttribute("Debounce") then return end
+
+        PasswordView.Password.Confirm:SetAttribute("Debounce", true)
+        PasswordView.Password.Confirm:SetAttribute("Locked", true)
+        local Result = RoomPadService:AttemptJoin(CurrentPad.Model, PasswordView.Password.TextBox.Text)
+        if Result == 1 then
+            RoomPadUIController.ShowUI(2)
+        end
+        task.wait(0.5)
+
+        PasswordView.Password.Confirm:SetAttribute("Debounce", false)
+        PasswordView.Password.Confirm:SetAttribute("Locked", false)
+    end)
+end
+
+local function SetGui()
+    if not Gui then return end
+    if not Gui:FindFirstChild("Frame") then return end
+
+    local OwnerView, JoinerView, PasswordView = Gui.Frame:FindFirstChild("OwnerView"), Gui.Frame:FindFirstChild("JoinerView"), Gui.Frame:FindFirstChild("PasswordView")
+    if not OwnerView or not JoinerView or not PasswordView then return end
+        
+    SetOwnerView(OwnerView)
+    SetPasswordView(PasswordView)
 
     task.delay(1, function() 
         GeneralUILibrary.CleanSpecificOldGui(LocalPlayer, Gui, "RoomPadUI") 
@@ -213,7 +251,7 @@ local function UpdatePlayerList(ListFrame: Frame?)
 
     if not ListFrame then
         local ThisView = GetCurrentView()
-        if ThisView and ThisView:FindFirstChild("CurrentPlayers"):FindFirstChild("List") then
+        if ThisView and ThisView:FindFirstChild("CurrentPlayers") and ThisView.CurrentPlayers:FindFirstChild("List") then
             ListFrame = ThisView.CurrentPlayers.List
         end
     end
@@ -278,7 +316,20 @@ local function UpdateUI()
         end
 
     else
+        local PlayerList = CurrentPad.Model:FindFirstChild("PlayerList")
+        if not PlayerList then return end
 
+        if PlayerList:FindFirstChild(LocalPlayer.Name) then
+            -- Joiner view
+            return
+        else
+            -- Password view
+            if PasswordView.Password.TextBox.Text == "" then
+                PasswordView.Password.Confirm:SetAttribute("Locked", true)
+            elseif (PasswordView.Password.TextBox.Text == "" and not PasswordView.Password.Confirm:GetAttribute("Debounce")) or (PasswordView.Password.TextBox.Text ~= "") then
+                PasswordView.Password.Confirm:SetAttribute("Locked", false)
+            end
+        end
     end
 end
 
@@ -345,17 +396,15 @@ function RoomPadUIController.RunHeartbeat(DeltaTime: number)
             RoomPadUIController.ShowUI(1)
         else
             local UINum = 2 -- Joiner view
+            local Type = CurrentPad.Model:GetAttribute("RoomType") :: CustomEnum.RoomPadType
 
             if not PlayerList:FindFirstChild(LocalPlayer.Name) then
-                return
+                if (Type == "Private") or (Type == "Friends" and CurrentPad.Model:GetAttribute("RequiresPassword")) then
+                    UINum = 3
+                end
             end
 
-            if PlayerList:FindFirstChild(LocalPlayer.Name) then
-                RoomPadUIController.ShowUI(2)
-            else
-                if not CurrentPad.Model:GetAttribute("RequiresPassword") then return end
-                RoomPadUIController.ShowUI(3)
-            end
+            RoomPadUIController.ShowUI(UINum)
         end
         
     else

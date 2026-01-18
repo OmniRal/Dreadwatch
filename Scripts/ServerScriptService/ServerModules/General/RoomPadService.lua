@@ -26,6 +26,7 @@ local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Other.ColorP
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local UPDATE_PADS_RATE = 0.1
+local SET_FIRST_ONE_WITH_FAKE_OWNER = true
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -37,7 +38,7 @@ local UPDATE_PADS_RATE = 0.1
 
 local AllPads: {
     [Model]: {
-        Owner: Player?, 
+        Owner: Player | string?, 
         LevelID: number, 
         RoomType: CustomEnum.RoomPadType,
         Password: string?,
@@ -79,27 +80,27 @@ local function AddPlayerTo(Pad: Model, ThisPlayer: Player)
     New.Instance("IntValue", ThisPlayer.Name, PlayerList, {Value = ThisPlayer.UserId})
 end
 
-local function SetPad(Pad: Model)
+local function SetPad(Pad: Model, FakeOwner: boolean?)
     if not Pad then return end
     local Platform = Pad:FindFirstChild("Platform") :: BasePart
     if not Platform then return end
 
     AllPads[Pad] = {
-        Owner = nil,
+        Owner = if not FakeOwner then nil else "FakeTestOwner",
         LevelID = 1,
-        Password = "None",
+        Password = if not FakeOwner then "None" else "Jizz",
         RoomType = "Private",
         Players = {},
         Locked = 0,
     }
     
-    Pad:SetAttribute("Owner", "None")
-    Pad:SetAttribute("RoomType", "Private")
-    Pad:SetAttribute("RequiresPassword", false)
+    Pad:SetAttribute("Owner", if not FakeOwner then "None" else "FakeTestOwner")
+    Pad:SetAttribute("RoomType", if not FakeOwner then "Private" else "Private")
+    Pad:SetAttribute("RequiresPassword", if not FakeOwner then false else true)
     New.Instance("Folder", "PlayerList", Pad) -- Store a list of the players as values; easy for client to see
 
     Platform.Transparency = 0.5
-    Platform.Color = ColorPalette.RoomPad_Available
+    Platform.Color = if not FakeOwner then ColorPalette.RoomPad_Available else ColorPalette.RoomPad_BeingUsed
 
     Platform.Touched:Connect(function(Hit: BasePart)
         if not Hit then return end
@@ -207,9 +208,11 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function RoomPadService.GetAllPads()
+    local Count = 0
     for _, Pad in CollectionService:GetTagged("RoomPad") do
         if not Pad then continue end
-        SetPad(Pad)
+        Count += 1
+        SetPad(Pad, if Count == 1 and SET_FIRST_ONE_WITH_FAKE_OWNER then true else false)
     end
 end
 
@@ -243,6 +246,7 @@ function RoomPadService.Run()
                 end
 
                 if not Info.Owner then continue end
+                if Info.Owner == "FakeTestOwner" then continue end
                 local Alive, _, Root = Utility.CheckPlayerAlive(Info.Owner)
                 if not Alive or not Root then continue end
 
