@@ -159,7 +159,7 @@ local function SetPasswordView(PasswordView)
         PasswordView.Password.Confirm:SetAttribute("Locked", true)
         local Result = RoomPadService:AttemptJoin(CurrentPad.Model, PasswordView.Password.TextBox.Text)
         if Result == 1 then
-            RoomPadUIController.ShowUI(2)
+            RoomPadUIController.ShowUI("Joiner")
         end
         task.wait(0.5)
 
@@ -326,6 +326,7 @@ local function UpdateUI()
             -- Password view
             if PasswordView.Password.TextBox.Text == "" then
                 PasswordView.Password.Confirm:SetAttribute("Locked", true)
+                
             elseif (PasswordView.Password.TextBox.Text == "" and not PasswordView.Password.Confirm:GetAttribute("Debounce")) or (PasswordView.Password.TextBox.Text ~= "") then
                 PasswordView.Password.Confirm:SetAttribute("Locked", false)
             end
@@ -337,20 +338,12 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function RoomPadUIController.ShowUI(SetTo: number)
+function RoomPadUIController.ShowUI(SetTo: "Owner" | "Joiner" | "Password")
     if not Gui then return end
 
     ResetViews()
 
-    if SetTo == 1 then
-        Gui.Frame.OwnerView.Visible = true
-    
-    elseif SetTo == 2 then
-        Gui.Frame.JoinerView.Visible = true
-
-    else
-        Gui.Frame.PasswordView.Visible = true
-    end
+    Gui.Frame[SetTo .. "View"].Visible = true
 
     Gui.Frame.Visible = true
     UI_Shown = true
@@ -393,18 +386,18 @@ function RoomPadUIController.RunHeartbeat(DeltaTime: number)
         UpdatePlayerList()
         
         if CurrentPad.Model:GetAttribute("Owner") == LocalPlayer.Name then
-            RoomPadUIController.ShowUI(1)
+            RoomPadUIController.ShowUI("Owner")
         else
-            local UINum = 2 -- Joiner view
+            local Show = "Joiner"
             local Type = CurrentPad.Model:GetAttribute("RoomType") :: CustomEnum.RoomPadType
 
             if not PlayerList:FindFirstChild(LocalPlayer.Name) then
                 if (Type == "Private") or (Type == "Friends" and CurrentPad.Model:GetAttribute("RequiresPassword")) then
-                    UINum = 3
+                    Show = "Password"
                 end
             end
 
-            RoomPadUIController.ShowUI(UINum)
+            RoomPadUIController.ShowUI(Show)
         end
         
     else
@@ -432,7 +425,7 @@ end
 function RoomPadUIController:Deferred()
     GetPads()
 
-    RoomPadService.ShowUI:Connect(function(SetTo: number)
+    RoomPadService.ShowUI:Connect(function(SetTo: "Owner" | "Joiner" | "Password")
         RoomPadUIController.ShowUI(SetTo)
     end)
 end
