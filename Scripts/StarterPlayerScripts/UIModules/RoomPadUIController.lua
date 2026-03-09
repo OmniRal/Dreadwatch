@@ -51,8 +51,8 @@ local CheckTick = 0
 local AllPads: {Model} = {}
 local CurrentPad: {
     Model: Model?,
-    ListChangeListener: RBXScriptConnection?,
-} = {Model = nil, ListChangeListener = nil}
+    PlayerListChangeListener: RBXScriptConnection?,
+} = {Model = nil, PlayerListChangeListener = nil}
 
 local SharedAssets = ReplicatedStorage.Assets
 
@@ -160,6 +160,7 @@ local function SetPasswordView(PasswordView)
         local Result = RoomPadService:AttemptJoin(CurrentPad.Model, PasswordView.Password.TextBox.Text)
         if Result == 1 then
             RoomPadUIController.ShowUI("Joiner")
+            RoomPadUIController.RoomPadChanged()
         end
         task.wait(0.5)
 
@@ -191,7 +192,7 @@ local function ResetViews()
     Gui.Frame.PasswordView.Visible = false
 end
 
-local function GetPads()
+local function GetRoomPads()
     for _, Pad in CollectionService:GetTagged("RoomPad") do
         if not Pad then continue end
         table.insert(AllPads, Pad)
@@ -199,7 +200,7 @@ local function GetPads()
 end
 
 -- Check if the player is standing inside any room pad
-local function CheckInPad() : Model?
+local function CheckInRoomPad() : Model?
     if PlayerInfo.Dead or not PlayerInfo.Root then return end
 
     local SetTo: Model? = nil
@@ -236,6 +237,7 @@ local function GetCurrentView(): Frame?
     elseif JoinerView.Visible then
         if JoinerView.PrepView.Visible then
             ThisView = JoinerView.PrepView
+            warn("Got joiner prep")
         end
     
     else
@@ -255,6 +257,8 @@ local function UpdatePlayerList(ListFrame: Frame?)
             ListFrame = ThisView.CurrentPlayers.List
         end
     end
+
+    warn("GOT: ", ListFrame)
 
     if not ListFrame then return end
 
@@ -338,6 +342,35 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+function RoomPadUIController.RoomPadChanged()
+    if not CurrentPad.Model then return end
+    local PlayerList, Platform = CurrentPad.Model:FindFirstChild("PlayerList"), CurrentPad.Model:FindFirstChild("Platform")
+    if not PlayerList or not Platform then return end
+
+    CurrentPad.PlayerListChangeListener = PlayerList.Changed:Connect(function() 
+        UpdatePlayerList()
+    end)
+        
+    if CurrentPad.Model:GetAttribute("Owner") == LocalPlayer.Name then
+        RoomPadUIController.ShowUI("Owner")
+    else
+        local Show = "Joiner"
+        local Type = CurrentPad.Model:GetAttribute("RoomType") :: CustomEnum.RoomPadType
+
+        if not PlayerList:FindFirstChild(LocalPlayer.Name) then
+            if (Type == "Private") or (Type == "Friends" and CurrentPad.Model:GetAttribute("RequiresPassword")) then
+                Show = "Password"
+            end
+        end
+
+        warn("Showing: ", Show)
+
+        RoomPadUIController.ShowUI(Show)
+    end     
+    
+    UpdatePlayerList()
+end
+
 function RoomPadUIController.ShowUI(SetTo: "Owner" | "Joiner" | "Password")
     if not Gui then return end
 
@@ -362,44 +395,23 @@ function RoomPadUIController.RunHeartbeat(DeltaTime: number)
 
     CheckTick = 0
 
-    local SetTo = CheckInPad()
-
-    if SetTo == CurrentPad.Model then 
+    local FoundPad = CheckInRoomPad()
+    if FoundPad == CurrentPad.Model then
+        -- If the found pad is the current pad, just update the UI
         UpdateUI()
         return 
     end
 
-    CurrentPad.Model = SetTo
-    if CurrentPad.ListChangeListener then
-        CurrentPad.ListChangeListener:Disconnect()
-        CurrentPad.ListChangeListener = nil
+    CurrentPad.Model = FoundPad -- Could be nil
+    if CurrentPad.PlayerListChangeListener then
+        CurrentPad.PlayerListChangeListener:Disconnect()
+        CurrentPad.PlayerListChangeListener = nil
     end
 
     if CurrentPad.Model then
-        local PlayerList, Platform = CurrentPad.Model:FindFirstChild("PlayerList"), CurrentPad.Model:FindFirstChild("Platform")
-        if not PlayerList or not Platform then return end
+        -- Set up new room pad
+        RoomPadUIController.RoomPadChanged()
 
-        CurrentPad.ListChangeListener = PlayerList.Changed:Connect(function() 
-            UpdatePlayerList()
-        end)
-
-        UpdatePlayerList()
-        
-        if CurrentPad.Model:GetAttribute("Owner") == LocalPlayer.Name then
-            RoomPadUIController.ShowUI("Owner")
-        else
-            local Show = "Joiner"
-            local Type = CurrentPad.Model:GetAttribute("RoomType") :: CustomEnum.RoomPadType
-
-            if not PlayerList:FindFirstChild(LocalPlayer.Name) then
-                if (Type == "Private") or (Type == "Friends" and CurrentPad.Model:GetAttribute("RequiresPassword")) then
-                    Show = "Password"
-                end
-            end
-
-            RoomPadUIController.ShowUI(Show)
-        end
-        
     else
         if not UI_Shown then return end
         RoomPadUIController.HideUI()
@@ -423,7 +435,7 @@ function RoomPadUIController:Init()
 end
 
 function RoomPadUIController:Deferred()
-    GetPads()
+    GetRoomPads()
 
     RoomPadService.ShowUI:Connect(function(SetTo: "Owner" | "Joiner" | "Password")
         RoomPadUIController.ShowUI(SetTo)
