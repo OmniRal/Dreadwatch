@@ -73,7 +73,7 @@ function Utility:ChangeModelTransparency(Model: Model, To: number, Ignore: {stri
     end
 end
 
-function Utility:CreateDot(CF: CFrame, Size: Vector3, Shape: Enum.PartType, Color: Color3?, Duration: number?, Parent: Instance?)
+function Utility.CreateDot(CF: CFrame, Size: Vector3, Shape: Enum.PartType, Color: Color3?, Duration: number?, Parent: Instance?)
     local Dot = Instance.new("Part")
     Dot.Name = "Dot"
     Dot.Anchored = true
