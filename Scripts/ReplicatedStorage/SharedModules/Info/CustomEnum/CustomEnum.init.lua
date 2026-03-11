@@ -39,8 +39,8 @@ CustomEnum.TextDisplayType = {
 }
 
 export type TeleportInfo = {
+    ExpectedPlayers: {{ID: number, Name: string}},
     MissionID: number,
-    ExpectedPlayers: {{Name: string, ID: number}}
 }
 
 export type Product = {

@@ -18,6 +18,7 @@ local CollectionService = game:GetService("CollectionService")
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
+local LobbyService = Remotes.LobbyService
 local RoomPadService = Remotes.RoomPadService
 
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)

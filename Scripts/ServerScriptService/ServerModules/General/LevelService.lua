@@ -618,7 +618,7 @@ function LevelService.SetAvailableSpawns(ThisRoom_ID: number?, ThisEntrance_ID: 
             local Spawn = Base * CFrame.new((x - 1) * CellFinal, 0, 0)
             table.insert(Level.AvailableSpawns, Spawn)
 
-            Utility:CreateDot(Spawn, Vector3.new(2, 2, 2), Enum.PartType.Block, Color3.fromRGB(50, 200, 255), 100)
+            Utility.CreateDot(Spawn, Vector3.new(2, 2, 2), Enum.PartType.Block, Color3.fromRGB(50, 200, 255), 100)
         end
     end
 end

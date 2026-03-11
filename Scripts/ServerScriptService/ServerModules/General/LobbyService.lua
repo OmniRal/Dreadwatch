@@ -9,10 +9,13 @@ local LobbyService = {}
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+local TeleportService = game:GetService("TeleportService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
@@ -22,6 +25,8 @@ local RoomPadService = require(ServerScriptService.Source.ServerModules.General.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local GAME_ID = game.GameId
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -71,7 +76,7 @@ end
 
 -- Decide if the place will be a lobby or a level based on the first players join data
 -- If returns TRUE without a LevelID, it means the game is waiting for all players to load; delete the lobby
-function LobbyService.CheckLoadLevel(Player: Player): (boolean, number?)
+function LobbyService.CheckLoadMission(Player: Player): (boolean, number?)
     if not Player then return false end
 
     if ServerGlobalValues.StartLevelInfo.TestingMode then
@@ -101,11 +106,45 @@ function LobbyService.CheckLoadLevel(Player: Player): (boolean, number?)
     return true, TeleportInfo.MissionID
 end
 
+-- Attempt to load players into a new mission
+function LobbyService.LaunchMission(Players: {Player}, MissionID: number): boolean
+    local TeleportInfo: CustomEnum.TeleportInfo = {
+        ExpectedPlayers = {},
+        MissionID = MissionID,
+    }
+
+    for _, Player in Players do
+        if not Player then continue end
+        table.insert(TeleportInfo.ExpectedPlayers, {ID = Player.UserId, Name = Player.Name})
+    end
+
+    local Options = Instance.new("TeleportOptions")
+    Options.ShouldReserveServer = true
+
+    local Success, Error = pcall(function() 
+        TeleportService:TeleportAsync(GAME_ID, Players, Options)
+    end)
+
+    if not Success then
+        warn("Mission teleporting failed;", Error)
+    end
+
+    return Success
+end
+
 function LobbyService.Load()
     if Loaded then return end
 
     Loaded = true
     RoomPadService.GetAllPads()
+end
+
+function LobbyService:Init()
+    Remotes:CreateToServer("LaunchMission", {"table", "number"}, "Returns", function(Player: Player, Players: {Player}, MissionID: number) 
+        if not Player or not Players or not MissionID then return 0 end
+
+        return LobbyService.LaunchMission(Players, MissionID)
+    end)
 end
 
 return LobbyService

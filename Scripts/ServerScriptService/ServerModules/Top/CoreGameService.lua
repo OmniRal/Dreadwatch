@@ -241,8 +241,7 @@ end
 function CoreGameService.PlayerAdded(Player: Player)
     table.insert(PlayerOrder, Player)
 
-    local CreateNew, ID = LobbyService.CheckLoadLevel(Player)
-
+    local CreateNew, ID = LobbyService.CheckLoadMission(Player)
     warn("CoreGameService :", CreateNew, ID)
 
     if CreateNew then
