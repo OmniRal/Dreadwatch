@@ -26,7 +26,7 @@ local RoomPadService = require(ServerScriptService.Source.ServerModules.General.
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local GAME_ID = game.GameId
+local GAME_ID = game.PlaceId
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -96,7 +96,7 @@ function LobbyService.CheckLoadMission(Player: Player): (boolean, number?)
 
     print("Got join data from", Player, " :", JoinData)
 
-    local TeleportInfo: CustomEnum.TeleportInfo = JoinData.TeleportInfo
+    local TeleportInfo: CustomEnum.TeleportInfo = JoinData.TeleportData
     if not TeleportInfo then return false end
     if not TeleportInfo.MissionID or not TeleportInfo.ExpectedPlayers then return false end
     if not CheckHaveAllPlayers(TeleportInfo) then return true end
@@ -120,6 +120,7 @@ function LobbyService.LaunchMission(Players: {Player}, MissionID: number): boole
 
     local Options = Instance.new("TeleportOptions")
     Options.ShouldReserveServer = true
+    Options:SetTeleportData(TeleportInfo)
 
     local Success, Error = pcall(function() 
         TeleportService:TeleportAsync(GAME_ID, Players, Options)

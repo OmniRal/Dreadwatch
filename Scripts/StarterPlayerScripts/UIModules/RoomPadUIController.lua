@@ -135,6 +135,32 @@ local function SetOwnerView(OwnerView: any)
         OwnerView.PrepView.Password.TextBox.Text = ""
         OwnerView.PrepView.Password.TextBox.PlaceholderText = PASSWORD_PLACEHOLDER
     end)
+
+    -- Temporary launch button
+    local LaunchDebounce = false
+    GeneralUILibrary.AddBaseButtonInteractions(OwnerView.PrepView.Launch, OwnerView.PrepView.Launch.Button)
+    OwnerView.PrepView.Launch:GetAttributeChangedSignal("Locked"):Connect(function()
+        local Locked = OwnerView.PrepView.Launch:GetAttribute("Locked")
+
+        OwnerView.PrepView.Launch.Button.AutoButtonColor = not Locked
+        if Locked then
+            OwnerView.PrepView.Launch.Button.BackgroundTransparency = 0.5
+            OwnerView.PrepView.Launch.Button.TextTransparency = 0.5
+        else
+            OwnerView.PrepView.Launch.Button.BackgroundTransparency = 0
+            OwnerView.PrepView.Launch.Button.TextTransparency = 0
+        end
+    end)
+    OwnerView.PrepView.Launch.Button.Activated:Connect(function()
+        if LaunchDebounce then return end
+        if OwnerView.PrepView.Launch:GetAttribute("Locked") then return end
+
+        LaunchDebounce = true
+        LobbyService:LaunchMission({LocalPlayer}, 1)
+
+        task.wait(1)
+        LaunchDebounce = false
+    end)
 end
 
 local function SetPasswordView(PasswordView)
@@ -400,6 +426,11 @@ function RoomPadUIController.RunHeartbeat(DeltaTime: number)
     if FoundPad == CurrentPad.Model then
         -- If the found pad is the current pad, just update the UI
         UpdateUI()
+
+        if FoundPad == nil then
+            RoomPadUIController.HideUI()
+        end
+
         return 
     end
 
@@ -423,6 +454,17 @@ function RoomPadUIController:Init()
     if StarterGui:FindFirstChild("RoomPadUI") then
         StarterGui.RoomPadUI:Destroy()
     end
+
+    task.spawn(function()
+        for x = 1, 10 do
+            for _, OldGui in LocalPlayer.PlayerGui:GetChildren() do
+                if OldGui.Name ~= "RoomPadUI" then continue end
+                if OldGui:GetAttribute("Keep") then continue end
+                OldGui:Destroy()
+            end
+            task.wait(1)
+        end
+    end)
 
     local NewGui = SharedAssets.UIs.RoomPadUI:Clone()
     NewGui.Enabled = true

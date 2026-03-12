@@ -260,6 +260,8 @@ function CoreGameService.PlayerAdded(Player: Player)
                     SpawnAllPlayers()
                 end)
             end
+
+            Workspace:SetAttribute("IsMission", true)
         end
     end
 

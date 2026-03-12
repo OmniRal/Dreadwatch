@@ -26,7 +26,7 @@ local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Other.ColorP
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local UPDATE_PADS_RATE = 0.1
-local HAVE_FAKE_ROOM = true -- If true, one room pad will have a fake owner; this is to test joining a room.
+local HAVE_FAKE_ROOM = false -- If true, one room pad will have a fake owner; this is to test joining a room.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes

@@ -2784,6 +2784,25 @@
 																			"children": []
 																		}
 																	]
+																},
+																{
+																	"name": "Launch",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "Button",
+																			"className": "TextButton",
+																			"filePaths": [],
+																			"children": []
+																		},
+																		{
+																			"name": "Info",
+																			"className": "TextLabel",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
 																}
 															]
 														}
