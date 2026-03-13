@@ -106,6 +106,16 @@ function LobbyService.CheckLoadMission(Player: Player): (boolean, number?)
     return true, TeleportInfo.MissionID
 end
 
+function LobbyService.ReturnToLobby()
+    local Success, Error = pcall(function() 
+        TeleportService:TeleportAsync(GAME_ID, ServerGlobalValues.LevelPlayers)
+    end)
+
+    if not Success then
+        warn("Return to lobby teleporting failed;", Error)
+    end
+end
+
 -- Attempt to load players into a new mission
 function LobbyService.LaunchMission(Players: {Player}, MissionID: number): boolean
     local TeleportInfo: CustomEnum.TeleportInfo = {
@@ -145,6 +155,10 @@ function LobbyService:Init()
         if not Player or not Players or not MissionID then return 0 end
 
         return LobbyService.LaunchMission(Players, MissionID)
+    end)
+
+    Remotes:CreateToServer("ReturnToLobby", {}, "Reliable", function(Player: Player)
+        LobbyService.ReturnToLobby()
     end)
 end
 

@@ -5,6 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local LevelEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum.LevelEnum)
+local LobbyService = require(ServerScriptService.Source.ServerModules.General.LobbyService)
 local LevelService = require(ServerScriptService.Source.ServerModules.General.LevelService)
 
 local Level_1: LevelEnum.LevelModule = {}
@@ -80,9 +81,11 @@ Level_1["Room_2"] = {
             if not Room.Build then return end
 
             local Button: BasePart = Room.Build:FindFirstChild("CompleteButton")
-            if not Button then return end
+            local ReturnButton: BasePart = Room.Build:FindFirstChild("ReturnButton")
+            if not Button or not ReturnButton then return end
 
             local Debounce = false
+            local Debounce_2 = false
 
             Button.Touched:Connect(function(Hit: BasePart)  
                 if Debounce then return end
@@ -94,6 +97,17 @@ Level_1["Room_2"] = {
                 Room.PuzzlesSolved = true
 
                 Button.Color = Color3.fromRGB(0, 0, 0)
+            end)
+
+            ReturnButton.Touched:Connect(function(Hit: BasePart)  
+                if Debounce_2 then return end
+                if not Hit then return end
+                if not Hit.Parent then return end
+                if not Players:FindFirstChild(Hit.Parent.Name) then return end
+                Debounce_2 = true
+
+                ReturnButton.Color = Color3.fromRGB(0, 0, 0)
+                LobbyService.ReturnToLobby()
             end)
         end,
 
